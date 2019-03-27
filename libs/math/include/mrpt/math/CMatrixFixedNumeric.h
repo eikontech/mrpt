@@ -8,125 +8,125 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/core/alignment_req.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
-#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
-#include <mrpt/math/types_math.h>
-#include <mrpt/serialization/CSerializable.h>
+#include <cstddef>  // std::size_t
+
+//#include <mrpt/math/eigen_frwds.h>
+//#include <mrpt/math/point_poses2vectors.h>  //
+// MRPT_MATRIX_CONSTRUCTORS_FROM_POSES() #include <mrpt/math/types_math.h>
+//#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
+#include <array>
 
-namespace mrpt
+namespace mrpt::math
 {
-namespace math
-{
-/**  A numeric matrix of compile-time fixed size.
- *   Basically, this class is a wrapper on Eigen::Matrix<T,NROWS,NCOLS>, but
- *   with a RowMajor element memory layout (except for column vectors).
+/** A compile-time fixed-size numeric matrix container.
+ * It uses a RowMajor element memory layout.
  *
- *  These matrices also have iterators to access all the elements in the matrix
- * as a sequence, starting from the element (0,0), then row by row, from left to
- * right.
- *
- * \note This class exists for backward compatibility of ancient times when MRPT
- * didn't rely on Eigen, feel free to directly use Eigen::Matrix<> types
- * instead.
  * \sa CMatrixTemplateNumeric (for dynamic-size matrices)
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_math_grp
  */
-template <typename T, size_t NROWS, size_t NCOLS>
+template <typename T, std::size_t ROWS, std::size_t COLS>
 class CMatrixFixedNumeric
-	: public Eigen::Matrix<
-		  T, NROWS, NCOLS,
-		  // Use row major storage for backward compatibility with MRPT matrices
-		  // in all cases, except in column vectors:
-		  Eigen::AutoAlign |
-			  ((NCOLS == 1 && NROWS != 1) ? Eigen::ColMajor : Eigen::RowMajor)>
 {
    public:
-	using Base = Eigen::Matrix<
-		T, NROWS, NCOLS,
-		Eigen::AutoAlign |
-			((NCOLS == 1 && NROWS != 1) ? Eigen::ColMajor : Eigen::RowMajor)>;
-	using mrpt_autotype = CMatrixFixedNumeric<T, NROWS, NCOLS>;
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixedNumeric)
-	MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(
-		CMatrixFixedNumeric)  // Implements ctor and "operator =" for any other
-	// Eigen class
-
 	/** Default constructor, initializes all elements to zero */
-	inline CMatrixFixedNumeric() : Base() { Base::setZero(); }
+	inline CMatrixFixedNumeric() { fill(0); }
+
 	/** Constructor from an array in row major */
-	inline CMatrixFixedNumeric(const T* vals) : Base(vals) {}
+	// inline CMatrixFixedNumeric(const T* vals) : Base(vals) {}
+
 	/** Constructor which leaves the matrix uninitialized.
 	 *  Example of usage: CMatrixFixedNumeric<double,3,2>
 	 * M(mrpt::math::UNINITIALIZED_MATRIX);
 	 */
-	inline CMatrixFixedNumeric(TConstructorFlags_Matrices) : Base() {}
-	template <size_t N, typename ReturnType>
-	inline ReturnType getVicinity(size_t c, size_t r) const
+	inline CMatrixFixedNumeric(TConstructorFlags_Matrices) {}
+
+	/** @name Matrix element access & modifiers
+	 *  @{ */
+
+	/** Get as an Eigen-compatible Eigen::Map object  */
+	template <
+	    typename EIGEN_MATRIX,
+	    typename EIGEN_MAP = Eigen::Map<
+	        EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+	EIGEN_MAP asEigen()
 	{
-		return detail::getVicinity<
-			CMatrixFixedNumeric<T, NROWS, NCOLS>, T, ReturnType,
-			N>::get(c, r, *this);
+		return EIGEN_MAP(&m_data[0], ROWS, COLS);
+	}
+	/** \overload (const version) */
+	template <
+	    typename EIGEN_MATRIX,
+	    typename EIGEN_MAP = Eigen::Map<
+	        const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+	EIGEN_MAP asEigen() const
+	{
+		return EIGEN_MAP(&m_data[0], ROWS, COLS);
 	}
 
+	/** Access (row,col), without out-of-bounds check (except in Debug builds)
+	 */
+	inline T& operator()(int row, int col)
+	{
+		ASSERTDEB_(row < ROWS);
+		ASSERTDEB_(col < COLS);
+		return m_data[row * COLS + col];
+	}
+	inline const T& operator()(int row, int col) const
+	{
+		ASSERTDEB_(row < ROWS);
+		ASSERTDEB_(col < COLS);
+		return m_data[row * COLS + col];
+	}
+
+	/** Access the [i-th] element (for 1xN or Nx1 matrices) */
+	inline T& operator[](int i)
+	{
+		ASSERT_(ROWS == 1 || COLS == 1);
+		ASSERTDEB_(i < ROWS * COLS);
+		return m_data[i];
+	}
+	inline const T& operator[](int i) const
+	{
+		ASSERT_(ROWS == 1 || COLS == 1);
+		ASSERTDEB_(i < ROWS * COLS);
+		return m_data[i];
+	}
+
+	void fill(const T& value) { m_data.fill(value); }
+	void setZero() { m_data.fill(0); }
+	void setIdentity()
+	{
+		for (std::size_t r = 0; r < ROWS; r++)
+			for (std::size_t c = 0; c < COLS; c++)
+				(*this)(r, c) = (r == c) ? 1 : 0;
+	}
+
+	/** @} */
+
+#if 0
 	inline void loadFromArray(const T* vals)
 	{
 		Base b(vals);
 		*this = b;
 	}
+#endif
 
-	/** == comparison of two matrices; it differs from default Eigen operator in
-	 * that returns false if matrices are of different sizes instead of raising
-	 * an assert. */
-	template <typename Derived>
-	inline bool operator==(const Eigen::MatrixBase<Derived>& m2) const
-	{
-		return Base::cols() == m2.cols() && Base::rows() == m2.rows() &&
-			   Base::cwiseEqual(m2).all();
-	}
-	/** != comparison of two matrices; it differs from default Eigen operator in
-	 * that returns true if matrices are of different sizes instead of raising
-	 * an assert. */
-	template <typename Derived>
-	inline bool operator!=(const Eigen::MatrixBase<Derived>& m2) const
-	{
-		return !((*this) == m2);
-	}
-
-};  // end of class definition ------------------------------
-
-namespace detail
-{
-/**
- * Vicinity traits class specialization for fixed size matrices.
- */
-template <typename T, size_t D>
-class VicinityTraits<CMatrixFixedNumeric<T, D, D>>
-{
-   public:
-	inline static void initialize(CMatrixFixedNumeric<T, D, D>& mat, size_t N)
-	{
-		UNUSED(mat);
-		ASSERT_(N == D);
-	}
-	inline static void insertInContainer(
-		CMatrixFixedNumeric<T, D, D>& mat, size_t r, size_t c, const T& t)
-	{
-		mat.get_unsafe(r, c) = t;
-	}
+   private:
+	/** RowMajor matrix data */
+	alignas(MRPT_MAX_ALIGN_BYTES) std::array<T, ROWS * COLS> m_data;
 };
-}  // namespace detail
+}  // namespace mrpt::math
 
-}  // namespace math
-
-namespace typemeta
+namespace mrpt::typemeta
 {
 // Extensions to mrpt::typemeta::TTypeName for matrices:
-template <typename T, size_t N, size_t M>
+template <typename T, std::size_t N, std::size_t M>
 struct TTypeName<mrpt::math::CMatrixFixedNumeric<T, N, M>>
 {
 	constexpr static auto get()
@@ -136,6 +136,4 @@ struct TTypeName<mrpt::math::CMatrixFixedNumeric<T, N, M>>
 			   literal(num_to_string<M>::value) + literal(">");
 	}
 };
-}  // namespace typemeta
-
-}  // namespace mrpt
+}  // namespace mrpt::typemeta

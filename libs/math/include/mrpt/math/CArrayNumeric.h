@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
-#include <mrpt/math/types_math.h>  // Eigen
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 
@@ -22,56 +21,16 @@ namespace math
  * \sa CArrayFloat, CArrayDouble, CArray
  */
 template <typename T, std::size_t N>
-class CArrayNumeric : public Eigen::Matrix<T, N, 1>
-{
-   public:
-	using value_type = T;
-	using Base = Eigen::Matrix<T, N, 1>;
+using CArrayNumeric = CMatrixFixedNumeric<T, N, 1>;
 
-	/** Default constructor */
-	CArrayNumeric() = default;
-	/** Constructor from initial values ptr[0]-ptr[N-1] */
-	CArrayNumeric(const T* ptr) : Eigen::Matrix<T, N, 1>(ptr) {}
-	/** Initialization from a vector-like source, that is, anything implementing
-	 * operator[]. */
-	template <class Derived>
-	CArrayNumeric(const Eigen::MatrixBase<Derived>& obj)
-		: Eigen::Matrix<T, N, 1>(obj)
-	{
-	}
-
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayNumeric)
-
-	template <typename OtherDerived>
-	inline CArrayNumeric<T, N>& operator=(
-		const Eigen::MatrixBase<OtherDerived>& other)
-	{
-		Base::operator=(other);
-		return *this;
-	}
-};
-
-// --------------  Partial specializations of CArrayNumeric -----------
-
-/** A partial specialization of CArrayNumeric for float numbers.
- * \sa CArrayNumeric, CArray */
+/** Specialization of CArrayNumeric for float numbers \sa CArrayNumeric  */
 template <std::size_t N>
 using CArrayFloat = CArrayNumeric<float, N>;
 
-/** A partial specialization of CArrayNumeric for double numbers.
- * \sa CArrayNumeric, CArray */
+/** Specialization of CArrayNumeric for double numbers \sa CArrayNumeric  */
 template <std::size_t N>
 using CArrayDouble = CArrayNumeric<double, N>;
 
-/** A partial specialization of CArrayNumeric for int numbers.
- * \sa CArrayNumeric, CArray */
-template <std::size_t N>
-using CArrayInt = CArrayNumeric<int, N>;
-
-/** A partial specialization of CArrayNumeric for unsigned int numbers.
- * \sa CArrayNumeric, CArray */
-template <std::size_t N>
-using CArrayUInt = CArrayNumeric<unsigned int, N>;
 }  // namespace math
 
 namespace typemeta

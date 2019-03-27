@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/serialization/CSerializable.h>
 

@@ -207,28 +207,6 @@ void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out)
 	MRPT_END
 }
 
-// ------ Implementatin of detail functions -------------
-namespace detail
-{
-/** Extract a submatrix - The output matrix must be set to the required size
- * before call. */
-template <class MATORG, class MATDEST>
-void extractMatrix(
-	const MATORG& M, const size_t first_row, const size_t first_col,
-	MATDEST& outMat)
-{
-	const size_t NR = outMat.rows();
-	const size_t NC = outMat.cols();
-	ASSERT_BELOWEQ_(first_row + NR, M.rows());
-	ASSERT_BELOWEQ_(first_col + NC, M.cols());
-	for (size_t r = 0; r < NR; r++)
-		for (size_t c = 0; c < NC; c++)
-			outMat.get_unsafe(r, c) =
-				M.get_unsafe(first_row + r, first_col + c);
-}
-
-}  // namespace detail
-
 /**  @} */  // end of grouping
 
 }  // namespace math

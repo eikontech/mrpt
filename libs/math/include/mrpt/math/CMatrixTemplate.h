@@ -12,6 +12,7 @@
 #include <mrpt/core/exceptions.h>  // ASSERT_()
 #include <mrpt/core/format.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
+#include <mrpt/math/matrix_size_t.h>
 #include <algorithm>  // swap()
 #include <array>
 #include <cstring>  // memset()
@@ -20,49 +21,14 @@
 
 namespace mrpt::math
 {
-/** Auxiliary class used in CMatrixTemplate:size(), CMatrixTemplate::resize(),
- * CMatrixFixedNumeric::size(), CMatrixFixedNumeric::resize(), to mimic the
- * behavior of STL-containers */
-struct CMatrixTemplateSize : public std::array<size_t, 2>
-{
-	using Base = std::array<size_t, 2>;
-	using mrpt_autotype = CMatrixTemplateSize;
-
-	inline CMatrixTemplateSize() : std::array<size_t, 2>() {}
-	inline CMatrixTemplateSize(const size_t* d)
-	{
-		(*this)[0] = d[0];
-		(*this)[1] = d[1];
-	}
-
-	inline bool operator==(const CMatrixTemplateSize& o) const
-	{
-		return Base::operator[](0) == o[0] && Base::operator[](1) == o[1];
-	}
-	inline bool operator!=(const CMatrixTemplateSize& o) const
-	{
-		return !(*this == o);
-	}
-	/** This operator allows the size(N,M) to be compared with a plain size_t
-	 * N*M  */
-	inline operator size_t() const { return 2; }
-};
-
 /**  This template class provides the basic functionality for a general 2D
  *any-size, resizable container of numerical or non-numerical elements.
  * NOTES:
- *		- This class is not serializable since it is a template. For using
+ * - This class is not serializable since it is a template. For using
  *serialization, see mrpt::math::CMatrixNumeric
- *		- First row or column index is "0".
- *		- This class includes range checks with ASSERT_() if compiling with
- *"_DEBUG" or "MRPT_ALWAYS_CHECKS_DEBUG_MATRICES=1".
- *		- Please DO NOT use as template class type any other class. It can be
- *safely used the following types:
- *			- Elemental types (int,char,float,doble,...)
- *			- Data struct (Not classes!)
- *			- Any kind of pointers (user is responsible for allocating and
- *freeing
- *the memory addressed by pointers).
+ * - First row or column index is "0".
+ * - This class includes range checks with ASSERT_() if compiling with "_DEBUG"
+ *or "MRPT_ALWAYS_CHECKS_DEBUG_MATRICES=1".
  *
  * \note Memory blocks for each row are 16-bytes aligned (since MRPT 0.7.0).
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
@@ -91,6 +57,8 @@ class CMatrixTemplate
 	 */
 	void realloc(size_t row, size_t col, bool newElementsToZero = false)
 	{
+		MRPT_TODO("Refactor storage to simple T*, not T** -> Map<> compatib.");
+
 		if (row != m_Rows || col != m_Cols || m_Val == nullptr)
 		{
 			size_t r;
@@ -154,7 +122,7 @@ class CMatrixTemplate
    public:
 	/*! Fill all the elements with a given value (Note: named "fillAll" since
 	 * "fill" will be used by child classes) */
-	void fillAll(const T& val)
+	void fill(const T& val)
 	{
 		for (size_t r = 0; r < m_Rows; r++)
 			for (size_t c = 0; c < m_Cols; c++) m_Val[r][c] = val;
@@ -296,9 +264,9 @@ class CMatrixTemplate
 	 */
 	inline size_t cols() const { return m_Cols; }
 	/** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
-	inline CMatrixTemplateSize size() const
+	inline matrix_size_t size() const
 	{
-		CMatrixTemplateSize dims;
+		matrix_size_t dims;
 		dims[0] = m_Rows;
 		dims[1] = m_Cols;
 		return dims;
@@ -312,8 +280,7 @@ class CMatrixTemplate
 
 	/** This method just checks has no effects in this class, but raises an
 	 * exception if the expected size does not match */
-	inline void resize(
-		const CMatrixTemplateSize& siz, bool zeroNewElements = false)
+	inline void resize(const matrix_size_t& siz, bool zeroNewElements = false)
 	{
 		setSize(siz[0], siz[1], zeroNewElements);
 	}
@@ -354,7 +321,7 @@ class CMatrixTemplate
 	 * matrix.
 	 * \exception std::exception If the object is not a column or row matrix.
 	 */
-	inline T& operator()(size_t ith)
+	inline T& operator[](size_t ith)
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		ASSERT_(m_Rows == 1 || m_Cols == 1);
@@ -385,7 +352,7 @@ class CMatrixTemplate
 	 * matrix.
 	 * \exception std::exception If the object is not a column or row matrix.
 	 */
-	inline T operator()(size_t ith) const
+	inline T operator[](size_t ith) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		ASSERT_(m_Rows == 1 || m_Cols == 1);
@@ -480,117 +447,6 @@ class CMatrixTemplate
 	 * (Use only in critical applications)
 	 */
 	inline const T* get_unsafe_row(size_t row) const { return m_Val[row]; }
-	/** Subscript operator to get a submatrix
-	 */
-	inline CMatrixTemplate<T> operator()(
-		const size_t row1, const size_t row2, const size_t col1,
-		const size_t col2) const
-	{
-		CMatrixTemplate<T> val(0, 0);
-		extractSubmatrix(row1, row2, col1, col2, val);
-		return val;
-	}
-
-	/** Get a submatrix, given its bounds
-	 * \sa extractSubmatrixSymmetricalBlocks
-	 */
-	void extractSubmatrix(
-		const size_t row1, const size_t row2, const size_t col1,
-		const size_t col2, CMatrixTemplate<T>& out) const
-	{
-		int nrows = int(row2) - int(row1) + 1;
-		int ncols = int(col2) - int(col1) + 1;
-		if (nrows <= 0 || ncols <= 0)
-		{
-			out.realloc(0, 0);
-			return;
-		}
-		if (row2 >= m_Rows || col2 >= m_Cols)
-			THROW_EXCEPTION("Indices out of range!");
-		out.realloc(nrows, ncols);
-		for (int i = 0; i < nrows; i++)
-			for (int j = 0; j < ncols; j++)
-				out.m_Val[i][j] = m_Val[i + row1][j + col1];
-	}
-	/// @overload
-	template <class EIGEN_MATRIX>
-	void extractSubmatrix(
-		const size_t row1, const size_t row2, const size_t col1,
-		const size_t col2, EIGEN_MATRIX& out) const
-	{
-		int nrows = int(row2) - int(row1) + 1;
-		int ncols = int(col2) - int(col1) + 1;
-		if (nrows <= 0 || ncols <= 0)
-		{
-			out = typename EIGEN_MATRIX::PlainObject();
-			return;
-		}
-		if (row2 >= m_Rows || col2 >= m_Cols)
-			THROW_EXCEPTION("Indices out of range!");
-		out.resize(nrows, ncols);
-		for (int i = 0; i < nrows; i++)
-			for (int j = 0; j < ncols; j++)
-				out.coeffRef(i, j) = m_Val[i + row1][j + col1];
-	}
-
-	/** Gets a series of contiguous rows.
-	 * \exception std::logic_error On index out of bounds
-	 * \sa extractRow
-	 * \sa extractColumns
-	 */
-	inline void extractRows(
-		size_t firstRow, size_t lastRow, CMatrixTemplate<T>& out) const
-	{
-		out.setSize(lastRow - firstRow + 1, m_Cols);
-		detail::extractMatrix(*this, firstRow, 0, out);
-	}
-
-	/** Gets a series of contiguous columns.
-	 * \exception std::logic_error On index out of bounds
-	 * \sa extractColumn
-	 * \sa extractRows
-	 */
-	inline void extractColumns(
-		size_t firstCol, size_t lastCol, CMatrixTemplate<T>& out) const
-	{
-		out.setSize(m_Rows, lastCol - firstCol + 1);
-		detail::extractMatrix(*this, 0, firstCol, out);
-	}
-
-	/** Returns a given column to a vector (without modifying the matrix)
-	 * \exception std::exception On index out of bounds
-	 */
-	void extractCol(size_t nCol, std::vector<T>& out, int startingRow = 0) const
-	{
-		size_t i, n;
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-		if (nCol >= m_Cols)
-			THROW_EXCEPTION("extractCol: Column index out of bounds");
-#endif
-
-		n = m_Rows - startingRow;
-		out.resize(n);
-
-		for (i = 0; i < n; i++) out[i] = m_Val[i + startingRow][nCol];
-	}
-
-	/** Gets a given column to a vector (without modifying the matrix)
-	 * \exception std::exception On index out of bounds
-	 */
-	void extractCol(
-		size_t nCol, CMatrixTemplate<T>& out, int startingRow = 0) const
-	{
-		size_t i, n;
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-		if (nCol >= m_Cols)
-			THROW_EXCEPTION("extractCol: Column index out of bounds");
-#endif
-
-		n = m_Rows - startingRow;
-		out.setSize(n, 1);
-
-		for (i = 0; i < n; i++) out(i, 0) = m_Val[i + startingRow][nCol];
-	}
 
 	/** Appends a new row to the MxN matrix from a 1xN vector.
 	 *  The lenght of the vector must match the width of the matrix, unless
@@ -608,24 +464,14 @@ class CMatrixTemplate
 	 */
 	void appendRow(const std::vector<T>& in)
 	{
-		size_t i, n, row;
-
-		n = m_Cols;
-		row = m_Rows;
-
 		if (m_Cols == 0 || m_Rows == 0)
-		{
 			ASSERT_(!in.empty());
-			n = m_Cols = in.size();
-		}
 		else
-		{
 			ASSERT_(in.size() == m_Cols);
-		}
 
-		realloc(row + 1, n);
-
-		for (i = 0; i < n; i++) m_Val[row][i] = in[i];
+		const auto row = m_Rows;
+		realloc(row + 1, m_Cols = in.size());
+		for (size_t i = 0; i < n; i++) m_Val[row][i] = in[i];
 	}
 
 	/** Appends a new column to the matrix from a vector.
@@ -650,22 +496,6 @@ class CMatrixTemplate
 		for (size_t i = 0; i < m_Rows; i++) m_Val[i][m_Cols - 1] = in[i];
 	}
 
-	/** Inserts a column from a vector, replacing the current contents of that
-	 * column.
-	 * \exception std::exception On index out of bounds
-	 * \sa extractCol
-	 */
-	void insertCol(size_t nCol, const std::vector<T>& in)
-	{
-		if (nCol >= m_Cols)
-			THROW_EXCEPTION("insertCol: Row index out of bounds");
-
-		size_t n = in.size();
-		ASSERT_(m_Rows >= in.size());
-
-		for (size_t i = 0; i < n; i++) m_Val[i][nCol] = in[i];
-	}
-
 	/** Returns a vector containing the matrix's values.
 	 */
 	void getAsVector(std::vector<T>& out) const
@@ -676,21 +506,29 @@ class CMatrixTemplate
 			out.insert(out.end(), &(m_Val[i][0]), &(m_Val[i][m_Cols]));
 	}
 
+	/** Get as an Eigen-compatible Eigen::Map object  */
+	template <
+	    typename EIGEN_MATRIX,
+	    typename EIGEN_MAP = Eigen::Map<
+	        EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+	EIGEN_MAP asEigen()
+	{
+		return EIGEN_MAP(m_Val, m_Rows, m_Cols);
+	}
+	/** \overload (const version) */
+	template <
+	    typename EIGEN_MATRIX,
+	    typename EIGEN_MAP = Eigen::Map<
+	        const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+	EIGEN_MAP asEigen() const
+	{
+		return EIGEN_MAP(m_Val, m_Rows, m_Cols);
+	}
+
 };  // end of class CMatrixTemplate
 
 /** Declares a matrix of booleans (non serializable).
- *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
- */
-// using CMatrixBool = CMatrixTemplate<bool>;
-class CMatrixBool : public CMatrixTemplate<bool>
-{
-   public:
-	/** Constructor */
-	CMatrixBool(size_t row = 1, size_t col = 1);
-	/** Copy constructor */
-	CMatrixBool(const CMatrixTemplate<bool>& m);
-	/** Assignment operator for float matrixes */
-	CMatrixBool& operator=(const CMatrixTemplate<bool>& m);
-};
+ *  \sa CMatrixDouble, CMatrixFloat, CMatrixB */
+using CMatrixBool = CMatrixTemplate<bool>;
 
 }  // namespace mrpt::math

@@ -162,27 +162,6 @@ using CMatrixLongDouble = CMatrixTemplateNumeric<long double>;
 using CMatrixLongDouble = CMatrixTemplateNumeric<double>;
 #endif
 
-namespace detail
-{
-/**
- * Vicinity traits class specialization for fixed size matrices.
- */
-template <typename T>
-class VicinityTraits<CMatrixTemplateNumeric<T>>
-{
-   public:
-	inline static void initialize(CMatrixTemplateNumeric<T>& mat, size_t N)
-	{
-		mat.setSize(N, N);
-		mat.fill(0);
-	}
-	inline static void insertInContainer(
-		CMatrixTemplateNumeric<T>& mat, size_t r, size_t c, const T& t)
-	{
-		mat.get_unsafe(r, c) = t;
-	}
-};
-}  // namespace detail
 }  // namespace math
 
 namespace typemeta
