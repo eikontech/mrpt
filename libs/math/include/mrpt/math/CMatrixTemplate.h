@@ -471,7 +471,7 @@ class CMatrixTemplate
 
 		const auto row = m_Rows;
 		realloc(row + 1, m_Cols = in.size());
-		for (size_t i = 0; i < n; i++) m_Val[row][i] = in[i];
+		for (size_t i = 0; i < m_Cols; i++) m_Val[row][i] = in[i];
 	}
 
 	/** Appends a new column to the matrix from a vector.
@@ -508,18 +508,18 @@ class CMatrixTemplate
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-	    typename EIGEN_MATRIX,
-	    typename EIGEN_MAP = Eigen::Map<
-	        EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+		typename EIGEN_MATRIX,
+		typename EIGEN_MAP = Eigen::Map<
+			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
 	{
 		return EIGEN_MAP(m_Val, m_Rows, m_Cols);
 	}
 	/** \overload (const version) */
 	template <
-	    typename EIGEN_MATRIX,
-	    typename EIGEN_MAP = Eigen::Map<
-	        const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+		typename EIGEN_MATRIX,
+		typename EIGEN_MAP = Eigen::Map<
+			const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
 	{
 		return EIGEN_MAP(m_Val, m_Rows, m_Cols);

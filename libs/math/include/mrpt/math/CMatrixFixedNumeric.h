@@ -52,18 +52,18 @@ class CMatrixFixedNumeric
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-	    typename EIGEN_MATRIX,
-	    typename EIGEN_MAP = Eigen::Map<
-	        EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+		typename EIGEN_MATRIX,
+		typename EIGEN_MAP = Eigen::Map<
+			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
 	{
 		return EIGEN_MAP(&m_data[0], ROWS, COLS);
 	}
 	/** \overload (const version) */
 	template <
-	    typename EIGEN_MATRIX,
-	    typename EIGEN_MAP = Eigen::Map<
-	        const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+		typename EIGEN_MATRIX,
+		typename EIGEN_MAP = Eigen::Map<
+			const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
 	{
 		return EIGEN_MAP(&m_data[0], ROWS, COLS);
@@ -109,13 +109,13 @@ class CMatrixFixedNumeric
 
 	/** @} */
 
-#if 0
-	inline void loadFromArray(const T* vals)
+	template <size_t LEN>
+	void loadFromArray(const T[LEN] & vals)
 	{
-		Base b(vals);
-		*this = b;
+		static_assert(LEN == ROWS * COLS, "Array of incorrect size.");
+		for (size_t r = 0, i = 0; r < ROWS; r++)
+			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i];
 	}
-#endif
 
    private:
 	/** RowMajor matrix data */

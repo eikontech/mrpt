@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/serialization/CArchive.h>
 #include <iomanip>  // for setprecision(), etc.
@@ -18,10 +19,6 @@
 
 namespace mrpt::math
 {
-// Frwd. decl.
-template <typename T, std::size_t N>
-class CArrayNumeric;
-
 /** \addtogroup container_ops_grp
  *  @{ */
 
