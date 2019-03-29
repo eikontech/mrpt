@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/matrix_adaptors.h>
 
 #include <algorithm>

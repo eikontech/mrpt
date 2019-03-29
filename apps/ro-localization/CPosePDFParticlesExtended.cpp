@@ -242,7 +242,7 @@ void CPosePDFParticlesExtended::getCovarianceAndMean(
 	CMatrixDouble33& cov, CPose2D& mean) const
 {
 	getMean(mean);
-	cov.zeros();
+	cov.setZero();
 
 	size_t i, n = m_particles.size();
 	double var_x = 0, var_y = 0, var_p = 0, var_xy = 0, var_xp = 0, var_yp = 0;

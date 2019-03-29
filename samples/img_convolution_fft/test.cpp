@@ -9,7 +9,7 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
@@ -31,7 +31,7 @@ void TestImageConvolutionFFT()
 {
 	CTicTac tictac;
 	CImage img;
-	CMatrix imgCorr;
+	CMatrixF imgCorr;
 
 	// ====================  1  ===================
 	if (!img.loadFromFile(myDataDir + string("test_image.jpg")))
@@ -41,7 +41,7 @@ void TestImageConvolutionFFT()
 		"Computing %ux%u image convolution ...", (unsigned)img.getWidth(),
 		(unsigned)img.getHeight());
 
-	CMatrix res_R, res_I;
+	CMatrixF res_R, res_I;
 
 	double meanTime = 0;
 
@@ -58,7 +58,7 @@ void TestImageConvolutionFFT()
 		size_t lx = mrpt::round2up(actual_lx);
 		size_t ly = mrpt::round2up(actual_ly);
 
-		CMatrix i1(ly, lx), i2;
+		CMatrixF i1(ly, lx), i2;
 		// Get as matrixes, padded with zeros up to power-of-two sizes:
 		img.getAsMatrix(i1, false);
 
@@ -70,8 +70,8 @@ void TestImageConvolutionFFT()
 			printf("\nMax real:%f Min real:%f\n", i1.maximum(), i1.minimum());
 
 		// FFT:
-		CMatrix I1_R, I1_I, I2_R, I2_I;
-		CMatrix ZEROS(ly, lx);
+		CMatrixF I1_R, I1_I, I2_R, I2_I;
+		CMatrixF ZEROS(ly, lx);
 		math::dft2_complex(i1, ZEROS, I1_R, I1_I);
 		math::dft2_complex(i2, ZEROS, I2_R, I2_I);
 

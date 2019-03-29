@@ -146,8 +146,8 @@ class CRandomGenerator
 	}
 
 	/** Fills the given matrix with independent, uniformly distributed samples.
-	 * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
-	 * mrpt::math::CMatrixFixedNumeric
+	 * Matrix classes can be mrpt::math::CMatrixDynamic or
+	 * mrpt::math::CMatrixFixed
 	 * \sa drawUniform
 	 */
 	template <class MAT>
@@ -196,8 +196,8 @@ class CRandomGenerator
 
 	/** Fills the given matrix with independent, 1D-normally distributed
 	 * samples.
-	 * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
-	 * mrpt::math::CMatrixFixedNumeric
+	 * Matrix classes can be mrpt::math::CMatrixDynamic or
+	 * mrpt::math::CMatrixFixed
 	 * \sa drawGaussian1D
 	 */
 	template <class MAT>
@@ -415,8 +415,8 @@ inline ptrdiff_t random_generator_for_STL(ptrdiff_t i)
 }
 
 /** Fills the given matrix with independent, uniformly distributed samples.
- * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
- * mrpt::math::CMatrixFixedNumeric
+ * Matrix classes can be mrpt::math::CMatrixDynamic or
+ * mrpt::math::CMatrixFixed
  * \sa matrixRandomNormal
  */
 template <class MAT>
@@ -442,8 +442,8 @@ void vectorRandomUni(
 }
 
 /** Fills the given matrix with independent, normally distributed samples.
- * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
- * mrpt::math::CMatrixFixedNumeric
+ * Matrix classes can be mrpt::math::CMatrixDynamic or
+ * mrpt::math::CMatrixFixed
  * \sa matrixRandomUni
  */
 template <class MAT>

@@ -515,7 +515,7 @@ void CKalmanFilterCapable<
 
 						// TODO: Use a Matrix view of "dh_dx_full" instead of
 						// creating a copy into "m_dh_dx_full_obs"
-						m_dh_dx_full_obs.zeros(
+						m_dh_dx_full_obs.setZero(
 							N_upd * OBS_SIZE,
 							VEH_SIZE + FEAT_SIZE * N_map);  // Init to zeros.
 						KFMatrix S_observed;  // The KF "m_S" matrix: A

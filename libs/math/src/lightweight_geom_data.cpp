@@ -10,7 +10,7 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/exceptions.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/geometry.h>  // distance()
 #include <mrpt/math/homog_matrices.h>
@@ -217,7 +217,7 @@ void TPose3D::asString(std::string& s) const
 }
 void TPose3D::getAsQuaternion(
 	mrpt::math::CQuaternion<double>& q,
-	mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr) const
+	mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr) const
 {
 	// See:
 	// http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles

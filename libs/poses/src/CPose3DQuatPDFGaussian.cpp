@@ -133,7 +133,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPosePDF& o)
 }
 
 void aux_poseypr2posequat(
-	const CArrayDouble<6>& x, const double& dummy, CArrayDouble<7>& y)
+	const CVectorFixedDouble<6>& x, const double& dummy, CVectorFixedDouble<7>& y)
 {
 	MRPT_UNUSED_PARAM(dummy);
 	y[0] = x[0];
@@ -153,7 +153,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 {
 	if (!USE_SUT_EULER2QUAT_CONVERSION_value)
 	{  // Use Jacobians
-		CMatrixFixedNumeric<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 
 		// Mean:
 		mean.x(o.mean.x());
@@ -164,7 +164,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 
 // Cov:
 #if 1
-		CMatrixFixedNumeric<double, 7, 6> dq_dr;
+		CMatrixFixed<double, 7, 6> dq_dr;
 		dq_dr(0, 0) = dq_dr(1, 1) = dq_dr(2, 2) = 1;
 		dq_dr.insertMatrix(3, 3, dq_dr_sub);
 		// Now for the covariance:
@@ -185,7 +185,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 		this->cov.insertMatrix(0, 0, cov_T);
 
 		// diagonals:
-		CMatrixFixedNumeric<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
 		cov_TQ.multiply_ABt(cov_TR, dq_dr_sub);
 		this->cov.insertMatrix(0, 3, cov_TQ);
 		this->cov.insertMatrixTranspose(3, 0, cov_TQ);
@@ -200,7 +200,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 	{
 		// Use UT transformation:
 		//   f: R^6 => R^7
-		const CArrayDouble<6> x_mean(o.mean);
+		const CVectorFixedDouble<6> x_mean(o.mean);
 
 		static const double dummy = 0;
 		mrpt::math::transform_gaussian_unscented(
@@ -302,11 +302,11 @@ void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 	auto& out = dynamic_cast<CPose3DQuatPDFGaussian&>(o);
 
 	// COV:
-	CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+	CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 	double lx, ly, lz;
 	mean.inverseComposePoint(0, 0, 0, lx, ly, lz, nullptr, &df_dpose);
 
-	CMatrixFixedNumeric<double, 7, 7> jacob;
+	CMatrixFixed<double, 7, 7> jacob;
 	jacob.insertMatrix(0, 0, df_dpose);
 	jacob(3, 3) = 1;
 	jacob(4, 4) = -1;

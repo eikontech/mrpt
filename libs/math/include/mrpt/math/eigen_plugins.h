@@ -174,7 +174,7 @@ std::string inMatlabFormat(const size_t decimal_digits = 6) const;
 
 /** Save matrix to a text file, compatible with MATLAB text format (see also the
  * methods of matrix classes themselves).
- * \param theMatrix It can be a CMatrixTemplate or a CMatrixFixedNumeric.
+ * \param theMatrix It can be a CMatrixDynamic or a CMatrixFixed.
  * \param file The target filename.
  * \param fileFormat See TMatrixTextFileFormat. The format of the numbers in
  * the text file.
@@ -183,7 +183,7 @@ std::string inMatlabFormat(const size_t decimal_digits = 6) const;
  * \param userHeader Additional text to be written at the head of the file.
  * Typically MALAB comments "% This file blah blah". Final end-of-line is not
  * needed.
- * \sa loadFromTextFile, CMatrixTemplate::inMatlabFormat, SAVE_MATRIX
+ * \sa loadFromTextFile, CMatrixDynamic::inMatlabFormat, SAVE_MATRIX
  */
 void saveToTextFile(
 	const std::string& file,

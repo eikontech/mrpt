@@ -22,28 +22,28 @@ namespace mrpt::math
 /** A compile-time fixed-size numeric matrix container.
  * It uses a RowMajor element memory layout.
  *
- * \sa CMatrixTemplateNumeric (for dynamic-size matrices)
+ * \sa CMatrixDynamic (for dynamic-size matrices)
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_math_grp
  */
 template <typename T, std::size_t ROWS, std::size_t COLS>
-class CMatrixFixedNumeric
+class CMatrixFixed
 {
    public:
 	/** @name Constructors
 	 *  @{ */
 
 	/** Default constructor, initializes all elements to zero */
-	inline CMatrixFixedNumeric() { fill(0); }
+	inline CMatrixFixed() { fill(0); }
 
 	/** Constructor which leaves the matrix uninitialized.
-	 *  Example of usage: CMatrixFixedNumeric<double,3,2>
+	 *  Example of usage: CMatrixFixed<double,3,2>
 	 * M(mrpt::math::UNINITIALIZED_MATRIX);
 	 */
-	inline CMatrixFixedNumeric(TConstructorFlags_Matrices) {}
+	inline CMatrixFixed(TConstructorFlags_Matrices) {}
 
-	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixTemplateNumeric)
+	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixed)
 
 	/** @} */
 
@@ -52,7 +52,7 @@ class CMatrixFixedNumeric
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-		typename EIGEN_MATRIX = Eigen::Matrix<T, ROWS, COLS>,
+		typename EIGEN_MATRIX = Eigen::Matrix<T, ROWS, COLS, 1, -1, -1>,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
@@ -123,18 +123,18 @@ class CMatrixFixedNumeric
 	/** RowMajor matrix data */
 	alignas(MRPT_MAX_ALIGN_BYTES) std::array<T, ROWS * COLS> m_data;
 };
+
 }  // namespace mrpt::math
 
 namespace mrpt::typemeta
 {
-// Extensions to mrpt::typemeta::TTypeName for matrices:
 template <typename T, std::size_t N, std::size_t M>
-struct TTypeName<mrpt::math::CMatrixFixedNumeric<T, N, M>>
+struct TTypeName<mrpt::math::CMatrixFixed<T, N, M>>
 {
 	constexpr static auto get()
 	{
-		return literal("CMatrixFixedNumeric<") + TTypeName<T>::get() +
-			   literal(",") + literal(num_to_string<N>::value) + literal(",") +
+		return literal("CMatrixFixed<") + TTypeName<T>::get() + literal(",") +
+			   literal(num_to_string<N>::value) + literal(",") +
 			   literal(num_to_string<M>::value) + literal(">");
 	}
 };

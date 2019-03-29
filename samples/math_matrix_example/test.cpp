@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>
@@ -93,7 +93,7 @@ void TestHCH()
 	cout << "H*C*(~H) = " << H.multiply_HCHt_scalar(C) << endl;
 	cout << "Should be= 31.434" << endl;
 
-	CMatrixFixedNumeric<double, 1, 5> Hfix;
+	CMatrixFixed<double, 1, 5> Hfix;
 	Hfix.loadFromTextFile(myDataDir + string("H_row.txt"));
 	cout << "Again, loaded as a fixed matrix: " << endl << Hfix;
 }
@@ -209,7 +209,7 @@ void TestCov()
 	// Initialize a matrix from a C array:
 	const double numbers[] = {1, 2, 3, 10, 4, 5, 6, 14, 10, -5, -3, 1};
 	CMatrixDouble Mdyn(4, 3, numbers);
-	CMatrixFixedNumeric<double, 4, 3> Mfix(numbers);
+	CMatrixFixed<double, 4, 3> Mfix(numbers);
 
 	vector<CVectorDouble> samples(4);
 	for (size_t i = 0; i < 4; i++)

@@ -373,7 +373,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //	const double cx = intrinsicParams(0,2);
 //	const double cy = intrinsicParams(1,2);
 //
-//	CMatrixFixedNumeric<double,43,43> dx, dy;
+//	CMatrixFixed<double,43,43> dx, dy;
 //
 //	// Compute the undistortion params according to Heittilä code.
 //	// Generate a regular meshgrid of size 43x43 and distort them

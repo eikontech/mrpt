@@ -59,7 +59,7 @@ void CRangeBearingKFSLAM2D::reset()
 
 	// Initial cov:
 	m_pkk.setSize(3, 3);
-	m_pkk.zeros();
+	m_pkk.setZero();
 }
 
 /*---------------------------------------------------------------
@@ -80,7 +80,7 @@ void CRangeBearingKFSLAM2D::getCurrentRobotPose(
 	out_robotPose.mean = CPose2D(m_xkk[0], m_xkk[1], m_xkk[2]);
 
 	// and cov:
-	CMatrixTemplateNumeric<kftype> COV(3, 3);
+	CMatrixDynamic<kftype> COV(3, 3);
 	m_pkk.extractMatrix(0, 0, COV);
 	out_robotPose.cov = COV;
 
@@ -104,7 +104,7 @@ void CRangeBearingKFSLAM2D::getCurrentState(
 	out_robotPose.mean = CPose2D(m_xkk[0], m_xkk[1], m_xkk[2]);
 
 	// and cov:
-	CMatrixTemplateNumeric<kftype> COV(3, 3);
+	CMatrixDynamic<kftype> COV(3, 3);
 	m_pkk.extractMatrix(0, 0, COV);
 	out_robotPose.cov = COV;
 
@@ -293,7 +293,7 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
 	if (!act3D && !act2D)
 	{
 		// Use constant Q:
-		Q.zeros();
+		Q.setZero();
 		ASSERT_(int(options.stds_Q_no_odo.size()) == Q.cols());
 		for (size_t i = 0; i < 3; i++)
 			Q(i, i) = square(options.stds_Q_no_odo[i]);
@@ -652,7 +652,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		// Build a Z matrix with the observations that need dat.assoc:
 		const size_t nObsDA = obs_idxs_needing_data_assoc.size();
 
-		CMatrixTemplateNumeric<kftype> Z_obs_means(nObsDA, obs_size);
+		CMatrixDynamic<kftype> Z_obs_means(nObsDA, obs_size);
 		for (size_t i = 0; i < nObsDA; i++)
 		{
 			const size_t idx = obs_idxs_needing_data_assoc[i];
@@ -948,7 +948,7 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 	CPoint2DPDFGaussian pointGauss;
 	pointGauss.mean.x(m_xkk[0]);
 	pointGauss.mean.y(m_xkk[1]);
-	CMatrixTemplateNumeric<kftype> COV;
+	CMatrixDynamic<kftype> COV;
 	m_pkk.extractMatrix(0, 0, 2, 2, COV);
 	pointGauss.cov = COV;
 

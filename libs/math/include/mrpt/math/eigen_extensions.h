@@ -11,8 +11,10 @@
 
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/math/math_frwds.h>
+#include <Eigen/Eigenvalues>  // EigenSolver
 #include <algorithm>
 #include <cstdio>  // fopen(),...
+#include <fstream>  // ifstream
 #include <sstream>  // stringstream
 #include <stdexcept>
 #include <vector>
@@ -53,7 +55,6 @@ struct TAuxResizer<MAT, -1>
 		obj.derived().conservativeResize(nsize);
 	}
 };
-}  // namespace detail
 
 // Generic version for all kind of matrices:
 template <int R, int C>
@@ -111,6 +112,7 @@ struct MatOrVecResizer<1, 1>
 			internal_resize(mat, new_cols);
 	}
 };
+}  // namespace detail
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices:
  * eigenvectors are the columns, and eigenvalues
@@ -119,6 +121,9 @@ template <class Derived, class MATRIX1, class VECTOR1>
 bool eigenVectorsVec(
 	const Eigen::MatrixBase<Derived>& m, MATRIX1& eVecs, VECTOR1& eVals)
 {
+	using Scalar = typename Derived::Scalar;
+	using Index = typename Derived::Index;
+
 	Eigen::EigenSolver<Derived> es(m, true);
 	// Keep only the real part of complex matrix
 	if (es.info() != Eigen::Success) return false;
@@ -162,7 +167,7 @@ bool eigenVectors(
  */
 template <class Derived, class MATRIX1, class VECTOR1>
 void eigenVectorsSymmetricVec(
-	const Eigen::MatrixBase<Derived>& m, MATRIX1& eVecs, VECTOR1& eVals) const
+    const Eigen::MatrixBase<Derived>& m, MATRIX1& eVecs, VECTOR1& eVals)
 {
 	// This solver returns the eigenvectors already sorted.
 	Eigen::SelfAdjointEigenSolver<Derived> eigensolver(m);
@@ -252,7 +257,7 @@ bool fromMatlabStringFormat(
 			const size_t N = lstElements.size();
 
 			// Check valid width: All rows must have the same width
-			if ((nRow > 0 && size_t(cols()) != N) ||
+			if ((nRow > 0 && size_t(m.cols()) != N) ||
 				(nRow == 0 && Derived::ColsAtCompileTime != Eigen::Dynamic &&
 				 Derived::ColsAtCompileTime != int(N)))
 			{
@@ -266,7 +271,7 @@ bool fromMatlabStringFormat(
 			// Append to the matrix:
 			if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
 				Derived::ColsAtCompileTime == Eigen::Dynamic)
-				internal::MatOrVecResizer<
+				detail::MatOrVecResizer<
 					Derived::RowsAtCompileTime,
 					Derived::ColsAtCompileTime>::doit(m, nRow + 1, N);
 			else if (
@@ -302,7 +307,7 @@ bool fromMatlabStringFormat(
 
 template <class Derived>
 std::string inMatlabFormat(
-	Eigen::MatrixBase<Derived>& m, const size_t decimal_digits = 6)
+    const Eigen::MatrixBase<Derived>& m, const size_t decimal_digits = 6)
 {
 	using Index = typename Derived::Index;
 	std::stringstream s;
@@ -311,7 +316,7 @@ std::string inMatlabFormat(
 	for (Index i = 0; i < m.rows(); i++)
 	{
 		for (Index j = 0; j < m.cols(); j++) s << m.coeff(i, j) << " ";
-		if (i < n.rows() - 1) s << ";";
+		if (i < m.rows() - 1) s << ";";
 	}
 	s << "]";
 	return s.str();
@@ -319,7 +324,7 @@ std::string inMatlabFormat(
 
 /** Save matrix to a text file, compatible with MATLAB text format (see also the
  * methods of matrix classes themselves).
- * \param theMatrix It can be a CMatrixTemplate or a CMatrixFixedNumeric.
+ * \param theMatrix It can be a CMatrixDynamic or a CMatrixFixed.
  * \param file The target filename.
  * \param fileFormat See TMatrixTextFileFormat. The format of the numbers in
  * the text file.
@@ -328,7 +333,7 @@ std::string inMatlabFormat(
  * \param userHeader Additional text to be written at the head of the file.
  * Typically MALAB comments "% This file blah blah". Final end-of-line is not
  * needed.
- * \sa loadFromTextFile, CMatrixTemplate::inMatlabFormat, SAVE_MATRIX
+ * \sa loadFromTextFile, CMatrixDynamic::inMatlabFormat, SAVE_MATRIX
  */
 template <class Derived>
 void saveToTextFile(
@@ -419,6 +424,7 @@ template <class Derived>
 void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 {
 	using Index = typename Derived::Index;
+	using Scalar = typename Derived::Scalar;
 	std::string str;
 	std::vector<double> fil(512);
 	size_t nRows = 0;
@@ -458,7 +464,7 @@ void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 					"loadFromTextFile: The matrix in the text file does not "
 					"match fixed matrix size");
 			if (Derived::ColsAtCompileTime == Eigen::Dynamic && nRows > 0 &&
-				Index(i) != cols())
+			    Index(i) != m.cols())
 				throw std::runtime_error(
 					"loadFromTextFile: The matrix in the text file does not "
 					"have the same number of columns in all rows");
@@ -472,7 +478,7 @@ void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 				{
 					const size_t extra_rows =
 						std::max(static_cast<size_t>(1), nRows >> 1);
-					internal::MatOrVecResizer<
+					detail::MatOrVecResizer<
 						Derived::RowsAtCompileTime,
 						Derived::ColsAtCompileTime>::
 						doit(m, nRows + extra_rows, i);
@@ -485,7 +491,7 @@ void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 					"loadFromTextFile: Read more rows than the capacity of the "
 					"fixed sized matrix.");
 
-			for (size_t q = 0; q < i; q++) coeffRef(nRows, q) = Scalar(fil[q]);
+			for (size_t q = 0; q < i; q++) m(nRows, q) = Scalar(fil[q]);
 
 			nRows++;
 		}  // end if fgets
@@ -494,9 +500,9 @@ void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 	// Final resize to the real size (in case we allocated space in advance):
 	if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
 		Derived::ColsAtCompileTime == Eigen::Dynamic)
-		internal::MatOrVecResizer<
+		detail::MatOrVecResizer<
 			Derived::RowsAtCompileTime,
-			Derived::ColsAtCompileTime>::doit(m, nRows, cols());
+		    Derived::ColsAtCompileTime>::doit(m, nRows, m.cols());
 
 	// Report error as exception
 	if (!nRows)

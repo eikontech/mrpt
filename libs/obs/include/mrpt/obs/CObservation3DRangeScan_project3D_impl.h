@@ -17,7 +17,7 @@ namespace mrpt::obs::detail
 template <class POINTMAP>
 void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrix& rangeImage,
+	const mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
@@ -25,7 +25,7 @@ void do_project_3d_pointcloud(
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrix& rangeImage,
+	const mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED);
@@ -221,11 +221,11 @@ void project3DPointsFromDepthImageInto(
 			//  store as a 4x4 homogeneous matrix to exploit SSE
 			//  optimizations
 			//  below:
-			mrpt::math::CMatrixFixedNumeric<float, 4, 4> T_inv;
+			mrpt::math::CMatrixFixed<float, 4, 4> T_inv;
 			if (!isDirectCorresp)
 			{
-				mrpt::math::CMatrixFixedNumeric<double, 3, 3> R_inv;
-				mrpt::math::CMatrixFixedNumeric<double, 3, 1> t_inv;
+				mrpt::math::CMatrixFixed<double, 3, 3> R_inv;
+				mrpt::math::CMatrixFixed<double, 3, 1> t_inv;
 				mrpt::math::homogeneousMatrixInverse(
 					src_obs.relativePoseIntensityWRTDepth.getRotationMatrix(),
 					src_obs.relativePoseIntensityWRTDepth.m_coords, R_inv,
@@ -341,7 +341,7 @@ void project3DPointsFromDepthImageInto(
 template <class POINTMAP>
 inline void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrix& rangeImage,
+	const mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
@@ -411,7 +411,7 @@ inline void do_project_3d_pointcloud(
 template <class POINTMAP>
 inline void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrix& rangeImage,
+	const mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED)

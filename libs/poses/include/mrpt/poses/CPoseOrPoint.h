@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/math_frwds.h>  // matrices frwd decls

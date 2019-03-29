@@ -397,7 +397,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			CPose3D Ap = finalEstimatedPoseGauss.mean - ith_last_pose;
 			const double  Ap_dist = Ap.norm();
 
-			finalEstimatedPoseGauss.cov.zeros();
+			finalEstimatedPoseGauss.cov.setZero();
 			finalEstimatedPoseGauss.cov(0,0) = square( fabs(Ap_dist)*0.01 );
 			finalEstimatedPoseGauss.cov(1,1) = square( fabs(Ap_dist)*0.01 );
 			finalEstimatedPoseGauss.cov(2,2) = square( fabs(Ap.yaw())*0.02 );
@@ -568,7 +568,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					newMode.val.mean = CPoint3D(auxPose);
 
 					// Uncertainty in z is null:
-					// CMatrix poseCOV =
+					// CMatrixF poseCOV =
 					// robotMovement->poseChange->getEstimatedCovariance();
 					CMatrixD poseCOV;
 					robotActionSampler.getOriginalPDFCov2D(poseCOV);

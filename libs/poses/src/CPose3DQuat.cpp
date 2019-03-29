@@ -113,9 +113,8 @@ void CPose3DQuat::inverseComposeFrom(const CPose3DQuat& A, const CPose3DQuat& B)
  */
 void CPose3DQuat::composePoint(
 	const double lx, const double ly, const double lz, double& gx, double& gy,
-	double& gz,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacobian_df_dpose) const
+	double& gz, mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint,
+	mrpt::math::CMatrixFixed<double, 3, 7>* out_jacobian_df_dpose) const
 {
 	if (out_jacobian_df_dpoint || out_jacobian_df_dpose)
 	{
@@ -171,8 +170,7 @@ void CPose3DQuat::composePoint(
 			this->quat().normalizationJacobian(norm_jacob);
 
 			out_jacobian_df_dpose->insertMatrix(
-				0, 3,
-				(CMatrixFixedNumeric<double, 3, 4>(vals) * norm_jacob).eval());
+				0, 3, (CMatrixFixed<double, 3, 4>(vals) * norm_jacob).eval());
 		}
 	}
 
@@ -188,9 +186,8 @@ void CPose3DQuat::composePoint(
  */
 void CPose3DQuat::inverseComposePoint(
 	const double gx, const double gy, const double gz, double& lx, double& ly,
-	double& lz,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacobian_df_dpose) const
+	double& lz, mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint,
+	mrpt::math::CMatrixFixed<double, 3, 7>* out_jacobian_df_dpose) const
 {
 	if (out_jacobian_df_dpoint || out_jacobian_df_dpose)
 	{
@@ -303,8 +300,7 @@ void CPose3DQuat::inverseComposePoint(
 			this->quat().normalizationJacobian(norm_jacob);
 
 			out_jacobian_df_dpose->insertMatrix(
-				0, 3,
-				(CMatrixFixedNumeric<double, 3, 4>(vals) * norm_jacob).eval());
+				0, 3, (CMatrixFixed<double, 3, 4>(vals) * norm_jacob).eval());
 		}
 	}
 
@@ -390,16 +386,16 @@ void CPose3DQuat::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 void CPose3DQuat::sphericalCoordinates(
 	const TPoint3D& point, double& out_range, double& out_yaw,
 	double& out_pitch,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacob_dryp_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacob_dryp_dpose) const
+	mrpt::math::CMatrixFixed<double, 3, 3>* out_jacob_dryp_dpoint,
+	mrpt::math::CMatrixFixed<double, 3, 7>* out_jacob_dryp_dpose) const
 {
 	const bool comp_jacobs =
 		out_jacob_dryp_dpoint != nullptr || out_jacob_dryp_dpose != nullptr;
 
 	// Pass to coordinates as seen from this 6D pose:
-	CMatrixFixedNumeric<double, 3, 3> jacob_dinv_dpoint,
+	CMatrixFixed<double, 3, 3> jacob_dinv_dpoint,
 		*ptr_ja1 = comp_jacobs ? &jacob_dinv_dpoint : nullptr;
-	CMatrixFixedNumeric<double, 3, 7> jacob_dinv_dpose,
+	CMatrixFixed<double, 3, 7> jacob_dinv_dpose,
 		*ptr_ja2 = comp_jacobs ? &jacob_dinv_dpose : nullptr;
 
 	TPoint3D local;

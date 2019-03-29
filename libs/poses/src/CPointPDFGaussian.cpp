@@ -44,7 +44,7 @@ CPointPDFGaussian::CPointPDFGaussian(
 CPointPDFGaussian::CPointPDFGaussian(const CPoint3D& init_Mean)
 	: mean(init_Mean), cov()
 {
-	cov.zeros();
+	cov.setZero();
 }
 
 /*---------------------------------------------------------------
@@ -77,7 +77,7 @@ void CPointPDFGaussian::serializeFrom(
 		{
 			in >> mean;
 
-			CMatrix c;
+			CMatrixF c;
 			in >> c;
 			cov = c.cast<double>();
 		}

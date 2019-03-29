@@ -260,7 +260,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_compose_point(
-		const CArrayDouble<6 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<6 + 3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0], x[1], x[2], x[3], x[4], x[5]);
@@ -270,7 +270,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_inv_compose_point(
-		const CArrayDouble<6 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<6 + 3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0], x[1], x[2], x[3], x[4], x[5]);
@@ -286,8 +286,8 @@ class Pose3DTests : public ::testing::Test
 	{
 		const CPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint;
-		CMatrixFixedNumeric<double, 3, 6> df_dpose;
+		CMatrixFixed<double, 3, 3> df_dpoint;
+		CMatrixFixed<double, 3, 6> df_dpose;
 
 		TPoint3D pp;
 		p1.composePoint(
@@ -295,24 +295,24 @@ class Pose3DTests : public ::testing::Test
 			use_aprox);
 
 		// Numerical approx:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 6> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 6> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<6 + 3> x_mean;
+			CVectorFixedDouble<6 + 3> x_mean;
 			for (int i = 0; i < 6; i++) x_mean[i] = p1[i];
 			x_mean[6 + 0] = x;
 			x_mean[6 + 1] = y;
 			x_mean[6 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<6 + 3> x_incrs;
+			CVectorFixedDouble<6 + 3> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<6 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_compose_point),
+					const CVectorFixedDouble<6 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -357,32 +357,32 @@ class Pose3DTests : public ::testing::Test
 	{
 		const CPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint;
-		CMatrixFixedNumeric<double, 3, 6> df_dpose;
+		CMatrixFixed<double, 3, 3> df_dpoint;
+		CMatrixFixed<double, 3, 6> df_dpose;
 
 		TPoint3D pp;
 		p1.inverseComposePoint(
 			x, y, z, pp.x, pp.y, pp.z, &df_dpoint, &df_dpose);
 
 		// Numerical approx:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 6> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 6> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<6 + 3> x_mean;
+			CVectorFixedDouble<6 + 3> x_mean;
 			for (int i = 0; i < 6; i++) x_mean[i] = p1[i];
 			x_mean[6 + 0] = x;
 			x_mean[6 + 1] = y;
 			x_mean[6 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<6 + 3> x_incrs;
+			CVectorFixedDouble<6 + 3> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<6 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_inv_compose_point),
+					const CVectorFixedDouble<6 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_inv_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -430,7 +430,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_compose_point_se3(
-		const CArrayDouble<6>& x, const CArrayDouble<3>& P, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P, CVectorFixedDouble<3>& Y)
 	{
 		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
@@ -439,7 +439,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_invcompose_point_se3(
-		const CArrayDouble<6>& x, const CArrayDouble<3>& P, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P, CVectorFixedDouble<3>& Y)
 	{
 		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
@@ -449,28 +449,28 @@ class Pose3DTests : public ::testing::Test
 
 	void test_composePointJacob_se3(const CPose3D& p, const TPoint3D x_l)
 	{
-		CMatrixFixedNumeric<double, 3, 6> df_dse3;
+		CMatrixFixed<double, 3, 6> df_dse3;
 
 		TPoint3D pp;
 		p.composePoint(
 			x_l.x, x_l.y, x_l.z, pp.x, pp.y, pp.z, nullptr, nullptr, &df_dse3);
 
 		// Numerical approx:
-		CMatrixFixedNumeric<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<6> x_mean;
+			CVectorFixedDouble<6> x_mean;
 			for (int i = 0; i < 6; i++) x_mean[i] = 0;
 
-			CArrayDouble<3> P;
+			CVectorFixedDouble<3> P;
 			for (int i = 0; i < 3; i++) P[i] = pp[i];
 
-			CArrayDouble<6> x_incrs;
+			CVectorFixedDouble<6> x_incrs;
 			x_incrs.assign(1e-9);
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<6>& x, const CArrayDouble<3>& P,
-					CArrayDouble<3>& Y)>(&func_compose_point_se3),
+					const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P,
+					CVectorFixedDouble<3>& Y)>(&func_compose_point_se3),
 				x_incrs, P, num_df_dse3);
 		}
 
@@ -487,28 +487,28 @@ class Pose3DTests : public ::testing::Test
 
 	void test_invComposePointJacob_se3(const CPose3D& p, const TPoint3D x_g)
 	{
-		CMatrixFixedNumeric<double, 3, 6> df_dse3;
+		CMatrixFixed<double, 3, 6> df_dse3;
 
 		TPoint3D pp;
 		p.inverseComposePoint(
 			x_g.x, x_g.y, x_g.z, pp.x, pp.y, pp.z, nullptr, nullptr, &df_dse3);
 
 		// Numerical approx:
-		CMatrixFixedNumeric<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<6> x_mean;
+			CVectorFixedDouble<6> x_mean;
 			for (int i = 0; i < 6; i++) x_mean[i] = 0;
 
-			CArrayDouble<3> P;
+			CVectorFixedDouble<3> P;
 			for (int i = 0; i < 3; i++) P[i] = pp[i];
 
-			CArrayDouble<6> x_incrs;
+			CVectorFixedDouble<6> x_incrs;
 			x_incrs.assign(1e-9);
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<6>& x, const CArrayDouble<3>& P,
-					CArrayDouble<3>& Y)>(&func_invcompose_point_se3),
+					const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P,
+					CVectorFixedDouble<3>& Y)>(&func_invcompose_point_se3),
 				x_incrs, P, num_df_dse3);
 		}
 
@@ -524,7 +524,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_expe_e(
-		const CArrayDouble<6>& x, const double& dummy, CArrayDouble<12>& Y)
+		const CVectorFixedDouble<6>& x, const double& dummy, CVectorFixedDouble<12>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p = Lie::SE<3>::exp(x);
@@ -536,18 +536,18 @@ class Pose3DTests : public ::testing::Test
 	// Check dexp(e)_de
 	void check_jacob_expe_e_at_0()
 	{
-		CArrayDouble<6> x_mean;
+		CVectorFixedDouble<6> x_mean;
 		for (int i = 0; i < 6; i++) x_mean[i] = 0;
 
 		double dummy = 0.;
-		CArrayDouble<6> x_incrs;
+		CVectorFixedDouble<6> x_incrs;
 		x_incrs.assign(1e-9);
 		CMatrixDouble numJacobs;
 		mrpt::math::estimateJacobian(
 			x_mean,
 			std::function<void(
-				const CArrayDouble<6>& x, const double& dummy,
-				CArrayDouble<12>& Y)>(&func_jacob_expe_e),
+				const CVectorFixedDouble<6>& x, const double& dummy,
+				CVectorFixedDouble<12>& Y)>(&func_jacob_expe_e),
 			x_incrs, dummy, numJacobs);
 
 		// Theoretical matrix:
@@ -563,7 +563,7 @@ class Pose3DTests : public ::testing::Test
 			0, 0, 0, 0, 1, 0,  0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0,  0,
 
 			1, 0, 0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 0, 0, 1, 0, 0,  0};
-		CMatrixFixedNumeric<double, 12, 6> M(vals);
+		CMatrixFixed<double, 12, 6> M(vals);
 
 		EXPECT_NEAR((numJacobs - M).array().abs().maxCoeff(), 0, 1e-5)
 			<< "M:\n"
@@ -572,7 +572,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_LnT_T(
-		const CArrayDouble<12>& x, const double& dummy, CArrayDouble<6>& Y)
+		const CVectorFixedDouble<12>& x, const double& dummy, CVectorFixedDouble<6>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3D p;
@@ -595,17 +595,17 @@ class Pose3DTests : public ::testing::Test
 
 		CMatrixDouble numJacobs;
 		{
-			CArrayDouble<12> x_mean;
+			CVectorFixedDouble<12> x_mean;
 			p.getAs12Vector(x_mean);
 
 			double dummy = 0.;
-			CArrayDouble<12> x_incrs;
+			CVectorFixedDouble<12> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<12>& x, const double& dummy,
-					CArrayDouble<6>& Y)>(&func_jacob_LnT_T),
+					const CVectorFixedDouble<12>& x, const double& dummy,
+					CVectorFixedDouble<6>& Y)>(&func_jacob_LnT_T),
 				x_incrs, dummy, numJacobs);
 		}
 
@@ -621,7 +621,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_expe_D(
-		const CArrayDouble<6>& eps, const CPose3D& D, CArrayDouble<12>& Y)
+		const CVectorFixedDouble<6>& eps, const CPose3D& D, CVectorFixedDouble<12>& Y)
 	{
 		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D expe_D = incr + D;
@@ -636,16 +636,16 @@ class Pose3DTests : public ::testing::Test
 
 		CMatrixDouble numJacobs;
 		{
-			CArrayDouble<6> x_mean;
+			CVectorFixedDouble<6> x_mean;
 			x_mean.setZero();
 
-			CArrayDouble<6> x_incrs;
+			CVectorFixedDouble<6> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<6>& eps, const CPose3D& D,
-					CArrayDouble<12>& Y)>(&func_jacob_expe_D),
+					const CVectorFixedDouble<6>& eps, const CPose3D& D,
+					CVectorFixedDouble<12>& Y)>(&func_jacob_expe_D),
 				x_incrs, p, numJacobs);
 		}
 
@@ -661,7 +661,7 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_D_expe(
-		const CArrayDouble<6>& eps, const CPose3D& D, CArrayDouble<12>& Y)
+		const CVectorFixedDouble<6>& eps, const CPose3D& D, CVectorFixedDouble<12>& Y)
 	{
 		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D expe_D = D + incr;
@@ -676,16 +676,16 @@ class Pose3DTests : public ::testing::Test
 
 		CMatrixDouble numJacobs;
 		{
-			CArrayDouble<6> x_mean;
+			CVectorFixedDouble<6> x_mean;
 			x_mean.setZero();
 
-			CArrayDouble<6> x_incrs;
+			CVectorFixedDouble<6> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<6>& eps, const CPose3D& D,
-					CArrayDouble<12>& Y)>(&func_jacob_D_expe),
+					const CVectorFixedDouble<6>& eps, const CPose3D& D,
+					CVectorFixedDouble<12>& Y)>(&func_jacob_D_expe),
 				x_incrs, p, numJacobs);
 		}
 
@@ -706,8 +706,8 @@ class Pose3DTests : public ::testing::Test
 	};
 
 	static void func_jacob_Aexpe_D(
-		const CArrayDouble<6>& eps, const TParams_func_jacob_Aexpe_D& params,
-		CArrayDouble<12>& Y)
+		const CVectorFixedDouble<6>& eps, const TParams_func_jacob_Aexpe_D& params,
+		CVectorFixedDouble<12>& Y)
 	{
 		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D res = params.A + incr + params.D;
@@ -723,20 +723,20 @@ class Pose3DTests : public ::testing::Test
 
 		CMatrixDouble numJacobs;
 		{
-			CArrayDouble<6> x_mean;
+			CVectorFixedDouble<6> x_mean;
 			x_mean.setZero();
 
 			TParams_func_jacob_Aexpe_D params;
 			params.A = A;
 			params.D = D;
-			CArrayDouble<6> x_incrs;
+			CVectorFixedDouble<6> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<6>& eps,
+					const CVectorFixedDouble<6>& eps,
 					const TParams_func_jacob_Aexpe_D& params,
-					CArrayDouble<12>& Y)>(&func_jacob_Aexpe_D),
+					CVectorFixedDouble<12>& Y)>(&func_jacob_Aexpe_D),
 				x_incrs, params, numJacobs);
 		}
 

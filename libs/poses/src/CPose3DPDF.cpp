@@ -112,7 +112,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF& o)
 			it2->val.mean.setFromValues(
 				it1->mean.x(), it1->mean.y(), 0, it1->mean.phi(), 0, 0);
 
-			it2->val.cov.zeros();
+			it2->val.cov.setZero();
 
 			it2->val.cov(0, 0) = it1->cov(0, 0);
 			it2->val.cov(1, 1) = it1->cov(1, 1);
@@ -167,9 +167,9 @@ void CPose3DPDF::jacobiansPoseComposition(
 	//  JACOB_du = J_Q2E (6x7) * quat_df_du (7x7) * J_E2Q_du (7x6)
 
 	// J_E2Q_dx:
-	CMatrixFixedNumeric<double, 7, 6> J_E2Q_dx;  // Init to zeros
+	CMatrixFixed<double, 7, 6> J_E2Q_dx;  // Init to zeros
 	{
-		CMatrixFixedNumeric<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 		CQuaternionDouble q_dumm(UNINITIALIZED_QUATERNION);
 		x.getAsQuaternion(q_dumm, &dq_dr_sub);
 		J_E2Q_dx(0, 0) = J_E2Q_dx(1, 1) = J_E2Q_dx(2, 2) = 1;
@@ -177,9 +177,9 @@ void CPose3DPDF::jacobiansPoseComposition(
 	}
 
 	// J_E2Q_du:
-	CMatrixFixedNumeric<double, 7, 6> J_E2Q_du;  // Init to zeros
+	CMatrixFixed<double, 7, 6> J_E2Q_du;  // Init to zeros
 	{
-		CMatrixFixedNumeric<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 		CQuaternionDouble q_dumm(UNINITIALIZED_QUATERNION);
 		u.getAsQuaternion(q_dumm, &dq_dr_sub);
 		J_E2Q_du(0, 0) = J_E2Q_du(1, 1) = J_E2Q_du(2, 2) = 1;
@@ -202,7 +202,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 	// J_Q2E = [ -------+------------- ]
 	//         [  0     | dr_dq_angles ]
 	//
-	CMatrixFixedNumeric<double, 6, 7> J_Q2E;  // Init to zeros
+	CMatrixFixed<double, 6, 7> J_Q2E;  // Init to zeros
 	J_Q2E(0, 0) = J_Q2E(1, 1) = J_Q2E(2, 2) = 1;
 	{
 		// The end result of the pose composition, as a quaternion:
@@ -210,14 +210,14 @@ void CPose3DPDF::jacobiansPoseComposition(
 		q_xu.crossProduct(quat_x.quat(), quat_u.quat());
 
 		// Compute the jacobian:
-		CMatrixFixedNumeric<double, 3, 4> dr_dq_sub_aux(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 4> dr_dq_sub_aux(UNINITIALIZED_MATRIX);
 		double yaw, pitch, roll;
 		q_xu.rpy_and_jacobian(roll, pitch, yaw, &dr_dq_sub_aux, false);
 
 		CMatrixDouble44 dnorm_dq(UNINITIALIZED_MATRIX);
 		q_xu.normalizationJacobian(dnorm_dq);
 
-		CMatrixFixedNumeric<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
 		dr_dq_sub.multiply(dr_dq_sub_aux, dnorm_dq);
 
 		J_Q2E.insertMatrix(3, 3, dr_dq_sub);

@@ -15,7 +15,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
@@ -1307,7 +1307,7 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 #endif
 
 	// Save dimensions of the grid (for any mapping algorithm):
-	CMatrix DIMs(1, 4);
+	CMatrixF DIMs(1, 4);
 	DIMs(0, 0) = m_x_min;
 	DIMs(0, 1) = m_x_max;
 	DIMs(0, 2) = m_y_min;
@@ -1323,9 +1323,9 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 		case mrKernelDM:
 		case mrKernelDMV:
 		{
-			CMatrix all_means(m_size_y, m_size_x);
-			CMatrix all_vars(m_size_y, m_size_x);
-			CMatrix all_confs(m_size_y, m_size_x);
+			CMatrixF all_means(m_size_y, m_size_x);
+			CMatrixF all_vars(m_size_y, m_size_x);
+			CMatrixF all_confs(m_size_y, m_size_x);
 
 			for (size_t y = 0; y < m_size_y; y++)
 				for (size_t x = 0; x < m_size_x; x++)
@@ -1356,8 +1356,8 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 			recoverMeanAndCov();
 
 			// Save the mean and std matrix:
-			CMatrix MEAN(m_size_y, m_size_x);
-			CMatrix STDs(m_size_y, m_size_x);
+			CMatrixF MEAN(m_size_y, m_size_x);
+			CMatrixF STDs(m_size_y, m_size_x);
 
 			for (size_t i = 0; i < m_size_y; i++)
 				for (size_t j = 0; j < m_size_x; j++)
@@ -1400,8 +1400,8 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 		case mrGMRF_SD:
 		{
 			// Save the mean and std matrix:
-			CMatrix MEAN(m_size_y, m_size_x);
-			CMatrix STDs(m_size_y, m_size_x);
+			CMatrixF MEAN(m_size_y, m_size_x);
+			CMatrixF STDs(m_size_y, m_size_x);
 			CMatrixD XYZ(m_size_y * m_size_x, 4);
 
 			size_t idx = 0;
@@ -2631,7 +2631,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 		cxo_max - cxo_min + 1, cyo_max - cyo_min + 1);
 	// cout << "Matrix creted with dimension:" << matExp.rows() << " x "
 	// << matExp.cols() << endl;
-	// CMatrix matExp(cxo_max-cxo_min+1, cyo_max-cyo_min+1);
+	// CMatrixF matExp(cxo_max-cxo_min+1, cyo_max-cyo_min+1);
 	matExp.fill(0);
 
 	// Add seed

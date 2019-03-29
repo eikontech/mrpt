@@ -633,7 +633,7 @@ void CDifodo::computeWeights()
 	// Alternative way to compute the log
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 
-	const CArrayDouble<6> kai_level_acu(
+	const CVectorFixedDouble<6> kai_level_acu(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
 
 	kai_level -= kai_level_acu.cast<float>();
@@ -904,7 +904,7 @@ void CDifodo::filterLevelSolution()
 		acu_trans = transformations[i] * acu_trans;
 
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
-	const CArrayDouble<6> kai_level_acu(
+	const CVectorFixedDouble<6> kai_level_acu(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
 
 	kai_loc_sub -= kai_level_acu.cast<float>();
@@ -934,7 +934,7 @@ void CDifodo::filterLevelSolution()
 		Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	// Compute the rigid transformation
-	mrpt::math::CArrayDouble<6> aux_vel(kai_loc_fil.cast<double>() / fps);
+	mrpt::math::CVectorFixedDouble<6> aux_vel(kai_loc_fil.cast<double>() / fps);
 	const poses::CPose3D aux2 = mrpt::poses::Lie::SE<3>::exp(aux_vel);
 
 	CMatrixDouble44 trans;
@@ -955,7 +955,7 @@ void CDifodo::poseUpdate()
 	//---------------------------------------------------------------------
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
 
-	const CArrayDouble<6> kai_level_acu(
+	const CVectorFixedDouble<6> kai_level_acu(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
 	kai_loc = kai_level_acu.cast<float>();
 

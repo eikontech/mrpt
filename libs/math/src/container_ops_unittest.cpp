@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/math/types_math.h>
+//#include <mrpt/math/types_math.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

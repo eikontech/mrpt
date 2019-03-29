@@ -366,7 +366,7 @@ void CPose2D::getAsVector(CVectorDouble& v) const
 	v[2] = m_phi;
 }
 
-void CPose2D::getAsVector(mrpt::math::CArrayDouble<3>& v) const
+void CPose2D::getAsVector(mrpt::math::CVectorFixedDouble<3>& v) const
 {
 	v[0] = m_coords[0];
 	v[1] = m_coords[1];

@@ -12,7 +12,7 @@
  */
 
 #include <mrpt/gui.h>
-#include <mrpt/math/types_math.h>  // CVectorDouble
+//#include <mrpt/math/types_math.h>  // CVectorDouble
 #include <mrpt/math/utils.h>  // normalize()
 #include <iostream>
 #include <mrpt/math/interp_fit.hpp>

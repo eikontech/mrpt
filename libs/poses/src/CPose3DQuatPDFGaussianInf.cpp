@@ -9,10 +9,10 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CMatrixFixedNumeric.h>  // for CMatrixF...
+#include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
 #include <mrpt/math/CQuaternion.h>  // for CQuatern...
 #include <mrpt/math/distributions.h>
-#include <mrpt/math/types_math.h>  // for CMatrixF...
+//#include <mrpt/math/types_math.h>  // for CMatrixF...
 #include <mrpt/poses/CPose3D.h>  // for CPose3D
 #include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
 #include <mrpt/poses/CPose3DQuatPDF.h>  // for CPose3DQ...
@@ -211,11 +211,11 @@ void CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF& o) const
 	auto& out = dynamic_cast<CPose3DQuatPDFGaussianInf&>(o);
 
 	// COV:
-	CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+	CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 	double lx, ly, lz;
 	mean.inverseComposePoint(0, 0, 0, lx, ly, lz, nullptr, &df_dpose);
 
-	CMatrixFixedNumeric<double, 7, 7> jacob;
+	CMatrixFixed<double, 7, 7> jacob;
 	jacob.insertMatrix(0, 0, df_dpose);
 	jacob(3, 3) = 1;
 	jacob(4, 4) = -1;

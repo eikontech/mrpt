@@ -221,7 +221,7 @@ void CPosePDFGaussianInf::rotateCov(const double ang)
 	alignas(MRPT_MAX_ALIGN_BYTES)
 		const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
 
-	const CMatrixFixedNumeric<double, 3, 3> rot(rot_vals);
+	const CMatrixFixed<double, 3, 3> rot(rot_vals);
 
 	// NEW_COV = H C H^T
 	// NEW_COV^(-1) = (H C H^T)^(-1) = (H^T)^(-1) C^(-1) H^(-1)
@@ -340,7 +340,7 @@ void CPosePDFGaussianInf::inverse(CPosePDF& o) const
 		-ccos, -ssin, mean.x() * ssin - mean.y() * ccos,
 		ssin,  -ccos, mean.x() * ccos + mean.y() * ssin,
 		0,	 0,	 -1};
-	const CMatrixFixedNumeric<double, 3, 3> H(H_values);
+	const CMatrixFixed<double, 3, 3> H(H_values);
 
 	out->cov_inv.noalias() =
 		(H * cov_inv * H.adjoint()).eval();  // o.cov = H * cov * Ht. It's the
@@ -401,8 +401,8 @@ double CPosePDFGaussianInf::mahalanobisDistanceTo(
 {
 	MRPT_START
 
-	auto MU = CArrayDouble<3>(mean);
-	MU -= CArrayDouble<3>(theOther.mean);
+	auto MU = CVectorFixedDouble<3>(mean);
+	MU -= CVectorFixedDouble<3>(theOther.mean);
 
 	wrapToPiInPlace(MU[2]);
 

@@ -104,7 +104,7 @@ void ffff(
 #endif
 
 void aux_posequat2poseypr(
-	const CArrayDouble<7>& x, const double& dummy, CArrayDouble<6>& y)
+	const CVectorFixedDouble<7>& x, const double& dummy, CVectorFixedDouble<6>& y)
 {
 	MRPT_UNUSED_PARAM(dummy);
 	y[0] = x[0];
@@ -167,14 +167,14 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 #endif
 
 		double yaw, pitch, roll;
-		CMatrixFixedNumeric<double, 3, 4> dr_dq_sub_aux(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 4> dr_dq_sub_aux(UNINITIALIZED_MATRIX);
 
 		o.mean.quat().rpy_and_jacobian(roll, pitch, yaw, &dr_dq_sub_aux, false);
 
 		CMatrixDouble44 dnorm_dq(UNINITIALIZED_MATRIX);
 		o.mean.quat().normalizationJacobian(dnorm_dq);
 
-		CMatrixFixedNumeric<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
 		dr_dq_sub.multiply(dr_dq_sub_aux, dnorm_dq);
 
 		// Set the mean:
@@ -184,7 +184,7 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		// Cov:
 		CMatrixDouble44 cov_Q(UNINITIALIZED_MATRIX);
 		CMatrixDouble33 cov_T(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
 		o.cov.extractMatrix(3, 3, cov_Q);
 		o.cov.extractMatrix(0, 0, cov_T);
 		o.cov.extractMatrix(0, 3, cov_TQ);
@@ -197,7 +197,7 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		this->cov.insertMatrix(0, 0, cov_T);
 
 		// diagonals:
-		CMatrixFixedNumeric<double, 3, 3> cov_TR(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> cov_TR(UNINITIALIZED_MATRIX);
 		cov_TR.multiply_ABt(cov_TQ, dr_dq_sub);
 		this->cov.insertMatrix(0, 3, cov_TR);
 		this->cov.insertMatrixTranspose(3, 0, cov_TR);
@@ -211,8 +211,8 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 	{
 		// Use UT transformation:
 		//   f: R^7 => R^6
-		const CArrayDouble<7> x_mean(o.mean);
-		CArrayDouble<6> y_mean;
+		const CVectorFixedDouble<7> x_mean(o.mean);
+		CVectorFixedDouble<6> y_mean;
 		static const bool elements_do_wrapPI[6] = {
 			false, false, false, true, true, true};  // xyz yaw pitch roll
 
@@ -264,7 +264,7 @@ void CPose3DPDFGaussian::copyFrom(const CPosePDF& o)
 	o.getCovarianceAndMean(C, p);
 	mean = CPose3D(p);
 
-	cov.zeros();
+	cov.setZero();
 	cov(0, 0) = C(0, 0);
 	cov(1, 1) = C(1, 1);
 	cov(3, 3) = C(2, 2);

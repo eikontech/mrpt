@@ -236,7 +236,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
 					case CBeacon::pdfGauss:
 					{
 						// Compute the Jacobian H and varZ
-						CMatrixFixedNumeric<double, 1, 3> H;
+						CMatrixFixed<double, 1, 3> H;
 						float varZ, varR = square(likelihoodOptions.rangeStd);
 						float Ax =
 							beac->m_locationGauss.mean.x() - sensor3D.x();

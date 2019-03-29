@@ -142,7 +142,7 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 // }
 //
 // void
-// CPosePDFWrap::getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,3ul,3ul>
+// CPosePDFWrap::getCovarianceAndMean(mrpt::math::CMatrixFixed<double,3ul,3ul>
 // &cov, mrpt::poses::CPose2D &mean_point) const
 // {
 //     this->get_override("getCovarianceAndMean")(cov, mean_point);
@@ -204,13 +204,13 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 //         this->get_override("getMean")(mean_point);
 //     }
 //
-//     void getCovariance(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov)
+//     void getCovariance(mrpt::math::CMatrixFixed<double,6ul,6ul> &cov)
 //     const
 //     {
 //         this->get_override("getCovariance")(cov);
 //     }
 //
-//     void getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul>
+//     void getCovarianceAndMean(mrpt::math::CMatrixFixed<double,6ul,6ul>
 //     &cov, mrpt::poses::CPose3D &mean_point) const
 //     {
 //         this->get_override("getCovarianceAndMean")(cov, mean_point);
@@ -554,7 +554,7 @@ void export_poses()
 
 		// dealing with overloading
 		void (CPose3DPDF::*getCovariance1)(
-			mrpt::math::CMatrixFixedNumeric<double, 6ul, 6ul> & cov) const =
+			mrpt::math::CMatrixFixed<double, 6ul, 6ul> & cov) const =
 			&CPose3DPDF::getCovariance;
 
 		class_<CPose3DPDF, boost::noncopyable>("CPose3DPDF", no_init)
@@ -614,7 +614,7 @@ void export_poses()
 
 		// dealing with overloading
 		void (CPose3DPDF::*getCovariance1)(
-			mrpt::math::CMatrixFixedNumeric<double, 6ul, 6ul> & cov) const =
+			mrpt::math::CMatrixFixed<double, 6ul, 6ul> & cov) const =
 			&CPose3DPDFGaussian::getCovariance;
 
 		class_<CPose3DPDFGaussian, bases<CPose3DPDF>>(

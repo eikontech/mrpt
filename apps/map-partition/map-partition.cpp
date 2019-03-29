@@ -178,7 +178,7 @@ void Test()
 
 	std::sort(parts.begin(), parts.end());
 
-	CMatrix B(A.rows(), A.cols());
+	CMatrixF B(A.rows(), A.cols());
 	std::vector<uint32_t> rearrIndexes;
 	std::vector<uint32_t> separations;
 	for (auto& part : parts)

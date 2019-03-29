@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random.h>
 
 #include "common.h"
@@ -38,7 +38,7 @@ void register_tests_matrices()
 template <typename T>
 double matrix_test_unit_dyn(int a1, int a2)
 {
-	CMatrixTemplateNumeric<T> C(a1, a1);
+	CMatrixDynamic<T> C(a1, a1);
 
 	const long N = 1000000;
 	CTicTac tictac;
@@ -53,7 +53,7 @@ double matrix_test_unit_dyn(int a1, int a2)
 template <typename T, size_t DIM>
 double matrix_test_unit_fix(int a1, int a2)
 {
-	CMatrixFixedNumeric<T, DIM, DIM> C;
+	CMatrixFixed<T, DIM, DIM> C;
 
 	const long N = 1000000;
 	CTicTac tictac;
@@ -68,9 +68,9 @@ double matrix_test_unit_fix(int a1, int a2)
 template <typename T, size_t DIM1, size_t DIM2, size_t DIM3>
 double matrix_test_mult_dyn(int a1, int a2)
 {
-	CMatrixTemplateNumeric<T> A(DIM1, DIM2);
-	CMatrixTemplateNumeric<T> B(DIM2, DIM3);
-	CMatrixTemplateNumeric<T> C(DIM1, DIM3);
+	CMatrixDynamic<T> A(DIM1, DIM2);
+	CMatrixDynamic<T> B(DIM2, DIM3);
+	CMatrixDynamic<T> C(DIM1, DIM3);
 
 	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 	getRandomGenerator().drawGaussian1DMatrix(B, T(0), T(1));
@@ -87,9 +87,9 @@ double matrix_test_mult_dyn(int a1, int a2)
 template <typename T, size_t DIM1, size_t DIM2, size_t DIM3>
 double matrix_test_mult_fix(int a1, int a2)
 {
-	CMatrixFixedNumeric<T, DIM1, DIM2> A;
-	CMatrixFixedNumeric<T, DIM2, DIM3> B;
-	CMatrixFixedNumeric<T, DIM1, DIM3> C;
+	CMatrixFixed<T, DIM1, DIM2> A;
+	CMatrixFixed<T, DIM2, DIM3> B;
+	CMatrixFixed<T, DIM1, DIM3> C;
 
 	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 	getRandomGenerator().drawGaussian1DMatrix(B, T(0), T(1));
@@ -106,8 +106,8 @@ double matrix_test_mult_fix(int a1, int a2)
 template <typename T, size_t DIM1>
 double matrix_test_inv_dyn(int a1, int a2)
 {
-	CMatrixTemplateNumeric<T> A(DIM1, DIM1);
-	CMatrixTemplateNumeric<T> A2(DIM1, DIM1);
+	CMatrixDynamic<T> A(DIM1, DIM1);
+	CMatrixDynamic<T> A2(DIM1, DIM1);
 	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 1000;
@@ -122,7 +122,7 @@ double matrix_test_inv_dyn(int a1, int a2)
 template <typename T, size_t DIM1>
 double matrix_test_inv_fix(int a1, int a2)
 {
-	CMatrixFixedNumeric<T, DIM1, DIM1> A, A2;
+	CMatrixFixed<T, DIM1, DIM1> A, A2;
 	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 1000;
@@ -137,7 +137,7 @@ double matrix_test_inv_fix(int a1, int a2)
 template <typename T, size_t DIM1>
 double matrix_test_det_dyn(int a1, int a2)
 {
-	CMatrixTemplateNumeric<T> A(DIM1, DIM1);
+	CMatrixDynamic<T> A(DIM1, DIM1);
 	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 10000;
@@ -152,7 +152,7 @@ double matrix_test_det_dyn(int a1, int a2)
 template <typename T, size_t DIM1>
 double matrix_test_det_fix(int a1, int a2)
 {
-	CMatrixFixedNumeric<T, DIM1, DIM1> A;
+	CMatrixFixed<T, DIM1, DIM1> A;
 	getRandomGenerator().drawGaussian1DMatrix(A, T(0), T(1));
 
 	const long N = 10000;

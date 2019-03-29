@@ -12,8 +12,8 @@
 
 namespace mrpt::math
 {
-/** Auxiliary class used in CMatrixTemplate:size(), CMatrixTemplate::resize(),
- * CMatrixFixedNumeric::size(), CMatrixFixedNumeric::resize(), to mimic the
+/** Auxiliary class used in CMatrixDynamic:size(), CMatrixDynamic::resize(),
+ * CMatrixFixed::size(), CMatrixFixed::resize(), to mimic the
  * behavior of STL-containers.
  * \ingroup mrpt_math_grp
  */

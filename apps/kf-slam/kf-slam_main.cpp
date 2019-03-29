@@ -178,12 +178,12 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			for (size_t i = 0; i < 6; i++)
 				fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
-			CMatrix H(fullCov.inv());
+			CMatrixF H(fullCov.inv());
 			H.saveToTextFile(OUT_DIR + string("/information_matrix_final.txt"));
 
 			// Replace by absolute values:
 			H = H.array().abs().matrix();
-			CMatrix H2(H);
+			CMatrixF H2(H);
 			H2.normalize(0, 1);
 			CImage imgF(H2, true);
 			imgF.saveToFile(OUT_DIR + string("/information_matrix_final.png"));
@@ -193,7 +193,7 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			//  E = SUM() / SUM(ALL ELEMENTS IN MATRIX)
 			// ----------------------------------------
 			vector<std::vector<uint32_t>> landmarksMembership, partsInObsSpace;
-			CMatrix ERRS(50, 3);
+			CMatrixF ERRS(50, 3);
 
 			for (int i = 0; i < ERRS.rows(); i++)
 			{

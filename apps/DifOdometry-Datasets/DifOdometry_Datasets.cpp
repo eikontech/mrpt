@@ -369,7 +369,7 @@ void CDifodoDatasets::loadFrame()
 	CObservation3DRangeScan::Ptr obs3D =
 		std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
-	const CMatrix range = obs3D->rangeImage;
+	const CMatrixF range = obs3D->rangeImage;
 	const unsigned int height = range.rows();
 	const unsigned int width = range.cols();
 

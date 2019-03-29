@@ -19,7 +19,7 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/math/types_math.h>  // Eigen
+//#include <mrpt/math/types_math.h>  // Eigen
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <iostream>

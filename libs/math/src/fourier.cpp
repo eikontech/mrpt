@@ -11,6 +11,7 @@
 
 #include <mrpt/core/bits_math.h>
 #include <mrpt/math/fourier.h>
+#include <Eigen/Dense>
 #include <algorithm>
 #include <cmath>
 
@@ -1423,8 +1424,8 @@ void math::idft2_complex(
 				out_imag(i, j) = (float)(a[i][j * 2 + 1]);
 			}
 
-		out_real *= scale;
-		out_imag *= scale;
+		out_real.asEigen() *= scale;
+		out_imag.asEigen() *= scale;
 
 		// The element (0,0) is purely real!
 		out_imag(0, 0) = 0;

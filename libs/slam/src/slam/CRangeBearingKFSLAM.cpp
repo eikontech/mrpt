@@ -73,7 +73,7 @@ void CRangeBearingKFSLAM::reset()
 
 	// Initial cov:  nullptr diagonal -> perfect knowledge.
 	m_pkk.setSize(get_vehicle_size(), get_vehicle_size());
-	m_pkk.zeros();
+	m_pkk.setZero();
 	// -----------------------
 
 	// Use SF-based matching (faster & easier for bearing-range observations
@@ -378,7 +378,7 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 	if ((!act3D && !act2D) || options.force_ignore_odometry)
 	{
 		// Use constant Q:
-		Q.zeros();
+		Q.setZero();
 		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()));
 		for (size_t i = 0; i < get_vehicle_size(); i++)
 			Q(i, i) = square(options.stds_Q_no_odo[i]);
@@ -510,8 +510,8 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	// Compute the jacobians, needed below:
 	// const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
 	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
-	CMatrixFixedNumeric<kftype, 7, 7> H_senpose_vehpose(UNINITIALIZED_MATRIX);
-	CMatrixFixedNumeric<kftype, 7, 7> H_senpose_senrelpose(
+	CMatrixFixed<kftype, 7, 7> H_senpose_vehpose(UNINITIALIZED_MATRIX);
+	CMatrixFixed<kftype, 7, 7> H_senpose_senrelpose(
 		UNINITIALIZED_MATRIX);  // Not actually used
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
@@ -646,7 +646,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		// Build a Z matrix with the observations that need dat.assoc:
 		const size_t nObsDA = obs_idxs_needing_data_assoc.size();
 
-		CMatrixTemplateNumeric<kftype> Z_obs_means(nObsDA, obs_size);
+		CMatrixDynamic<kftype> Z_obs_means(nObsDA, obs_size);
 		for (size_t i = 0; i < nObsDA; i++)
 		{
 			const size_t idx = obs_idxs_needing_data_assoc[i];
@@ -850,8 +850,8 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 
 	// const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
 	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
-	CMatrixFixedNumeric<kftype, 7, 7> dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
-	CMatrixFixedNumeric<kftype, 7, 7> dsensorabs_dsenrelpose(
+	CMatrixFixed<kftype, 7, 7> dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
+	CMatrixFixed<kftype, 7, 7> dsensorabs_dsenrelpose(
 		UNINITIALIZED_MATRIX);  // Not actually used
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
@@ -981,7 +981,7 @@ void CRangeBearingKFSLAM::getAs3DObject(
 	pointGauss.mean.x(m_xkk[0]);
 	pointGauss.mean.y(m_xkk[1]);
 	pointGauss.mean.z(m_xkk[2]);
-	CMatrixTemplateNumeric<kftype> COV;
+	CMatrixDynamic<kftype> COV;
 	m_pkk.extractMatrix(0, 0, 3, 3, COV);
 	pointGauss.cov = COV;
 
@@ -1180,12 +1180,12 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 	MRPT_START
 
 	// Compute the information matrix:
-	CMatrixTemplateNumeric<kftype> fullCov(m_pkk);
+	CMatrixDynamic<kftype> fullCov(m_pkk);
 	size_t i;
 	for (i = 0; i < get_vehicle_size(); i++)
 		fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
-	CMatrixTemplateNumeric<kftype> H(fullCov.inv());
+	CMatrixDynamic<kftype> H(fullCov.inv());
 	H.array().abs();  // Replace by absolute values:
 
 	double sumOffBlocks = 0;

@@ -34,7 +34,7 @@ class CPoint3D : public CPoint<CPoint3D>,
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** [x,y,z] */
-	mrpt::math::CArrayDouble<3> m_coords;
+	mrpt::math::CVectorFixedDouble<3> m_coords;
 
    public:
 	/** Constructor for initializing point coordinates. */
@@ -46,7 +46,7 @@ class CPoint3D : public CPoint<CPoint3D>,
 	}
 
 	/** Constructor from a XYZ 3-vector */
-	explicit inline CPoint3D(const mrpt::math::CArrayDouble<3>& xyz)
+	explicit inline CPoint3D(const mrpt::math::CVectorFixedDouble<3>& xyz)
 		: m_coords(xyz)
 	{
 	}

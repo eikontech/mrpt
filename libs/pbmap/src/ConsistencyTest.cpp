@@ -15,8 +15,8 @@
 
 #include "pbmap-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/ransac.h>
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>
@@ -27,7 +27,7 @@
 using namespace std;
 using namespace Eigen;
 using namespace mrpt::pbmap;
-using namespace mrpt::math;  // CMatrix*
+using namespace mrpt::math;  // CMatrixF*
 using namespace mrpt;
 
 ConsistencyTest::ConsistencyTest(PbMap& PBM_source, PbMap& PBM_target)
@@ -523,7 +523,7 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel(
 
 		Eigen::Matrix<float, 6, 1> updatedSE3 =
 			(m6Hessian.inverse() * v6Error).transpose();
-		mrpt::math::CArrayNumeric<double, 6> _updatedSE3;
+		mrpt::math::CVectorFixed<double, 6> _updatedSE3;
 		_updatedSE3(0) = updatedSE3(0);
 		_updatedSE3(1) = updatedSE3(1);
 		_updatedSE3(2) = updatedSE3(2);

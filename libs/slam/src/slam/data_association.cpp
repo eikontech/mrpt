@@ -62,9 +62,9 @@ struct TAuxDataRecursiveJCBB
  */
 template <typename T, TDataAssociationMetric METRIC>
 double joint_pdf_metric(
-	const CMatrixTemplateNumeric<T>& Z_observations_mean,
-	const CMatrixTemplateNumeric<T>& Y_predictions_mean,
-	const CMatrixTemplateNumeric<T>& Y_predictions_cov,
+	const CMatrixDynamic<T>& Z_observations_mean,
+	const CMatrixDynamic<T>& Y_predictions_mean,
+	const CMatrixDynamic<T>& Y_predictions_cov,
 	const TAuxDataRecursiveJCBB& info, const TDataAssociationResults& aux_data)
 {
 	MRPT_UNUSED_PARAM(aux_data);
@@ -113,7 +113,7 @@ double joint_pdf_metric(
 	}
 
 	// Compute mahalanobis distance squared:
-	CMatrixTemplateNumeric<T> COV_inv;
+	CMatrixDynamic<T> COV_inv;
 	COV.inv_fast(COV_inv);
 
 	const double d2 = mrpt::math::multiply_HCHt_scalar(innovations, COV_inv);
@@ -154,9 +154,9 @@ bool isCloser<metricML>(const double v1, const double v2)
 */
 template <typename T, TDataAssociationMetric METRIC>
 void JCBB_recursive(
-	const mrpt::math::CMatrixTemplateNumeric<T>& Z_observations_mean,
-	const mrpt::math::CMatrixTemplateNumeric<T>& Y_predictions_mean,
-	const mrpt::math::CMatrixTemplateNumeric<T>& Y_predictions_cov,
+	const mrpt::math::CMatrixDynamic<T>& Z_observations_mean,
+	const mrpt::math::CMatrixDynamic<T>& Y_predictions_mean,
+	const mrpt::math::CMatrixDynamic<T>& Y_predictions_cov,
 	TDataAssociationResults& results, const TAuxDataRecursiveJCBB& info,
 	const observation_index_t curObsIdx)
 {

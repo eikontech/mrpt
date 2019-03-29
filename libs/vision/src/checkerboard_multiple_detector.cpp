@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/kmeans.h>
 #include <list>
@@ -146,7 +146,7 @@ bool find_chessboard_corners_multiple(
 		// JL: To achieve multiple-checkerboard, take all the raw detected quads
 		// and
 		//  separate them in groups with k-means.
-		vector<CArrayDouble<2>, Eigen::aligned_allocator<CArrayDouble<2>>>
+		vector<CVectorFixedDouble<2>, Eigen::aligned_allocator<CVectorFixedDouble<2>>>
 			quad_centers;
 		quad_centers.resize(quads.size());
 		for (size_t i = 0; i < quads.size(); i++)
@@ -169,10 +169,10 @@ bool find_chessboard_corners_multiple(
 			vector<int> assignments;
 			mrpt::math::kmeanspp<
 				vector<
-					CArrayDouble<2>, Eigen::aligned_allocator<CArrayDouble<2>>>,
+					CVectorFixedDouble<2>, Eigen::aligned_allocator<CVectorFixedDouble<2>>>,
 				vector<
-					CArrayDouble<2>,
-					Eigen::aligned_allocator<CArrayDouble<2>>>>(
+					CVectorFixedDouble<2>,
+					Eigen::aligned_allocator<CVectorFixedDouble<2>>>>(
 				nClusters, quad_centers, assignments);
 
 			// Count # of quads in each cluster:

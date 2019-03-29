@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 
 namespace mrpt
 {
@@ -102,7 +102,7 @@ double stub_kmeans(
  *std::vector,std::list,std::deque,...
  *		- POINT can be:
  *			- std::vector<double/float>
- *			- CArrayDouble<N> / CArrayFloat<N>
+ *			- CVectorFixedDouble<N> / CVectorFixedFloat<N>
  *
  *  \param k [IN] Number of cluster to look for.
  *  \param points [IN] The list of N input points. It can be any STL-like
@@ -137,7 +137,7 @@ inline double kmeans(
  *std::vector,std::list,std::deque,...
  *		- POINT can be:
  *			- std::vector<double/float>
- *			- CArrayDouble<N> / CArrayFloat<N>
+ *			- CVectorFixedDouble<N> / CVectorFixedFloat<N>
  *
  *  \param k [IN] Number of cluster to look for.
  *  \param points [IN] The list of N input points. It can be any STL-like

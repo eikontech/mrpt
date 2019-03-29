@@ -771,7 +771,7 @@ void vision::filterBadCorrsByDistance(
 	MRPT_START
 
 	TMatchingPairList::iterator itPair;
-	CMatrix dist;
+	CMatrixF dist;
 	double v_mean, v_std;
 	unsigned int count = 0;
 

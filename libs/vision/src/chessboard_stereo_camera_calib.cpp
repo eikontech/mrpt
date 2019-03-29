@@ -250,7 +250,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		const double MAX_LAMBDA = 1e20;
 
 		// Initial state:
-		// Within lm_stat: CArrayDouble<9> left_cam_params, right_cam_params; //
+		// Within lm_stat: CVectorFixedDouble<9> left_cam_params, right_cam_params; //
 		// [fx fy cx cy k1 k2 k3 t1 t2]
 		lm_stat_t lm_stat(images, valid_image_pair_indices, obj_points);
 
@@ -873,7 +873,7 @@ void mrpt::vision::add_lm_increment(
 			lm_stat.left_cam_poses[lm_stat.valid_image_pair_indices[i]];
 
 		// Use the Lie Algebra methods for the increment:
-		const CArrayDouble<6> incr(&eps[6 * i]);
+		const CVectorFixedDouble<6> incr(&eps[6 * i]);
 		const CPose3D incrPose = Lie::SE<3>::exp(incr);
 
 		// new_pose =  old_pose  [+] delta
@@ -884,7 +884,7 @@ void mrpt::vision::add_lm_increment(
 	// Increment of the right-left pose:
 	{
 		// Use the Lie Algebra methods for the increment:
-		const CArrayDouble<6> incr(&eps[6 * N]);
+		const CVectorFixedDouble<6> incr(&eps[6 * N]);
 		const CPose3D incrPose = Lie::SE<3>::exp(incr);
 
 		// new_pose =  old_pose  [+] delta
@@ -930,17 +930,17 @@ struct TNumJacobData
 };
 
 void numeric_jacob_eval_function(
-	const CArrayDouble<30>& x, const TNumJacobData& dat, CArrayDouble<4>& out)
+	const CVectorFixedDouble<30>& x, const TNumJacobData& dat, CVectorFixedDouble<4>& out)
 {
 	// Recover the state out from "x":
-	const CArrayDouble<6> incr_l(&x[0]);
+	const CVectorFixedDouble<6> incr_l(&x[0]);
 	const CPose3D incrPose_l = Lie::SE<3>::exp(incr_l);
-	const CArrayDouble<6> incr_rl(&x[6]);
+	const CVectorFixedDouble<6> incr_rl(&x[6]);
 	const CPose3D incrPose_rl = Lie::SE<3>::exp(incr_rl);
 
 	// [fx fy cx cy k1 k2 k3 t1 t2]
 	TStereoCamera cam_params;
-	CArrayDouble<9> left_cam_params = x.segment<9>(6 + 6);
+	CVectorFixedDouble<9> left_cam_params = x.segment<9>(6 + 6);
 	cam_params.leftCamera.fx(left_cam_params[0]);
 	cam_params.leftCamera.fy(left_cam_params[1]);
 	cam_params.leftCamera.cx(left_cam_params[2]);
@@ -952,7 +952,7 @@ void numeric_jacob_eval_function(
 	cam_params.leftCamera.p2(left_cam_params[8]);
 
 	// [fx fy cx cy k1 k2 k3 t1 t2]
-	CArrayDouble<9> right_cam_params = x.segment<9>(6 + 6 + 9);
+	CVectorFixedDouble<9> right_cam_params = x.segment<9>(6 + 6 + 9);
 	cam_params.rightCamera.fx(right_cam_params[0]);
 	cam_params.rightCamera.fy(right_cam_params[1]);
 	cam_params.rightCamera.cx(right_cam_params[2]);
@@ -979,7 +979,7 @@ void numeric_jacob_eval_function(
 }
 
 void eval_h_b(
-	const CArrayDouble<2>& X, const TCamera& params, CArrayDouble<2>& out)
+	const CVectorFixedDouble<2>& X, const TCamera& params, CVectorFixedDouble<2>& out)
 {
 	// Radial distortion:
 	const double x = X[0], y = X[1];
@@ -998,7 +998,7 @@ void eval_h_b(
 									 params.dist[2] * (r2 + 2 * square(y)));
 }
 
-void eval_b_p(const CArrayDouble<3>& P, const int& dummy, CArrayDouble<2>& b)
+void eval_b_p(const CVectorFixedDouble<3>& P, const int& dummy, CVectorFixedDouble<2>& b)
 {
 	// Radial distortion:
 	b[0] = P[0] / P[2];
@@ -1006,9 +1006,9 @@ void eval_b_p(const CArrayDouble<3>& P, const int& dummy, CArrayDouble<2>& b)
 }
 
 void eval_deps_D_p(
-	const CArrayDouble<6>& eps, const TPoint3D& D_p, CArrayDouble<3>& out)
+	const CVectorFixedDouble<6>& eps, const TPoint3D& D_p, CVectorFixedDouble<3>& out)
 {
-	const CArrayDouble<6> incr(&eps[0]);
+	const CVectorFixedDouble<6> incr(&eps[0]);
 	const CPose3D incrPose = Lie::SE<3>::exp(incr);
 	TPoint3D D_p_out;
 	incrPose.composePoint(D_p, D_p_out);
@@ -1022,10 +1022,10 @@ struct TEvalData_A_eps_D_p
 };
 
 void eval_dA_eps_D_p(
-	const CArrayDouble<6>& eps, const TEvalData_A_eps_D_p& dat,
-	CArrayDouble<3>& out)
+	const CVectorFixedDouble<6>& eps, const TEvalData_A_eps_D_p& dat,
+	CVectorFixedDouble<3>& out)
 {
-	const CArrayDouble<6> incr(&eps[0]);
+	const CVectorFixedDouble<6> incr(&eps[0]);
 	const CPose3D incrPose = Lie::SE<3>::exp(incr);
 	const CPose3D A_eps_D = dat.A + (incrPose + dat.D);
 	TPoint3D pt;
@@ -1047,7 +1047,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 	const size_t N = lm_stat.valid_image_pair_indices.size();
 	res_jac.resize(N);
 
-	// Parse lm_stat data: CArrayDouble<9> left_cam_params, right_cam_params; //
+	// Parse lm_stat data: CVectorFixedDouble<9> left_cam_params, right_cam_params; //
 	// [fx fy cx cy k1 k2 k3 t1 t2]
 	TCamera camparam_l;
 	camparam_l.fx(lm_stat.left_cam_params[0]);
@@ -1148,12 +1148,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 #if 0
 			// Almost exact....
 			{
-				CArrayDouble<2> x0;
+				CVectorFixedDouble<2> x0;
 				TPoint3D nP = pt_wrt_left;
 				x0[0] = nP.x/nP.z;
 				x0[1] = nP.y/nP.z;
 
-				CArrayDouble<2> x_incrs;
+				CVectorFixedDouble<2> x_incrs;
 				x_incrs.setConstant(1e-6);
 
 				Eigen::Matrix<double,2,2> num_dhl_dbl, num_dhr_dbr;
@@ -1177,12 +1177,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 #if 0
 			// OK! 100% exact.
 			{
-				CArrayDouble<3> x0;
+				CVectorFixedDouble<3> x0;
 				x0[0]=pt_wrt_left.x;
 				x0[1]=pt_wrt_left.y;
 				x0[2]=pt_wrt_left.z;
 
-				CArrayDouble<3> x_incrs;
+				CVectorFixedDouble<3> x_incrs;
 				x_incrs.setConstant(1e-8);
 
 				Eigen::Matrix<double,2,3> num_dbl_dpl, num_dbr_dpr;
@@ -1214,10 +1214,10 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			// 100% Exact.
 			{
 				// Test jacob_deps_D_p_deps:
-				CArrayDouble<6> x0;
+				CVectorFixedDouble<6> x0;
 				x0.setConstant(0);
 
-				CArrayDouble<6> x_incrs;
+				CVectorFixedDouble<6> x_incrs;
 				x_incrs.setConstant(1e-8);
 
 				Eigen::Matrix<double,3,6> num_dpl_del, num_dpr_der;
@@ -1233,10 +1233,10 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			// 100% Exact.
 			{
 				// Test jacob_dA_eps_D_p_deps:
-				CArrayDouble<6> x0;
+				CVectorFixedDouble<6> x0;
 				x0.setConstant(0);
 
-				CArrayDouble<6> x_incrs;
+				CVectorFixedDouble<6> x_incrs;
 				x_incrs.setConstant(1e-8);
 
 				TEvalData_A_eps_D_p dat;
@@ -1272,7 +1272,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 #if defined(USE_NUMERIC_JACOBIANS) || defined(COMPARE_NUMERIC_JACOBIANS)
 			// ----- Numeric Jacobians ----
 
-			CArrayDouble<30> x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) +
+			CVectorFixedDouble<30> x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) +
 			// r_camparams (9)
 			x0.setZero();
 			x0.segment<9>(6 + 6) = lm_stat.left_cam_params;
@@ -1284,7 +1284,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				1e-3, 1e-3, 1e-3, 1e-3, 1e-8, 1e-8, 1e-8, 1e-8, 1e-4,  // cam_l
 				1e-3, 1e-3, 1e-3, 1e-3, 1e-8, 1e-8, 1e-8, 1e-8, 1e-4  // cam_rl
 			};
-			const CArrayDouble<30> x_incrs(x_incrs_val);
+			const CVectorFixedDouble<30> x_incrs(x_incrs_val);
 			TNumJacobData dat(
 				lm_stat, lm_stat.obj_points[i], lm_stat.left_cam_poses[k_idx],
 				lm_stat.right2left_pose, obs);

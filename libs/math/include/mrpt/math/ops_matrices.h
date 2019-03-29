@@ -11,8 +11,9 @@
 #include <mrpt/math/eigen_frwds.h>  // forward declarations
 #include <mrpt/math/math_frwds.h>  // forward declarations
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorDynamic.h>
 
 #include <mrpt/math/ops_containers.h>  // Many generic operations
 
@@ -91,8 +92,8 @@ void multiply_HtCH(
 
 /** Computes the mean vector and covariance from a list of samples in an NxM
  * matrix, where each row is a sample, so the covariance is MxM.
- * \param v The set of data as a NxM matrix, of types: CMatrixTemplateNumeric
- * or CMatrixFixedNumeric
+ * \param v The set of data as a NxM matrix, of types: CMatrixDynamic
+ * or CMatrixFixed
  * \param out_mean The output M-vector for the estimated mean.
  * \param out_cov The output MxM matrix for the estimated covariance matrix,
  * this can also be either a fixed-size of dynamic size matrix.
@@ -117,7 +118,7 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 	// Second: Compute the covariance
 	//  Save only the above-diagonal part, then after averaging
 	//  duplicate that part to the other half.
-	out_cov.zeros(M, M);
+	out_cov.setZero(M, M);
 	for (size_t i = 0; i < N; i++)
 	{
 		for (size_t j = 0; j < M; j++)
@@ -142,13 +143,14 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 template <class MATRIX>
 inline Eigen::Matrix<
 	typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
-	MATRIX::ColsAtCompileTime>
+    MATRIX::ColsAtCompileTime, 0, MATRIX::ColsAtCompileTime, 1>
 	cov(const MATRIX& v)
 {
-	Eigen::Matrix<double, MATRIX::ColsAtCompileTime, 1> m;
+	CVectorDynamic<double> m;
 	Eigen::Matrix<
 		typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
-		MATRIX::ColsAtCompileTime>
+	    MATRIX::ColsAtCompileTime, 1, MATRIX::ColsAtCompileTime,
+	    MATRIX::ColsAtCompileTime>
 		C;
 	meanAndCovMat(v, m, C);
 	return C;

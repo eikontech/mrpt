@@ -336,7 +336,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		for (i = 0; i < valid_detected_imgs; i++)
 		{
 			CMatrixDouble44 HM;
-			HM.zeros();
+			HM.setZero();
 			HM(3, 3) = 1;
 
 			{

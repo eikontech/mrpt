@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/img/TCamera.h>
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/utils.h>
@@ -205,7 +205,7 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		T x_ = 1 / pIn[0];
 		T x_2 = square(x_);
 		// First two jacobians...
-		mrpt::math::CMatrixFixedNumeric<T, 3, 3> J21;
+		mrpt::math::CMatrixFixed<T, 3, 3> J21;
 		T tmpK = 2 * (cam.k1() + tmp.R * (2 * cam.k2() + 3 * tmp.R * cam.k3()));
 		T tmpKx = tmpK * tmp.x_;
 		T tmpKy = tmpK * tmp.y_;
@@ -224,7 +224,7 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		T pxpy = 2 * (cam.p1() * tmp.x_ + cam.p2() * tmp.y_);
 		T p1y = cam.p1() * tmp.y_;
 		T p2x = cam.p2() * tmp.x_;
-		mrpt::math::CMatrixFixedNumeric<T, 2, 3> J43;
+		mrpt::math::CMatrixFixed<T, 2, 3> J43;
 		T fx = cam.fx(), fy = cam.fy();
 		J43(0, 0) = fx * (tmp.K + 2 * p1y + 6 * p2x);
 		J43(0, 1) = fx * pxpy;
@@ -242,25 +242,25 @@ class CCamModel : public mrpt::config::CLoadableOptions
 	// once,
 	// and not in each iteration.
 	// They are mostly useless outside the scope of this function.
-	mrpt::math::CMatrixFixedNumeric<double, 2, 2> firstInverseJacobian() const
+	mrpt::math::CMatrixFixed<double, 2, 2> firstInverseJacobian() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 2, 2> res;
+		mrpt::math::CMatrixFixed<double, 2, 2> res;
 		res(0, 1) = 0;
 		res(1, 0) = 0;
 		return res;
 	}
-	mrpt::math::CMatrixFixedNumeric<double, 4, 2> secondInverseJacobian() const
+	mrpt::math::CMatrixFixed<double, 4, 2> secondInverseJacobian() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 4, 2> res;
+		mrpt::math::CMatrixFixed<double, 4, 2> res;
 		res(0, 0) = 1;
 		res(0, 1) = 0;
 		res(1, 0) = 0;
 		res(1, 1) = 1;
 		return res;
 	}
-	mrpt::math::CMatrixFixedNumeric<double, 3, 4> thirdInverseJacobian() const
+	mrpt::math::CMatrixFixed<double, 3, 4> thirdInverseJacobian() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 3, 4> res;
+		mrpt::math::CMatrixFixed<double, 3, 4> res;
 		res(0, 1) = 0;
 		res(0, 2) = 0;
 		res(1, 0) = 0;
@@ -284,13 +284,13 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		// faster, but makes it incapable of being used in more than one thread
 		// simultaneously!
 		using mrpt::square;
-		static mrpt::math::CMatrixFixedNumeric<double, 2, 2> J1(
+		static mrpt::math::CMatrixFixed<double, 2, 2> J1(
 			firstInverseJacobian());
-		static mrpt::math::CMatrixFixedNumeric<double, 4, 2> J2(
+		static mrpt::math::CMatrixFixed<double, 4, 2> J2(
 			secondInverseJacobian());
-		static mrpt::math::CMatrixFixedNumeric<double, 3, 4> J3(
+		static mrpt::math::CMatrixFixed<double, 3, 4> J3(
 			thirdInverseJacobian());
-		static mrpt::math::CMatrixFixedNumeric<double, 2, 3> J4;  // This is not
+		static mrpt::math::CMatrixFixed<double, 2, 3> J4;  // This is not
 		// initialized
 		// in a
 		// special
@@ -298,8 +298,8 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		// although
 		// declaring
 		// it
-		mrpt::math::CArrayNumeric<double, 4> tmp1;
-		mrpt::math::CArrayNumeric<double, 2> tmp2;  // This would be a
+		mrpt::math::CVectorFixed<double, 4> tmp1;
+		mrpt::math::CVectorFixed<double, 2> tmp2;  // This would be a
 		// array<double,3>, but to
 		// avoid copying, we let
 		// "R2" lie in tmp1.

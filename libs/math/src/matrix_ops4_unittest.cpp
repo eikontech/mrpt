@@ -12,8 +12,8 @@
 // compiling in small systems.
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
@@ -48,7 +48,7 @@ TEST(Matrices, meanAndStd)
 		2.6694845663, 1.7205860530, 2.1518695071, 2.1110960664, 1.6731209980,
 		2.5655678993, 2.9541115932, 2.1854562572, 2.4463194915, 2.7170092067,
 		3.0742063088, 1.8710847505, 2.8907499694, 1.6731209980, 3.9093678727};
-	CMatrixFixedNumeric<double, 10, 10> A(dat_A);
+	CMatrixFixed<double, 10, 10> A(dat_A);
 
 	// Compute mean & std of each column:
 	CVectorDouble result_mean, result_std;
@@ -95,7 +95,7 @@ TEST(Matrices, meanAndStdAll)
 		2.6694845663, 1.7205860530, 2.1518695071, 2.1110960664, 1.6731209980,
 		2.5655678993, 2.9541115932, 2.1854562572, 2.4463194915, 2.7170092067,
 		3.0742063088, 1.8710847505, 2.8907499694, 1.6731209980, 3.9093678727};
-	CMatrixFixedNumeric<double, 10, 10> A(dat_A);
+	CMatrixFixed<double, 10, 10> A(dat_A);
 
 	// Compute mean & std of each column:
 	double result_mean, result_std;
@@ -213,7 +213,7 @@ TEST(Matrices, loadFromTextFile)
 			"1 2 3\n"
 			"4 5 6\n";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixFixed<double, 2, 3> M;
 		bool retval = false;
 		try
 		{
@@ -233,7 +233,7 @@ TEST(Matrices, loadFromTextFile)
 			"1 2 3\n"
 			"4 5\n";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixFixed<double, 2, 3> M;
 		bool retval = false;
 		try
 		{
@@ -265,7 +265,7 @@ TEST(Matrices, loadFromTextFile)
 	{
 		const std::string s1 = "  \n";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixFixed<double, 2, 3> M;
 		bool retval = false;
 		try
 		{
@@ -283,7 +283,7 @@ TEST(Matrices, loadFromTextFile)
 			"1 2 3\n"
 			"1 2 3";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixFixed<double, 2, 3> M;
 		bool retval = false;
 		try
 		{

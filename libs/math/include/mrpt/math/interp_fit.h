@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/wrap2pi.h>
 
 namespace mrpt::math
@@ -59,7 +59,8 @@ NUMTYPE spline(
  * \sa getRegressionLine, getRegressionPlane
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
  */
-template <typename NUMTYPE, class VECTORLIKE, int NUM_POINTS = Eigen::Dynamic>
+template <
+    typename NUMTYPE, class VECTORLIKE, int NUM_POINTS = -1 /*Eigen::Dynamic*/>
 NUMTYPE leastSquareLinearFit(
 	const NUMTYPE t, const VECTORLIKE& x, const VECTORLIKE& y,
 	bool wrap2pi = false);
@@ -74,7 +75,7 @@ NUMTYPE leastSquareLinearFit(
  */
 template <
 	class VECTORLIKE1, class VECTORLIKE2, class VECTORLIKE3,
-	int NUM_POINTS = Eigen::Dynamic>
+    int NUM_POINTS = -1 /*Eigen::Dynamic*/>
 void leastSquareLinearFit(
 	const VECTORLIKE1& ts, VECTORLIKE2& outs, const VECTORLIKE3& x,
 	const VECTORLIKE3& y, bool wrap2pi = false);

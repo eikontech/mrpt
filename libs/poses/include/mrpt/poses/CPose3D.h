@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/poses/CPose.h>
 #include <mrpt/system/string_utils.h>
@@ -90,7 +90,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
    public:
 	/** The translation vector [x,y,z] access directly or with x(), y(), z()
 	 * setter/getter methods. */
-	mrpt::math::CArrayDouble<3> m_coords;
+	mrpt::math::CVectorFixedDouble<3> m_coords;
 
    protected:
 	/** The 3x3 rotation matrix, access with getRotationMatrix(),
@@ -159,7 +159,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	//! \overload
 	inline CPose3D(
 		const mrpt::math::CMatrixDouble33& rot,
-		const mrpt::math::CArrayDouble<3>& xyz)
+		const mrpt::math::CVectorFixedDouble<3>& xyz)
 		: m_coords(xyz), m_ROT(rot), m_ypr_uptodate(false)
 	{
 	}
@@ -200,7 +200,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 * the 3D translation of the pose
 	 *  \sa setFrom12Vector, getAs12Vector
 	 */
-	inline explicit CPose3D(const mrpt::math::CArrayDouble<12>& vec12)
+	inline explicit CPose3D(const mrpt::math::CVectorFixedDouble<12>& vec12)
 		: m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 	{
 		setFrom12Vector(vec12);
@@ -281,12 +281,10 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 */
 	void composePoint(
 		double lx, double ly, double lz, double& gx, double& gy, double& gz,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint =
+		mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint =
 			nullptr,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 6>* out_jacobian_df_dpose =
-			nullptr,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 6>* out_jacobian_df_dse3 =
-			nullptr,
+		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dpose = nullptr,
+		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dse3 = nullptr,
 		bool use_small_rot_approx = false) const;
 
 	/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
@@ -338,11 +336,10 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	void inverseComposePoint(
 		const double gx, const double gy, const double gz, double& lx,
 		double& ly, double& lz,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint =
+		mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint =
 			nullptr,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 6>* out_jacobian_df_dpose =
-			nullptr,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 6>* out_jacobian_df_dse3 =
+		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dpose = nullptr,
+		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dse3 =
 			nullptr) const;
 
 	/** \overload */
@@ -541,7 +538,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	/** Returns a 1x6 vector with [x y z yaw pitch roll] */
 	void getAsVector(mrpt::math::CVectorDouble& v) const;
 	/// \overload
-	void getAsVector(mrpt::math::CArrayDouble<6>& v) const;
+	void getAsVector(mrpt::math::CVectorFixedDouble<6>& v) const;
 
 	/** Returns the quaternion associated to the rotation of this object (NOTE:
 	 * XYZ translation is ignored)
@@ -560,8 +557,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 */
 	void getAsQuaternion(
 		mrpt::math::CQuaternionDouble& q,
-		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr =
-			nullptr) const;
+		mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr = nullptr) const;
 
 	inline const double& operator[](unsigned int i) const
 	{

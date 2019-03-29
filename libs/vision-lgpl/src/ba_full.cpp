@@ -67,11 +67,11 @@ double mrpt::vision::bundle_adj_full(
 	using MyJacDataVec = mrpt::aligned_std_vector<MyJacData>;
 
 	using Array_O = std::array<double, ObsDim>;
-	using Array_F = CArrayDouble<FrameDof>;
-	using Array_P = CArrayDouble<PointDof>;
-	using Matrix_FxF = CMatrixFixedNumeric<double, FrameDof, FrameDof>;
-	using Matrix_PxP = CMatrixFixedNumeric<double, PointDof, PointDof>;
-	using Matrix_FxP = CMatrixFixedNumeric<double, FrameDof, PointDof>;
+	using Array_F = CVectorFixedDouble<FrameDof>;
+	using Array_P = CVectorFixedDouble<PointDof>;
+	using Matrix_FxF = CMatrixFixed<double, FrameDof, FrameDof>;
+	using Matrix_PxP = CMatrixFixed<double, PointDof, PointDof>;
+	using Matrix_FxP = CMatrixFixed<double, FrameDof, PointDof>;
 
 	// Extra params:
 	const bool use_robust_kernel =
@@ -241,10 +241,10 @@ double mrpt::vision::bundle_adj_full(
 
 				if (jac_iter->J_frame_valid && jac_iter->J_point_valid)
 				{
-					const CMatrixFixedNumeric<double, ObsDim, FrameDof>&
-						J_frame = jac_iter->J_frame;
-					const CMatrixFixedNumeric<double, ObsDim, PointDof>&
-						J_point = jac_iter->J_point;
+					const CMatrixFixed<double, ObsDim, FrameDof>& J_frame =
+						jac_iter->J_frame;
+					const CMatrixFixed<double, ObsDim, PointDof>& J_point =
+						jac_iter->J_point;
 					const pair<TCameraPoseID, TLandmarkID> id_pair =
 						make_pair(frame_id, feat_id);
 
@@ -314,7 +314,7 @@ double mrpt::vision::bundle_adj_full(
 						YW_map[ids_jk] = YWt * (-1.0);
 				}
 
-				CArrayDouble<FrameDof> r;
+				CVectorFixedDouble<FrameDof> r;
 				Y_ij->second.multiply_Ab(eps_point[i], r);
 				for (size_t k = 0; k < FrameDof; k++)
 					e[j * FrameDof + k] -= r[k];

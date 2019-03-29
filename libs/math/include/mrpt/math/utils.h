@@ -132,7 +132,7 @@ void normalize(const VEC1& v, VEC2& out_v)
 
 /** Extract a column from a vector of vectors, and store it in another vector.
  *  - Input data can be: std::vector<mrpt::math::CVectorDouble>,
- * std::deque<std::list<double> >, std::list<CArrayDouble<5> >, etc. etc.
+ * std::deque<std::list<double> >, std::list<CVectorFixedDouble<5> >, etc. etc.
  *  - Output is the sequence:  data[0][idx],data[1][idx],data[2][idx], etc..
  *
  *  For the sake of generality, this function does NOT check the limits in

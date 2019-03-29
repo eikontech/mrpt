@@ -12,8 +12,8 @@
 // compiling in small systems.
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/random.h>
 
@@ -188,7 +188,7 @@ TEST(Matrices, det_10x10_fix)
 		0.8169107561,  -1.1659481510, -0.1406355512, 2.3507381980,
 		2.6346742737,  -1.1028788167, -0.0533115044, 0.3752684649,
 		-1.3799576309, -0.7274190037, 1.1188847602,  -0.6624231096};
-	CMatrixFixedNumeric<double, 10, 10> A(dat_A);
+	CMatrixFixed<double, 10, 10> A(dat_A);
 	const double d = A.det();
 	const double d_R = 330.498518199239;
 	CHECK_AND_RET_ERROR(fabs(d - d_R) > 1e-4, "Error in Determinant: 10x10 fix")
@@ -341,7 +341,7 @@ TEST(Matrices, chol_10x10_fix)
 		2.6694845663, 1.7205860530, 2.1518695071, 2.1110960664, 1.6731209980,
 		2.5655678993, 2.9541115932, 2.1854562572, 2.4463194915, 2.7170092067,
 		3.0742063088, 1.8710847505, 2.8907499694, 1.6731209980, 3.9093678727};
-	CMatrixFixedNumeric<double, 10, 10> A(dat_A);
+	CMatrixFixed<double, 10, 10> A(dat_A);
 	CMatrixDouble C;
 	A.chol(C);
 

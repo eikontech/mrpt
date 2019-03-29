@@ -11,8 +11,8 @@
 // building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/ops_matrices.h>
 //#include <mrpt/math/utils.h>
 #include <gtest/gtest.h>
@@ -151,12 +151,11 @@ TEST(Matrices, multiply_A_skew3)
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
 		const double dat_v[] = {1, 2, 3};
-		const CMatrixFixedNumeric<double, 2, 3> A(dat_A);
-		const CArrayDouble<3> v(dat_v);
-		const CMatrixFixedNumeric<double, 3, 3> S =
-			mrpt::math::skew_symmetric3(v);
+		const CMatrixFixed<double, 2, 3> A(dat_A);
+		const CVectorFixedDouble<3> v(dat_v);
+		const CMatrixFixed<double, 3, 3> S = mrpt::math::skew_symmetric3(v);
 
-		CMatrixFixedNumeric<double, 2, 3> R;
+		CMatrixFixed<double, 2, 3> R;
 		R.multiply_A_skew3(A, v);
 		EXPECT_TRUE(R == A * S);
 	}
@@ -177,12 +176,11 @@ TEST(Matrices, multiply_skew3_A)
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
 		const double dat_v[] = {1, 2, 3};
-		const CMatrixFixedNumeric<double, 3, 2> A(dat_A);
-		const CArrayDouble<3> v(dat_v);
-		const CMatrixFixedNumeric<double, 3, 3> S =
-			mrpt::math::skew_symmetric3(v);
+		const CMatrixFixed<double, 3, 2> A(dat_A);
+		const CVectorFixedDouble<3> v(dat_v);
+		const CMatrixFixed<double, 3, 3> S = mrpt::math::skew_symmetric3(v);
 
-		CMatrixFixedNumeric<double, 3, 2> R;
+		CMatrixFixed<double, 3, 2> R;
 		R.multiply_skew3_A(v, A);
 		EXPECT_TRUE(R == S * A);
 	}
@@ -210,32 +208,26 @@ TEST(Matrices, fromMatlabStringFormat)
 	CMatrixDouble M1, M2, M3, M4, M5, M6;
 
 	if (!M1.fromMatlabStringFormat(mat1) ||
-		(CMatrixFixedNumeric<double, 2, 3>(vals1) - M1).array().abs().sum() >
-			1e-4)
+		(CMatrixFixed<double, 2, 3>(vals1) - M1).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat1;
 
 	{
-		CMatrixFixedNumeric<double, 2, 3> M1b;
+		CMatrixFixed<double, 2, 3> M1b;
 		if (!M1b.fromMatlabStringFormat(mat1) ||
-			(CMatrixFixedNumeric<double, 2, 3>(vals1) - M1b)
-					.array()
-					.abs()
-					.sum() > 1e-4)
+			(CMatrixFixed<double, 2, 3>(vals1) - M1b).array().abs().sum() >
+				1e-4)
 			GTEST_FAIL() << mat1;
 	}
 
 	if (!M2.fromMatlabStringFormat(mat2) || M2.cols() != 2 || M2.rows() != 3 ||
-		(CMatrixFixedNumeric<double, 3, 2>(vals2) - M2).array().abs().sum() >
-			1e-4)
+		(CMatrixFixed<double, 3, 2>(vals2) - M2).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat2;
 
 	{
-		CMatrixFixedNumeric<double, 3, 2> M2b;
+		CMatrixFixed<double, 3, 2> M2b;
 		if (!M2b.fromMatlabStringFormat(mat2) ||
-			(CMatrixFixedNumeric<double, 3, 2>(vals2) - M2b)
-					.array()
-					.abs()
-					.sum() > 1e-4)
+			(CMatrixFixed<double, 3, 2>(vals2) - M2b).array().abs().sum() >
+				1e-4)
 			GTEST_FAIL() << mat2;
 	}
 
@@ -247,9 +239,9 @@ TEST(Matrices, fromMatlabStringFormat)
 			GTEST_FAIL() << "CVectorDouble:" << mat3;
 	}
 	{
-		CArrayDouble<1> m;
+		CVectorFixedDouble<1> m;
 		if (!m.fromMatlabStringFormat(mat3))
-			GTEST_FAIL() << "CArrayDouble<1>:" << mat3;
+			GTEST_FAIL() << "CVectorFixedDouble<1>:" << mat3;
 	}
 
 	{
@@ -258,9 +250,9 @@ TEST(Matrices, fromMatlabStringFormat)
 			GTEST_FAIL() << "CVectorDouble:" << mat31;
 	}
 	{
-		CArrayDouble<3> m;
+		CVectorFixedDouble<3> m;
 		if (!m.fromMatlabStringFormat(mat31))
-			GTEST_FAIL() << "CArrayDouble<3>:" << mat31;
+			GTEST_FAIL() << "CVectorFixedDouble<3>:" << mat31;
 	}
 
 	{

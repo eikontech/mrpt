@@ -103,7 +103,7 @@ void CGeneralizedCylinder::render_dl() const
 }
 
 inline void createMesh(
-	const CMatrixTemplate<TPoint3D>& pointsMesh, size_t R, size_t C,
+	const CMatrixDynamic<TPoint3D>& pointsMesh, size_t R, size_t C,
 	vector<CGeneralizedCylinder::TQuadrilateral>& mesh)
 {
 	mesh.reserve(R * C);
@@ -114,8 +114,8 @@ inline void createMesh(
 				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j));
 }
 
-/*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>
-&in,CMatrixTemplate<TPoint3D> &out)	{
+/*void transformMesh(const CPose3D &pose,const CMatrixDynamic<TPoint3D>
+&in,CMatrixDynamic<TPoint3D> &out)	{
 	size_t R=in.rows();
 	size_t C=in.cols();
 	out.setSize(R,C);
@@ -143,7 +143,7 @@ void CGeneralizedCylinder::updateMesh() const
 	mesh.clear();
 	if (A > 1 && G > 1)
 	{
-		pointsMesh = CMatrixTemplate<TPoint3D>(A, G);
+		pointsMesh = CMatrixDynamic<TPoint3D>(A, G);
 		for (size_t i = 0; i < A; i++)
 			for (size_t j = 0; j < G; j++)
 				axis[i].composePoint(genX[j], pointsMesh(i, j));
@@ -239,7 +239,7 @@ void CGeneralizedCylinder::getClosedSection(
 {
 	if (index1 > index2) swap(index1, index2);
 	if (index2 >= axis.size() - 1) throw std::logic_error("Out of range");
-	CMatrixTemplate<TPoint3D> ROIpoints;
+	CMatrixDynamic<TPoint3D> ROIpoints;
 	if (!meshUpToDate) updateMesh();
 	pointsMesh.extractRows(index1, index2 + 1, ROIpoints);
 	// At this point, ROIpoints contains a matrix of TPoints in which the number

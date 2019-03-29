@@ -1138,8 +1138,8 @@ void vision::projectMatchedFeatures(
 						float w0 = k / (Na + k);
 						float w1 = 1 / (2 * (Na + k));
 
-						CMatrix Pa(3, 3);
-						CMatrix L(3, 3);
+						CMatrixF Pa(3, 3);
+						CMatrixF L(3, 3);
 
 						Pa.fill(0);
 						Pa(0, 0) = Pa(1, 1) = (Na + k) * square(param.stdPixel);
@@ -1150,7 +1150,7 @@ void vision::projectMatchedFeatures(
 
 						vector<TPoint3D> B;  // B group
 						TPoint3D meanB;  // Mean value of the B group
-						CMatrix Pb;  // Covariance of the B group
+						CMatrixF Pb;  // Covariance of the B group
 
 						B.resize(2 * Na + 1);  // Set of output values
 						Pb.fill(0);  // Reset the output covariance
@@ -1219,7 +1219,7 @@ void vision::projectMatchedFeatures(
 						for (i = 0; i <= 2 * Na; i++)
 						{
 							float weight = w1;
-							CMatrix v(3, 1);
+							CMatrixF v(3, 1);
 
 							if (i ==
 								0)  // The weight for the mean value of A is w0
@@ -1258,8 +1258,8 @@ void vision::projectMatchedFeatures(
 						float w0_c = w0_m + (1 - square(a) + b);
 						float w1 = 1 / (2 * (Na + lambda));
 
-						CMatrix Pa(3, 3);
-						CMatrix L(3, 3);
+						CMatrixF Pa(3, 3);
+						CMatrixF L(3, 3);
 
 						Pa.fill(0);
 						Pa(0, 0) = Pa(1, 1) =
@@ -1271,7 +1271,7 @@ void vision::projectMatchedFeatures(
 
 						vector<TPoint3D> B;  // B group
 						TPoint3D meanB;  // Mean value of the B group
-						CMatrix Pb;  // Covariance of the B group
+						CMatrixF Pb;  // Covariance of the B group
 
 						B.resize(2 * Na + 1);  // Set of output values
 						Pb.fill(0);  // Reset the output covariance
@@ -1342,7 +1342,7 @@ void vision::projectMatchedFeatures(
 						for (i = 0; i <= 2 * Na; i++)
 						{
 							float weight = w1;
-							CMatrix v(3, 1);
+							CMatrixF v(3, 1);
 
 							if (i ==
 								0)  // The weight for the mean value of A is w0
@@ -1487,8 +1487,8 @@ void vision::projectMatchedFeatures(
 						float w0 = k / (Na + k);
 						float w1 = 1 / (2 * (Na + k));
 
-						CMatrix Pa(3, 3);
-						CMatrix L(3, 3);
+						CMatrixF Pa(3, 3);
+						CMatrixF L(3, 3);
 
 						Pa.fill(0);
 						Pa(0, 0) = Pa(1, 1) = (Na + k) * square(param.stdPixel);
@@ -1499,7 +1499,7 @@ void vision::projectMatchedFeatures(
 
 						vector<TPoint3D> B;  // B group
 						TPoint3D meanB;  // Mean value of the B group
-						CMatrix Pb;  // Covariance of the B group
+						CMatrixF Pb;  // Covariance of the B group
 
 						B.resize(2 * Na + 1);  // Set of output values
 						Pb.fill(0);  // Reset the output covariance
@@ -1568,7 +1568,7 @@ void vision::projectMatchedFeatures(
 						for (i = 0; i <= 2 * Na; i++)
 						{
 							float weight = w1;
-							CMatrix v(3, 1);
+							CMatrixF v(3, 1);
 
 							if (i ==
 								0)  // The weight for the mean value of A is w0
@@ -1607,8 +1607,8 @@ void vision::projectMatchedFeatures(
 						float w0_c = w0_m + (1 - square(a) + b);
 						float w1 = 1 / (2 * (Na + lambda));
 
-						CMatrix Pa(3, 3);
-						CMatrix L(3, 3);
+						CMatrixF Pa(3, 3);
+						CMatrixF L(3, 3);
 
 						Pa.fill(0);
 						Pa(0, 0) = Pa(1, 1) =
@@ -1620,7 +1620,7 @@ void vision::projectMatchedFeatures(
 
 						vector<TPoint3D> B;  // B group
 						TPoint3D meanB;  // Mean value of the B group
-						CMatrix Pb;  // Covariance of the B group
+						CMatrixF Pb;  // Covariance of the B group
 
 						B.resize(2 * Na + 1);  // Set of output values
 						Pb.fill(0);  // Reset the output covariance
@@ -1691,7 +1691,7 @@ void vision::projectMatchedFeatures(
 						for (i = 0; i <= 2 * Na; i++)
 						{
 							float weight = w1;
-							CMatrix v(3, 1);
+							CMatrixF v(3, 1);
 
 							if (i ==
 								0)  // The weight for the mean value of A is w0
@@ -1949,7 +1949,7 @@ void vision::StereoObs2BRObs(
 
 		// CMatrixDouble33 aux;
 		// CMatrixDouble33 diag;
-		// diag.zeros();
+		// diag.setZero();
 		// diag.set_unsafe(0,0) = square( sg_r );
 		// diag.set_unsafe(1,1) = square( sg_c );
 		// diag.set_unsafe(2,2) = square( sg_d );
@@ -2111,7 +2111,7 @@ TStereoSystemParams::TStereoSystemParams()
 
 {
 	K = defaultIntrinsicParamsMatrix(0, 640, 480);
-	F.zeros();
+	F.setZero();
 	F(1, 2) = -1;
 	F(2, 1) = 1;
 }

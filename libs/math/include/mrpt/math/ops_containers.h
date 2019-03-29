@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/types_math.h>
+//#include <mrpt/math/types_math.h>
 
 #include <mrpt/math/lightweight_geom_data.h>  // forward declarations
 
@@ -25,8 +25,8 @@
  * This file implements several operations that operate element-wise on
  * individual or pairs of containers.
  *  Containers here means any of: mrpt::math::CVectorTemplace,
- * mrpt::math::CArray, mrpt::math::CMatrixFixedNumeric,
- * mrpt::math::CMatrixTemplate.
+ * mrpt::math::CArray, mrpt::math::CMatrixFixed,
+ * mrpt::math::CMatrixDynamic.
  *
  */
 
@@ -353,7 +353,7 @@ void meanAndCovVec(
 	// Second: Compute the covariance
 	//  Save only the above-diagonal part, then after averaging
 	//  duplicate that part to the other half.
-	out_cov.zeros(M, M);
+	out_cov.setZero(M, M);
 	for (size_t i = 0; i < N; i++)
 	{
 		for (size_t j = 0; j < M; j++)

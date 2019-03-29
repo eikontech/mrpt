@@ -360,7 +360,7 @@ void CMesh::assignImage(const CImage& img)
 }
 
 void CMesh::assignImageAndZ(
-	const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
+	const CImage& img, const mrpt::math::CMatrixDynamic<float>& in_Z)
 {
 	MRPT_START
 
@@ -512,7 +512,7 @@ void CMesh::updateColorsMatrix() const
 	trianglesUpToDate = false;
 }
 
-void CMesh::setZ(const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
+void CMesh::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
 {
 	Z = in_Z;
 	m_modified_Z = true;
@@ -524,7 +524,7 @@ void CMesh::setZ(const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
 	CRenderizableDisplayList::notifyChange();
 }
 
-void CMesh::setMask(const mrpt::math::CMatrixTemplateNumeric<float>& in_mask)
+void CMesh::setMask(const mrpt::math::CMatrixDynamic<float>& in_mask)
 {
 	mask = in_mask;
 	trianglesUpToDate = false;
@@ -532,8 +532,8 @@ void CMesh::setMask(const mrpt::math::CMatrixTemplateNumeric<float>& in_mask)
 }
 
 void CMesh::setUV(
-	const mrpt::math::CMatrixTemplateNumeric<float>& in_U,
-	const mrpt::math::CMatrixTemplateNumeric<float>& in_V)
+	const mrpt::math::CMatrixDynamic<float>& in_U,
+	const mrpt::math::CMatrixDynamic<float>& in_V)
 {
 	U = in_U;
 	V = in_V;

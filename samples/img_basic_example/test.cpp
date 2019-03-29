@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <iostream>
@@ -91,7 +91,7 @@ void TestImageConversion()
 	imgSmall.line(550, 75, 650, 25, TColor(0, 0, 255));
 	imgSmall.line(-10, -20, 20, 30, TColor(0, 0, 255));
 
-	CMatrix COV(2, 2);
+	CMatrixF COV(2, 2);
 	COV(0, 0) = 100;
 	COV(1, 1) = 50;
 	COV(0, 1) = COV(1, 0) = -30;

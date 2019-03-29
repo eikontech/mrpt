@@ -86,7 +86,7 @@ void CPointPDFSOG::getCovarianceAndMean(
 	size_t N = m_modes.size();
 
 	getMean(p);
-	estCov.zeros();
+	estCov.setZero();
 
 	if (N)
 	{

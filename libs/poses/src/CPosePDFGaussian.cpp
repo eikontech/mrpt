@@ -9,7 +9,7 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/wrap2pi.h>
@@ -53,7 +53,7 @@ CPosePDFGaussian::CPosePDFGaussian(
 CPosePDFGaussian::CPosePDFGaussian(const CPose2D& init_Mean)
 	: mean(init_Mean), cov()
 {
-	cov.zeros();
+	cov.setZero();
 }
 
 uint8_t CPosePDFGaussian::serializeGetVersion() const { return 2; }
@@ -83,7 +83,7 @@ void CPosePDFGaussian::serializeFrom(
 		break;
 		case 0:
 		{
-			CMatrix auxCov;
+			CMatrixF auxCov;
 			in >> mean >> auxCov;
 			cov = auxCov.cast<double>();
 		}
@@ -205,7 +205,7 @@ void CPosePDFGaussian::rotateCov(const double ang)
 	alignas(MRPT_MAX_ALIGN_BYTES)
 		const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
 
-	const CMatrixFixedNumeric<double, 3, 3> rot(rot_vals);
+	const CMatrixFixed<double, 3, 3> rot(rot_vals);
 	cov = (rot * cov * rot.adjoint()).eval();
 }
 
@@ -318,7 +318,7 @@ void CPosePDFGaussian::inverse(CPosePDF& o) const
 		-ccos, -ssin, mean.x() * ssin - mean.y() * ccos,
 		ssin,  -ccos, mean.x() * ccos + mean.y() * ssin,
 		0,	 0,	 -1};
-	const CMatrixFixedNumeric<double, 3, 3> H(H_values);
+	const CMatrixFixed<double, 3, 3> H(H_values);
 
 	out->cov.noalias() =
 		(H * cov * H.adjoint()).eval();  // o.cov = H * cov * Ht
@@ -375,8 +375,8 @@ double CPosePDFGaussian::mahalanobisDistanceTo(const CPosePDFGaussian& theOther)
 {
 	MRPT_START
 
-	auto MU = CArrayDouble<3>(mean);
-	MU -= CArrayDouble<3>(theOther.mean);
+	auto MU = CVectorFixedDouble<3>(mean);
+	MU -= CVectorFixedDouble<3>(theOther.mean);
 
 	wrapToPiInPlace(MU[2]);
 
@@ -568,7 +568,7 @@ void CPosePDFGaussian::composePoint(
 		false  // Eval df_du (not needed)
 	);
 
-	const CMatrixFixedNumeric<double, 2, 3> dp_dx = df_dx.block<2, 3>(0, 0);
+	const CMatrixFixed<double, 2, 3> dp_dx = df_dx.block<2, 3>(0, 0);
 	g.cov = dp_dx * this->cov * dp_dx.transpose();
 }
 

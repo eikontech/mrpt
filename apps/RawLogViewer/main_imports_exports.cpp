@@ -333,7 +333,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 
 				// Default camera parameters:
 				im->cameraParams.dist.fill(0);
-				im->cameraParams.intrinsicParams.zeros();
+				im->cameraParams.intrinsicParams.setZero();
 				im->cameraParams.intrinsicParams(0, 0) = 300;  // fx
 				im->cameraParams.intrinsicParams(1, 1) = 300;  // fy
 				im->cameraParams.intrinsicParams(0, 2) =

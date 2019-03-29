@@ -11,7 +11,7 @@
 #include <mrpt/graphs/TNodeAnnotations.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/io/CTextFileLinesParser.h>
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>  // multiply_*()
@@ -1010,7 +1010,7 @@ struct graph_ops
 			//  We want to compute the squared Mahalanobis distance:
 			//       err^t * INV_COV * err
 			//
-			mrpt::math::CArrayDouble<constraint_t::type_value::static_size> err;
+			mrpt::math::CVectorFixedDouble<constraint_t::type_value::static_size> err;
 			for (size_t i = 0; i < constraint_t::type_value::static_size; i++)
 				err[i] = from_plus_delta.getPoseMean()[i] - to_mean[i];
 

@@ -9,7 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/opengl/CEllipsoid.h>
@@ -190,7 +190,7 @@ void CEllipsoid::serializeFrom(
 			readFromStreamRender(in);
 			if (version == 0)
 			{
-				CMatrix c;
+				CMatrixF c;
 				in >> c;
 				m_cov = c.cast<double>();
 			}
@@ -288,8 +288,8 @@ void CEllipsoid::setCovMatrix(
 	{
 		// All zeros:
 		m_prevComputedCov = m_cov;
-		m_eigVec.zeros(3, 3);
-		m_eigVal.zeros(3, 3);
+		m_eigVec.setZero(3, 3);
+		m_eigVal.setZero(3, 3);
 	}
 	else
 	{
@@ -303,8 +303,8 @@ void CEllipsoid::setCovMatrix(
 		}
 		else
 		{
-			m_eigVec.zeros(3, 3);
-			m_eigVal.zeros(3, 3);
+			m_eigVec.setZero(3, 3);
+			m_eigVal.setZero(3, 3);
 		}
 	}
 

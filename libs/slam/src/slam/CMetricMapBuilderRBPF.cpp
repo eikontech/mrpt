@@ -211,7 +211,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 			<< odoIncrementSinceLastLocalization.mean);
 		// Reset distance counters:
 		odoIncrementSinceLastLocalization.mean.setFromValues(0, 0, 0, 0, 0, 0);
-		odoIncrementSinceLastLocalization.cov.zeros();
+		odoIncrementSinceLastLocalization.cov.setZero();
 
 		CParticleFilter pf;
 		pf.m_options = m_PF_options;

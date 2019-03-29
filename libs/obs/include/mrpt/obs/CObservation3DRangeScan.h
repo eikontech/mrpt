@@ -10,7 +10,7 @@
 
 #include <mrpt/core/integer_select.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -439,7 +439,7 @@ class CObservation3DRangeScan : public CObservation
 	bool hasRangeImage{false};
 	/** If hasRangeImage=true, a matrix of floats with the range data as
 	 * captured by the camera (in meters) \sa range_is_depth */
-	mrpt::math::CMatrix rangeImage;
+	mrpt::math::CMatrixF rangeImage;
 	/** true: Kinect-like ranges: entries of \a rangeImage are distances along
 	 * the +X axis; false: Ranges in \a rangeImage are actual distances in 3D.
 	 */

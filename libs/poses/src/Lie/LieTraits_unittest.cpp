@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -53,12 +53,12 @@ class SE_traits_tests : public ::testing::Test
 	template <unsigned int MAT_LEN>
 	struct TParamsMat
 	{
-		CArrayDouble<MAT_LEN> Avec, Bvec;
+		CVectorFixedDouble<MAT_LEN> Avec, Bvec;
 	};
 
 	static void func_numeric_DinvP1InvP2(
-		const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
-		CArrayDouble<SE_TYPE::DOFs>& Y)
+		const CVectorFixedDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
+		CVectorFixedDouble<SE_TYPE::DOFs>& Y)
 	{
 		typename SE_TYPE::tangent_vector eps1, eps2;
 		for (size_t i = 0; i < SE_TYPE::DOFs; i++)
@@ -98,13 +98,13 @@ class SE_traits_tests : public ::testing::Test
 		static const int DIMS = SE_TYPE::DOFs;
 
 		// Theoretical results:
-		CMatrixFixedNumeric<double, DIMS, DIMS> J1, J2;
+		CMatrixFixed<double, DIMS, DIMS> J1, J2;
 		SE_TYPE::jacob_dDinvP1invP2_de1e2(Pdinv, P1, P2, J1, J2);
 
 		// Numerical approx:
-		CMatrixFixedNumeric<double, DIMS, DIMS> num_J1, num_J2;
+		CMatrixFixed<double, DIMS, DIMS> num_J1, num_J2;
 		{
-			CArrayDouble<2 * DIMS> x_mean;
+			CVectorFixedDouble<2 * DIMS> x_mean;
 			for (int i = 0; i < DIMS + DIMS; i++) x_mean[i] = 0;
 
 			TParams params;
@@ -112,14 +112,14 @@ class SE_traits_tests : public ::testing::Test
 			params.D = Pd;
 			params.P2 = P2;
 
-			CArrayDouble<DIMS + DIMS> x_incrs;
+			CVectorFixedDouble<DIMS + DIMS> x_incrs;
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<2 * SE_TYPE::DOFs>& x,
-					const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
+					const CVectorFixedDouble<2 * SE_TYPE::DOFs>& x,
+					const TParams& params, CVectorFixedDouble<SE_TYPE::DOFs>& Y)>(
 					&func_numeric_DinvP1InvP2),
 				x_incrs, params, numJacobs);
 
@@ -153,9 +153,9 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	static void func_numeric_dAB_dA(
-		const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
+		const CVectorFixedDouble<SE_TYPE::MANIFOLD_DIM>& x,
 		const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
-		CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
+		CVectorFixedDouble<SE_TYPE::MANIFOLD_DIM>& Y)
 	{
 		const POSE_TYPE A = SE_TYPE::fromManifoldVector(params.Avec + x);
 		const POSE_TYPE B = SE_TYPE::fromManifoldVector(params.Bvec);
@@ -163,9 +163,9 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	static void func_numeric_dAB_dB(
-		const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
+		const CVectorFixedDouble<SE_TYPE::MANIFOLD_DIM>& x,
 		const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
-		CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
+		CVectorFixedDouble<SE_TYPE::MANIFOLD_DIM>& Y)
 	{
 		const POSE_TYPE A = SE_TYPE::fromManifoldVector(params.Avec);
 		const POSE_TYPE B = SE_TYPE::fromManifoldVector(params.Bvec + x);
@@ -184,46 +184,46 @@ class SE_traits_tests : public ::testing::Test
 		const auto dAB_B = SE_TYPE::jacob_dAB_dB(A, B);
 
 		// Numerical approx: dAB_A
-		CMatrixFixedNumeric<double, N, N> num_dAB_A;
+		CMatrixFixed<double, N, N> num_dAB_A;
 		{
-			CArrayDouble<N> x_mean;
+			CVectorFixedDouble<N> x_mean;
 			x_mean.assign(0);
 
 			TParamsMat<N> params;
 			params.Avec = SE_TYPE::asManifoldVector(A);
 			params.Bvec = SE_TYPE::asManifoldVector(B);
 
-			CArrayDouble<N> x_incrs;
+			CVectorFixedDouble<N> x_incrs;
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<N>& x, const TParamsMat<N>& params,
-					CArrayDouble<N>& Y)>(&func_numeric_dAB_dA),
+					const CVectorFixedDouble<N>& x, const TParamsMat<N>& params,
+					CVectorFixedDouble<N>& Y)>(&func_numeric_dAB_dA),
 				x_incrs, params, numJacobs);
 
 			num_dAB_A = numJacobs;
 		}
 
 		// Numerical approx: dAB_B
-		CMatrixFixedNumeric<double, N, N> num_dAB_B;
+		CMatrixFixed<double, N, N> num_dAB_B;
 		{
-			CArrayDouble<N> x_mean;
+			CVectorFixedDouble<N> x_mean;
 			x_mean.assign(0);
 
 			TParamsMat<N> params;
 			params.Avec = SE_TYPE::asManifoldVector(A);
 			params.Bvec = SE_TYPE::asManifoldVector(B);
 
-			CArrayDouble<N> x_incrs;
+			CVectorFixedDouble<N> x_incrs;
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<N>& x, const TParamsMat<N>& params,
-					CArrayDouble<N>& Y)>(&func_numeric_dAB_dB),
+					const CVectorFixedDouble<N>& x, const TParamsMat<N>& params,
+					CVectorFixedDouble<N>& Y)>(&func_numeric_dAB_dB),
 				x_incrs, params, numJacobs);
 
 			num_dAB_B = numJacobs;

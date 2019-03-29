@@ -129,12 +129,12 @@ NUMTYPE leastSquareLinearFit(
 
 	// X= [1 columns of ones, x' ]
 	const NUMTYPE x_min = x.minimum();
-	Eigen::Matrix<NUMTYPE, 2, NUM_POINTS> Xt;
+	Eigen::Matrix<NUMTYPE, 2, NUM_POINTS, 0, 2, NUM_POINTS> Xt;
 	Xt.resize(2, N);
 	for (size_t i = 0; i < N; i++)
 	{
-		Xt(0, i)= 1;
-		Xt(1, i)= x[i] - x_min;
+		Xt(0, i) = 1;
+		Xt(1, i) = x[i] - x_min;
 	}
 
 	const auto B = ((Xt * Xt.transpose()).inv().eval() * Xt * y).eval();
@@ -168,12 +168,12 @@ void leastSquareLinearFit(
 	// X= [1 columns of ones, x' ]
 	using NUM = typename VECTORLIKE3::value_type;
 	const NUM x_min = x.minimum();
-	Eigen::Matrix<NUM, 2, NUM_POINTS> Xt;
+	Eigen::Matrix<NUM, 2, NUM_POINTS, 0, 2, NUM_POINTS> Xt;
 	Xt.resize(2, N);
 	for (size_t i = 0; i < N; i++)
 	{
-		Xt(0, i)= 1;
-		Xt(1, i)= x[i] - x_min;
+		Xt(0, i) = 1;
+		Xt(1, i) = x[i] - x_min;
 	}
 
 	const auto B = ((Xt * Xt.transpose()).inv().eval() * Xt * y).eval();
@@ -189,6 +189,4 @@ void leastSquareLinearFit(
 			outs[k] = mrpt::math::wrapToPi(B[0] + B[1] * (ts[k] - x_min));
 	MRPT_END
 }
-}  // namespace mrpt
-
-
+}  // namespace mrpt::math

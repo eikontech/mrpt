@@ -68,7 +68,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 	}
 
 	static void func_compose(
-		const CArrayDouble<12>& x, const double& dummy, CArrayDouble<6>& Y)
+		const CVectorFixedDouble<12>& x, const double& dummy, CVectorFixedDouble<6>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p1(x[0], x[1], x[2], x[3], x[4], x[5]);
@@ -79,7 +79,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 	}
 
 	static void func_inv_compose(
-		const CArrayDouble<2 * 6>& x, const double& dummy, CArrayDouble<6>& Y)
+		const CVectorFixedDouble<2 * 6>& x, const double& dummy, CVectorFixedDouble<6>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p1(x[0], x[1], x[2], x[3], x[4], x[5]);
@@ -104,19 +104,19 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		CPose3DPDFGaussian p6_comp = p6pdf1 + p6pdf2;
 
 		// Numeric approximation:
-		CArrayDouble<6> y_mean;
-		CMatrixFixedNumeric<double, 6, 6> y_cov;
+		CVectorFixedDouble<6> y_mean;
+		CMatrixFixed<double, 6, 6> y_cov;
 		{
-			CArrayDouble<12> x_mean;
+			CVectorFixedDouble<12> x_mean;
 			for (int i = 0; i < 6; i++) x_mean[i] = p6pdf1.mean[i];
 			for (int i = 0; i < 6; i++) x_mean[6 + i] = p6pdf2.mean[i];
 
-			CMatrixFixedNumeric<double, 12, 12> x_cov;
+			CMatrixFixed<double, 12, 12> x_cov;
 			x_cov.insertMatrix(0, 0, p6pdf1.cov);
 			x_cov.insertMatrix(6, 6, p6pdf2.cov);
 
 			double DUMMY = 0;
-			CArrayDouble<12> x_incrs;
+			CVectorFixedDouble<12> x_incrs;
 			x_incrs.assign(1e-6);
 			transform_gaussian_linear(
 				x_mean, x_cov, func_compose, DUMMY, y_mean, y_cov, x_incrs);
@@ -170,19 +170,19 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		CMatrixDouble66 num_df_dx(UNINITIALIZED_MATRIX),
 			num_df_du(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<2 * 6> x_mean;
+			CVectorFixedDouble<2 * 6> x_mean;
 			for (int i = 0; i < 6; i++) x_mean[i] = q1[i];
 			for (int i = 0; i < 6; i++) x_mean[6 + i] = q2[i];
 
 			double DUMMY = 0;
-			CArrayDouble<2 * 6> x_incrs;
+			CVectorFixedDouble<2 * 6> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<12>& x, const double& dummy,
-					CArrayDouble<6>& Y)>(&func_compose),
+					const CVectorFixedDouble<12>& x, const double& dummy,
+					CVectorFixedDouble<6>& Y)>(&func_compose),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dx);
@@ -226,19 +226,19 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		CPose3DPDFGaussian p6_comp = p6pdf1 - p6pdf2;
 
 		// Numeric approximation:
-		CArrayDouble<6> y_mean;
-		CMatrixFixedNumeric<double, 6, 6> y_cov;
+		CVectorFixedDouble<6> y_mean;
+		CMatrixFixed<double, 6, 6> y_cov;
 		{
-			CArrayDouble<2 * 6> x_mean;
+			CVectorFixedDouble<2 * 6> x_mean;
 			for (int i = 0; i < 6; i++) x_mean[i] = p6pdf1.mean[i];
 			for (int i = 0; i < 6; i++) x_mean[6 + i] = p6pdf2.mean[i];
 
-			CMatrixFixedNumeric<double, 12, 12> x_cov;
+			CMatrixFixed<double, 12, 12> x_cov;
 			x_cov.insertMatrix(0, 0, p6pdf1.cov);
 			x_cov.insertMatrix(6, 6, p6pdf2.cov);
 
 			double DUMMY = 0;
-			CArrayDouble<2 * 6> x_incrs;
+			CVectorFixedDouble<2 * 6> x_incrs;
 			x_incrs.assign(1e-6);
 			transform_gaussian_linear(
 				x_mean, x_cov, func_inv_compose, DUMMY, y_mean, y_cov, x_incrs);

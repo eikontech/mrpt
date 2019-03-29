@@ -50,7 +50,7 @@ void CObservationImage::serializeFrom(
 			}
 			else
 			{
-				CMatrix intrinsicParams, distortionParams;
+				CMatrixF intrinsicParams, distortionParams;
 				in >> distortionParams >> intrinsicParams;
 
 				if (distortionParams.rows() == 1 &&

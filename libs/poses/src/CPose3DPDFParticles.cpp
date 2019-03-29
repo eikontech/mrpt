@@ -73,7 +73,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(
 	getMean(mean);  // First! the mean value:
 
 	// Now the covariance:
-	cov.zeros();
+	cov.setZero();
 	CVectorDouble vars;
 	vars.assign(6, 0.0);  // The diagonal of the final covariance matrix
 

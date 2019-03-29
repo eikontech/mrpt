@@ -69,7 +69,7 @@ SO<3>::tangent_vector SO<3>::log(const SO<3>::type& R)
 	using std::sqrt;
 
 	mrpt::math::CQuaternionDouble q;
-	mrpt::poses::CPose3D(R, CArrayDouble<3>()).getAsQuaternion(q);
+	mrpt::poses::CPose3D(R, CVectorFixedDouble<3>()).getAsQuaternion(q);
 
 	const auto squared_n = q.x() * q.x() + q.y() * q.y() + q.z() * q.z();
 	const auto n = sqrt(squared_n);
@@ -163,7 +163,7 @@ SO<3>::mat2tang_jacob SO<3>::jacob_dlogv_dv(const SO<3>::type& R)
 	using namespace mrpt::math;
 
 	const double d = 0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
-	CArrayDouble<3> a;
+	CVectorFixedDouble<3> a;
 	CMatrixDouble33 B(UNINITIALIZED_MATRIX);
 	if (d > 0.99999)
 	{

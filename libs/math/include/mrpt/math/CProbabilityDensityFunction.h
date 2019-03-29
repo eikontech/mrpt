@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/math_frwds.h>
 
 namespace mrpt::math
@@ -44,7 +44,7 @@ class CProbabilityDensityFunction
 	 * \sa getMean, getInformationMatrix
 	 */
 	virtual void getCovarianceAndMean(
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>& cov,
+		mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN>& cov,
 		TDATA& mean_point) const = 0;
 
 	/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN
@@ -54,7 +54,7 @@ class CProbabilityDensityFunction
 	inline void getCovarianceDynAndMean(
 		mrpt::math::CMatrixDouble& cov, TDATA& mean_point) const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN> C(
+		mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN> C(
 			mrpt::math::UNINITIALIZED_MATRIX);
 		this->getCovarianceAndMean(C, mean_point);
 		cov = C;  // Convert to dynamic size matrix
@@ -86,8 +86,7 @@ class CProbabilityDensityFunction
 	 * \sa getMean, getCovarianceAndMean, getInformationMatrix
 	 */
 	inline void getCovariance(
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>& cov)
-		const
+		mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN>& cov) const
 	{
 		TDATA p;
 		this->getCovarianceAndMean(cov, p);
@@ -97,10 +96,10 @@ class CProbabilityDensityFunction
 	 * covariance matrix)
 	 * \sa getMean, getInformationMatrix
 	 */
-	inline mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>
+	inline mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN>
 		getCovariance() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN> cov(
+		mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN> cov(
 			mrpt::math::UNINITIALIZED_MATRIX);
 		TDATA p;
 		this->getCovarianceAndMean(cov, p);
@@ -122,10 +121,9 @@ class CProbabilityDensityFunction
 	 * \sa getMean, getCovarianceAndMean
 	 */
 	virtual void getInformationMatrix(
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>& inf)
-		const
+		mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN>& inf) const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN> cov(
+		mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN> cov(
 			mrpt::math::UNINITIALIZED_MATRIX);
 		TDATA p;
 		this->getCovarianceAndMean(cov, p);

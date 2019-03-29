@@ -15,7 +15,7 @@
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/zip.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
 #include <mrpt/serialization/CArchive.h>
@@ -1402,7 +1402,7 @@ void CImage::cross_correlation_FFT(
 	size_t lx = mrpt::round2up<size_t>(actual_lx);
 	size_t ly = mrpt::round2up<size_t>(actual_ly);
 
-	CMatrix i1(ly, lx), i2(ly, lx);
+	CMatrixF i1(ly, lx), i2(ly, lx);
 
 	// We fill the images with the bias, such as when we substract the bias
 	// later on,
@@ -1421,7 +1421,7 @@ void CImage::cross_correlation_FFT(
 	i1.array() -= biasInImg;
 
 	// FFT:
-	CMatrix I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
+	CMatrixF I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
 	math::dft2_complex(i1, ZEROS, I1_R, I1_I);
 	math::dft2_complex(i2, ZEROS, I2_R, I2_I);
 
@@ -1441,7 +1441,7 @@ void CImage::cross_correlation_FFT(
 		}
 
 	// IFFT:
-	CMatrix res_R, res_I;
+	CMatrixF res_R, res_I;
 	math::idft2_complex(I2_R, I2_I, res_R, res_I);
 
 	out_corr.setSize(actual_ly, actual_lx);
@@ -1452,7 +1452,7 @@ void CImage::cross_correlation_FFT(
 	MRPT_END
 }
 
-void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
+void CImage::getAsMatrixTiled(CMatrixF& outMatrix) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START

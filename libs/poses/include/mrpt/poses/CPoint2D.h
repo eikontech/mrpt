@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPoint.h>
 
 namespace mrpt::poses
@@ -36,7 +36,7 @@ class CPoint2D : public CPoint<CPoint2D>,
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** [x,y] */
-	mrpt::math::CArrayDouble<2> m_coords;
+	mrpt::math::CVectorFixedDouble<2> m_coords;
 
    public:
 	/** Constructor for initializing point coordinates. */

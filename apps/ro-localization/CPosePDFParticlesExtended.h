@@ -15,7 +15,7 @@
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPosePDF.h>
 

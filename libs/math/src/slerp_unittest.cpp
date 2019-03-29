@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/slerp.h>
 

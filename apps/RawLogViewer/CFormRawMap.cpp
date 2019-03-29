@@ -1349,7 +1349,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
 		// Standard matrix used for all the sensors on the vehicle:
 		CMatrixDouble COV_sensor_local;
-		COV_sensor_local.zeros(6, 6);
+		COV_sensor_local.setZero(6, 6);
 
 		{
 			CConfigFileMemory cfg;

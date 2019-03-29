@@ -546,7 +546,7 @@ void do_grid_align()
 
 #ifdef SAVE_SOG_GRID
 					// Save grid evaluation of the SOG:
-					CMatrix gridLimits(1, 4);
+					CMatrixF gridLimits(1, 4);
 					gridLimits(0, 0) = estimateMean.x - 0.10f;
 					gridLimits(0, 1) = estimateMean.x + 0.10f,
 								  gridLimits(0, 2) = estimateMean.y - 0.10f;

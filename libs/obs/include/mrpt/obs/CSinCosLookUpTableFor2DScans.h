@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/types_math.h>
+//#include <mrpt/math/types_math.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <map>
 

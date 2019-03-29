@@ -565,7 +565,7 @@ void CRangeBearing::OnObservationJacobians(
 	kftype x = m_xkk[0];
 	kftype y = m_xkk[1];
 
-	Hx.zeros();
+	Hx.setZero();
 	Hx(0, 0) = -y / (square(x) + square(y));
 	Hx(0, 1) = 1 / (x * (1 + square(y / x)));
 

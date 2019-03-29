@@ -22,7 +22,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 
 // #include <mrpt/img/TColor.h>
 

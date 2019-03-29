@@ -16,7 +16,7 @@ namespace mrpt::math
  * transposing the rotation 3x3 part and solving the translation with dot
  * products.
  *  This is a generic template which works with:
- *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
+ *    MATRIXLIKE: CMatrixDynamic, CMatrixFixed
  */
 template <class MATRIXLIKE1, class MATRIXLIKE2>
 void homogeneousMatrixInverse(const MATRIXLIKE1& M, MATRIXLIKE2& out_inverse_M)

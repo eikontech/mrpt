@@ -46,11 +46,11 @@ std::string MRPT_getVersion();
 namespace mrpt::math
 {
 struct TPoseOrPoint;
-// class CMatrix;  // mrpt-binary-serializable matrix
+// class CMatrixF;  // mrpt-binary-serializable matrix
 // class CMatrixD;  // mrpt-binary-serializable matrix
 
-/** For usage in one of the constructors of CMatrixFixedNumeric or
-   CMatrixTemplate (and derived classes), if it's not required
+/** For usage in one of the constructors of CMatrixFixed or
+   CMatrixDynamic (and derived classes), if it's not required
 	 to fill it with zeros at the constructor to save time. */
 enum TConstructorFlags_Matrices
 {
@@ -59,7 +59,7 @@ enum TConstructorFlags_Matrices
 
 // ---------------- Forward declarations: Classes ----------------
 template <class T>
-class CMatrixTemplate;
+class CMatrixDynamic;
 template <class T>
 class CMatrixTemplateObjects;
 template <class T>

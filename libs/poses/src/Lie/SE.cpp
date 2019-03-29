@@ -158,7 +158,7 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
 	{
 		matrix_TxT& J1 = df_de1.value().get();
 
-		const CMatrixFixedNumeric<double, 12, 12> J1a =
+		const CMatrixFixed<double, 12, 12> J1a =
 			SE<3>::jacob_dAB_dA(Dinv, P1inv + P2);
 		const CMatrixDouble12_6 J1b = -SE<3>::jacob_dDexpe_de(Dinv);
 

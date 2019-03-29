@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <array>
 

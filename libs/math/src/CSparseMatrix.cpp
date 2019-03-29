@@ -10,6 +10,7 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSparseMatrix.h>
+#include <mrpt/math/eigen_extensions.h>
 #include <iostream>
 #include <string>
 
@@ -231,7 +232,7 @@ CSparseMatrix CSparseMatrix::transpose() const
  */
 void CSparseMatrix::cs2dense(const cs& SM, CMatrixDouble& d_M)
 {
-	d_M.zeros(SM.m, SM.n);
+	d_M.setZero(SM.m, SM.n);
 	if (SM.nz >= 0)  // isTriplet ??
 	{  // It's in triplet form.
 		for (int idx = 0; idx < SM.nz; ++idx)
@@ -281,7 +282,7 @@ bool CSparseMatrix::saveToTextFile_dense(const std::string& filName)
 	this->get_dense(dense);
 	try
 	{
-		dense.saveToTextFile(filName);
+		saveToTextFile(dense.asEigen(), filName);
 		return true;
 	}
 	catch (...)
@@ -389,7 +390,7 @@ void CSparseMatrix::CholeskyDecomp::get_L(CMatrixDouble& L) const
 
 /** Return the vector from a back-substitution step that solves: Ux=b   */
 void CSparseMatrix::CholeskyDecomp::backsub(
-	const Eigen::VectorXd& b, Eigen::VectorXd& sol) const
+    const CVectorDouble& b, CVectorDouble& sol) const
 {
 	ASSERT_(b.size() > 0);
 	sol.resize(b.size());

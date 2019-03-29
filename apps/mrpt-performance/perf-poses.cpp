@@ -109,9 +109,9 @@ double poses_test_compose3Dpoint3(int a1, int a2)
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	double x, y, z;
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3> df_dpoint;
-	mrpt::math::CMatrixFixedNumeric<double, 3, 6> df_dpose;
-	mrpt::math::CMatrixFixedNumeric<double, 3, 6> df_dse3;
+	mrpt::math::CMatrixFixed<double, 3, 3> df_dpoint;
+	mrpt::math::CMatrixFixed<double, 3, 6> df_dpose;
+	mrpt::math::CMatrixFixed<double, 3, 6> df_dse3;
 
 	for (long i = 0; i < N; i++)
 	{
@@ -377,7 +377,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 	CMatrixDouble66 a_cov;
 
 	{
-		CMatrixFixedNumeric<double, 6, 8> v;
+		CMatrixFixed<double, 6, 8> v;
 		mrpt::random::getRandomGenerator().randomize(1234);
 		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v *= 0.1;
@@ -410,7 +410,7 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 	CPose3D a_mean(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
 	CMatrixDouble66 a_cov;
 	{
-		CMatrixFixedNumeric<double, 6, 8> v;
+		CMatrixFixed<double, 6, 8> v;
 		mrpt::random::getRandomGenerator().randomize(1234);
 		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v *= 0.1;

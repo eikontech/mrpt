@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservation.h>  // INVALID_BEACON_ID
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFGaussian.h>

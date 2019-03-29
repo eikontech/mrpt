@@ -12,7 +12,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>

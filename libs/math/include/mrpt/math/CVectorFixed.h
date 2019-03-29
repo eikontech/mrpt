@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 
@@ -16,20 +16,20 @@ namespace mrpt
 {
 namespace math
 {
-/** CArrayNumeric is an array for numeric types supporting several mathematical
+/** CVectorFixed is an array for numeric types supporting several mathematical
  * operations (actually, just a wrapper on Eigen::Matrix<T,N,1>)
- * \sa CArrayFloat, CArrayDouble, CArray
+ * \sa CVectorFixedFloat, CVectorFixedDouble, CArray
  */
 template <typename T, std::size_t N>
-using CArrayNumeric = CMatrixFixedNumeric<T, N, 1>;
+using CVectorFixed = CMatrixFixed<T, N, 1>;
 
-/** Specialization of CArrayNumeric for float numbers \sa CArrayNumeric  */
+/** Specialization of CVectorFixed for float numbers \sa CVectorFixed  */
 template <std::size_t N>
-using CArrayFloat = CArrayNumeric<float, N>;
+using CVectorFixedFloat = CVectorFixed<float, N>;
 
-/** Specialization of CArrayNumeric for double numbers \sa CArrayNumeric  */
+/** Specialization of CVectorFixed for double numbers \sa CVectorFixed  */
 template <std::size_t N>
-using CArrayDouble = CArrayNumeric<double, N>;
+using CVectorFixedDouble = CVectorFixed<double, N>;
 
 }  // namespace math
 
@@ -37,30 +37,30 @@ namespace typemeta
 {
 // Extensions to mrpt::typemeta::TTypeName for matrices:
 template <typename T, size_t N>
-struct TTypeName<mrpt::math::CArrayNumeric<T, N>>
+struct TTypeName<mrpt::math::CVectorFixed<T, N>>
 {
 	constexpr static auto get()
 	{
-		return literal("CArrayNumeric<") + TTypeName<T>::get() + literal(",") +
+		return literal("CVectorFixed<") + TTypeName<T>::get() + literal(",") +
 			   literal(num_to_string<N>::value) + literal(">");
 	}
 };
 template <size_t N>
-struct TTypeName<mrpt::math::CArrayDouble<N>>
+struct TTypeName<mrpt::math::CVectorFixedDouble<N>>
 {
 	constexpr static auto get()
 	{
-		return literal("CArrayDouble<") + literal(num_to_string<N>::value) +
-			   literal(">");
+		return literal("CVectorFixedDouble<") +
+		       literal(num_to_string<N>::value) + literal(">");
 	}
 };
 template <size_t N>
-struct TTypeName<mrpt::math::CArrayFloat<N>>
+struct TTypeName<mrpt::math::CVectorFixedFloat<N>>
 {
 	constexpr static auto get()
 	{
-		return literal("CArrayFloat<") + literal(num_to_string<N>::value) +
-			   literal(">");
+		return literal("CVectorFixedFloat<") +
+		       literal(num_to_string<N>::value) + literal(">");
 	}
 };
 }  // namespace typemeta

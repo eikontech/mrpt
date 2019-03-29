@@ -12,8 +12,8 @@
 #include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CFaceDetection.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CArrow.h>
@@ -234,7 +234,7 @@ void CFaceDetection::detectObjects_Impl(
 					}
 
 					/////////////////////////////////////////////////////
-					// CMatrixTemplate<bool> region;
+					// CMatrixDynamic<bool> region;
 					// experimental_segmentFace( m_lastFaceDetected,  region);
 					/////////////////////////////////////////////////////
 
@@ -391,16 +391,16 @@ bool CFaceDetection::checkIfFacePlaneCov(CObservation3DRangeScan* face)
 	const bool confidence = face->hasConfidenceImage;
 
 	// To fill with valid points
-	vector<CArrayDouble<3>> pointsVector;
+	vector<CVectorFixedDouble<3>> pointsVector;
 
-	CMatrixTemplate<bool> region;  // To save the segmented region
+	CMatrixDynamic<bool> region;  // To save the segmented region
 	experimental_segmentFace(*face, region);
 
 	for (unsigned int j = 0; j < faceHeight; j++)
 	{
 		for (unsigned int k = 0; k < faceWidth; k++)
 		{
-			CArrayDouble<3> aux;
+			CVectorFixedDouble<3> aux;
 
 			// Don't take in account dark pixels
 			if (region(j, k) &&
@@ -429,7 +429,7 @@ bool CFaceDetection::checkIfFacePlaneCov(CObservation3DRangeScan* face)
 	CMatrixDouble eVects, m_eVals;
 	CVectorDouble eVals;
 
-	cov = covVector<vector<CArrayDouble<3>>, CMatrixDouble>(pointsVector);
+	cov = covVector<vector<CVectorFixedDouble<3>>, CMatrixDouble>(pointsVector);
 
 	cov.eigenValues(eVals);
 
@@ -545,7 +545,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	// algorithm
 	//
 
-	CMatrixTemplate<bool> region;  // To save the segmented region
+	CMatrixDynamic<bool> region;  // To save the segmented region
 	experimental_segmentFace(*face, region);
 
 	//
@@ -586,7 +586,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	// determine if we use it
 	//
 
-	CMatrixTemplate<unsigned int> hist;
+	CMatrixDynamic<unsigned int> hist;
 	hist.setSize(1, 256, true);
 	experimental_calcHist(
 		face->intensityImage, start, 0, end, ceil(faceHeight * 0.1), hist);
@@ -1134,7 +1134,7 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 	const unsigned int faceWidth = face->intensityImage.getWidth();
 	const unsigned int faceHeight = face->intensityImage.getHeight();
 
-	CMatrixTemplate<bool> region;  // To save the segmented region
+	CMatrixDynamic<bool> region;  // To save the segmented region
 	experimental_segmentFace(*face, region);
 
 	size_t cont = 0;
@@ -1463,7 +1463,7 @@ void CFaceDetection::experimental_viewFacePointsScanned(
 //------------------------------------------------------------------------
 
 void CFaceDetection::experimental_viewFacePointsAndEigenVects(
-	const vector<CArrayDouble<3>>& pointsVector, const CMatrixDouble& eigenVect,
+	const vector<CVectorFixedDouble<3>>& pointsVector, const CMatrixDouble& eigenVect,
 	const CVectorDouble& eigenVal)
 {
 	vector<float> xs, ys, zs;
@@ -1657,7 +1657,7 @@ void CFaceDetection::experimental_viewRegions(
 //------------------------------------------------------------------------
 
 void CFaceDetection::experimental_segmentFace(
-	const CObservation3DRangeScan& face, CMatrixTemplate<bool>& region)
+	const CObservation3DRangeScan& face, CMatrixDynamic<bool>& region)
 {
 	const unsigned int faceWidth = face.intensityImage.getWidth();
 	const unsigned int faceHeight = face.intensityImage.getHeight();
@@ -1670,7 +1670,7 @@ void CFaceDetection::experimental_segmentFace(
 	unsigned int y2 = floor(faceHeight * 0.6);
 
 	region.setSize(faceHeight, faceWidth);
-	CMatrixTemplate<size_t> toExpand;
+	CMatrixDynamic<size_t> toExpand;
 	toExpand.setSize(faceHeight, faceWidth, true);
 
 	unsigned int cont = (y1 <= 1 ? 0 : faceHeight * (y1 - 1));
@@ -1791,7 +1791,7 @@ void CFaceDetection::experimental_segmentFace(
 
 void CFaceDetection::experimental_calcHist(
 	const CImage& face, const size_t& c1, const size_t& r1, const size_t& c2,
-	const size_t& r2, CMatrixTemplate<unsigned int>& hist)
+	const size_t& r2, CMatrixDynamic<unsigned int>& hist)
 {
 	TImageSize size;
 	face.getSize(size);

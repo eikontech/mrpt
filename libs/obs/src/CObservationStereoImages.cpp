@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
 #if MRPT_HAS_MATLAB
@@ -80,7 +80,7 @@ void CObservationStereoImages::serializeFrom(
 			}
 			else
 			{
-				CMatrix intParams;
+				CMatrixF intParams;
 				in >> intParams;  // Get the intrinsic params
 				leftCamera.intrinsicParams =
 					CMatrixDouble33(intParams);  // Set them to both cameras

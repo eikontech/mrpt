@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random.h>
 
@@ -23,10 +23,9 @@ using namespace std;
 template <typename T, size_t DIM1>
 double matrix_test_chol_dyn(int a1, int a2)
 {
-	auto A =
-		getRandomGenerator()
-			.drawDefinitePositiveMatrix<CMatrixTemplateNumeric<T>>(DIM1, 0.2);
-	CMatrixTemplateNumeric<T> chol_U;
+	auto A = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDynamic<T>>(
+		DIM1, 0.2);
+	CMatrixDynamic<T> chol_U;
 
 	const long N = 100;
 	CTicTac tictac;
@@ -62,11 +61,10 @@ double matrix_test_chol_Nx6x6_dyn(int DIM, int nReps)
 template <typename T, size_t DIM1>
 double matrix_test_chol_fix(int a1, int a2)
 {
-	auto A =
-		getRandomGenerator()
-			.drawDefinitePositiveMatrix<
-				CMatrixFixedNumeric<T, DIM1, DIM1>, Eigen::MatrixXd>(DIM1, 0.2);
-	CMatrixFixedNumeric<T, DIM1, DIM1> chol_U;
+	auto A = getRandomGenerator()
+				 .drawDefinitePositiveMatrix<
+					 CMatrixFixed<T, DIM1, DIM1>, Eigen::MatrixXd>(DIM1, 0.2);
+	CMatrixFixed<T, DIM1, DIM1> chol_U;
 
 	const long N = 100;
 	CTicTac tictac;
@@ -127,7 +125,7 @@ double matrix_test_loadFromArray(int N, int a2)
 	alignas(MRPT_MAX_ALIGN_BYTES) double nums[4 * 4] = {
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-	CMatrixFixedNumeric<double, 4, 4> M;
+	CMatrixFixed<double, 4, 4> M;
 
 	CTicTac tictac;
 	M.loadFromArray(nums);
@@ -139,11 +137,10 @@ double matrix_test_loadWithEigenMap(int N, int a2)
 	alignas(16) double nums[4 * 4] = {0, 1, 2,  3,  4,  5,  6,  7,
 									  8, 9, 10, 11, 12, 13, 14, 15};
 
-	CMatrixFixedNumeric<double, 4, 4> M;
+	CMatrixFixed<double, 4, 4> M;
 
 	CTicTac tictac;
-	M = Eigen::Map<CMatrixFixedNumeric<double, 4, 4>::Base, Eigen::Aligned16>(
-		nums);
+	M = Eigen::Map<CMatrixFixed<double, 4, 4>::Base, Eigen::Aligned16>(nums);
 	const double t = tictac.Tac();
 	dummy_do_nothing_with_string(mrpt::format("%e", M(0, 0)));
 	return t;

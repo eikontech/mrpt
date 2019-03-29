@@ -74,7 +74,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 		in_feature->scale = options.SpinImagesOptions.radius;
 
 		// Reset histogram to zeros:
-		hist2d.zeros();
+		hist2d.setZero();
 
 		// Define the ROI around the interest point which counts for the
 		// histogram:

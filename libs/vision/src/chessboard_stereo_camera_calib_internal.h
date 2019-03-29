@@ -28,7 +28,7 @@ struct lm_stat_t
 		left_cam_poses;  // Poses of the origin of coordinates of the pattern
 	// wrt the left camera
 	mrpt::poses::CPose3D right2left_pose;
-	mrpt::math::CArrayDouble<9> left_cam_params,
+	mrpt::math::CVectorFixedDouble<9> left_cam_params,
 		right_cam_params;  // [fx fy cx cy k1 k2 k3 t1 t2]
 
 	// Ctor

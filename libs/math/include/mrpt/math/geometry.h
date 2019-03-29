@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -1110,7 +1110,7 @@ bool RectanglesIntersection(
 	*
 	*    \f[ v^3 = v^1 \times v^2  \f]
   *
-  * \return The 3x3 matrix (CMatrixTemplateNumeric<T>), containing one vector
+  * \return The 3x3 matrix (CMatrixDynamic<T>), containing one vector
   per column.
   * \except Throws an std::exception on invalid input (i.e. null direction
   vector)
@@ -1119,14 +1119,14 @@ bool RectanglesIntersection(
   * (JLB @ 18-SEP-2007)
   */
 template <class T>
-CMatrixTemplateNumeric<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
+CMatrixDynamic<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
 {
 	MRPT_START
 
 	if (dx == 0 && dy == 0 && dz == 0)
 		THROW_EXCEPTION("Invalid input: Direction vector is (0,0,0);");
 
-	CMatrixTemplateNumeric<T> P(3, 3);
+	CMatrixDynamic<T> P(3, 3);
 
 	// 1st vector:
 	T n_xy = square(dx) + square(dy);

@@ -73,7 +73,7 @@ void CPosePDFSOG::getCovarianceAndMean(
 	size_t N = m_modes.size();
 
 	this->getMean(estMean2D);
-	estCov.zeros();
+	estCov.setZero();
 
 	if (N)
 	{

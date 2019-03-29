@@ -43,7 +43,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 
    public:
 	/** [x,y] */
-	mrpt::math::CArrayDouble<2> m_coords;
+	mrpt::math::CVectorFixedDouble<2> m_coords;
 
    protected:
 	/** The orientation of the pose, in radians. */
@@ -122,7 +122,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	/** Returns a 1x3 vector with [x y phi] */
 	void getAsVector(mrpt::math::CVectorDouble& v) const;
 	/// \overload
-	void getAsVector(mrpt::math::CArrayDouble<3>& v) const;
+	void getAsVector(mrpt::math::CVectorFixedDouble<3>& v) const;
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
 	 * point(translation) or pose (translation+orientation).

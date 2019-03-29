@@ -131,7 +131,7 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_compose_point(
-		const CArrayDouble<7 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
@@ -149,31 +149,31 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q1(CPose3D(x1, y1, z1, yaw1, pitch1, roll1));
 		const CPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 
 		TPoint3D l;
 		q1.composePoint(x, y, z, l.x, l.y, l.z, &df_dpoint, &df_dpose);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<7 + 3> x_mean;
+			CVectorFixedDouble<7 + 3> x_mean;
 			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<7 + 3> x_incrs;
+			CVectorFixedDouble<7 + 3> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<7 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_compose_point),
+					const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -234,7 +234,7 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_inv_compose_point(
-		const CArrayDouble<7 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
@@ -254,8 +254,8 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q1(CPose3D(x1, y1, z1, yaw1, pitch1, roll1));
 		const CPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 
 		TPoint3D l;
 		q1.inverseComposePoint(x, y, z, l.x, l.y, l.z, &df_dpoint, &df_dpose);
@@ -285,24 +285,24 @@ class Pose3DQuatTests : public ::testing::Test
 		EXPECT_NEAR(theorical.z, l.z, 1e-5);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<7 + 3> x_mean;
+			CVectorFixedDouble<7 + 3> x_mean;
 			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<7 + 3> x_incrs;
+			CVectorFixedDouble<7 + 3> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<7 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_inv_compose_point),
+					const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_inv_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -475,7 +475,7 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_spherical_coords(
-		const CArrayDouble<7 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
@@ -492,31 +492,31 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q1(CPose3D(x1, y1, z1, yaw1, pitch1, roll1));
 		const TPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 
 		double hr, hy, hp;
 		q1.sphericalCoordinates(p, hr, hy, hp, &df_dpoint, &df_dpose);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<7 + 3> x_mean;
+			CVectorFixedDouble<7 + 3> x_mean;
 			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<7 + 3> x_incrs;
+			CVectorFixedDouble<7 + 3> x_incrs;
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<7 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_spherical_coords),
+					const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_spherical_coords),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -546,7 +546,7 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_normalizeJacob(
-		const CArrayDouble<4>& x, const double& dummy, CArrayDouble<4>& Y)
+		const CVectorFixedDouble<4>& x, const double& dummy, CVectorFixedDouble<4>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CQuaternionDouble q;
@@ -561,24 +561,24 @@ class Pose3DQuatTests : public ::testing::Test
 		CQuaternionDouble q1;
 		pp.getAsQuaternion(q1);
 
-		CMatrixFixedNumeric<double, 4, 4> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 4> df_dpose(UNINITIALIZED_MATRIX);
 		q1.normalizationJacobian(df_dpose);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 4, 4> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 4> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<4> x_mean;
+			CVectorFixedDouble<4> x_mean;
 			for (int i = 0; i < 4; i++) x_mean[i] = q1[i];
 
 			double DUMMY = 0;
-			CArrayDouble<4> x_incrs;
+			CVectorFixedDouble<4> x_incrs;
 			x_incrs.assign(1e-5);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<4>& x, const double& dummy,
-					CArrayDouble<4>& Y)>(&func_normalizeJacob),
+					const CVectorFixedDouble<4>& x, const double& dummy,
+					CVectorFixedDouble<4>& Y)>(&func_normalizeJacob),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);

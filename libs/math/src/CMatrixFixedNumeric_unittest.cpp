@@ -8,41 +8,40 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <Eigen/Dense>
 
-TEST(CMatrixFixedNumeric, CtorUninit)
+TEST(CMatrixFixed, CtorUninit)
 {
-	mrpt::math::CMatrixFixedNumeric<double, 2, 2> M(
-		mrpt::math::UNINITIALIZED_MATRIX);
+	mrpt::math::CMatrixFixed<double, 2, 2> M(mrpt::math::UNINITIALIZED_MATRIX);
 	// do nothing, just test that the ctor above compiles
 	(void)M(0, 0);
 }
 
-TEST(CMatrixFixedNumeric, CtorAllZeros)
+TEST(CMatrixFixed, CtorAllZeros)
 {
-	mrpt::math::CMatrixFixedNumeric<double, 2, 2> M;
+	mrpt::math::CMatrixFixed<double, 2, 2> M;
 	for (int i = 0; i < 2; i++)
 		for (int j = 0; j < 2; j++) EXPECT_EQ(M(i, j), .0);
 }
 
-TEST(CMatrixFixedNumeric, Identity)
+TEST(CMatrixFixed, Identity)
 {
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3> M;
+	mrpt::math::CMatrixFixed<double, 3, 3> M;
 	M.setIdentity();
 	for (int i = 0; i < 3; i++) EXPECT_EQ(M(i, i), 1.0);
 }
 
-TEST(CMatrixFixedNumeric, GetSetEigen)
+TEST(CMatrixFixed, GetSetEigen)
 {
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3> M;
+		mrpt::math::CMatrixFixed<double, 3, 3> M;
 		auto em = M.asEigen<Eigen::Matrix3d>();
 		em.setIdentity();
 		for (int i = 0; i < 3; i++) EXPECT_EQ(M(i, i), 1.0);
 	}
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3> M;
+		mrpt::math::CMatrixFixed<double, 3, 3> M;
 		auto em = M.asEigen<Eigen::Matrix3d>();
 		for (int i = 0; i < 2; i++)
 			for (int j = 0; j < 2; j++)

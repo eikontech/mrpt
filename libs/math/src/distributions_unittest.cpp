@@ -34,9 +34,9 @@ TEST(distributions, normalPDF_vector)
 	const double x2_vals[3] = {1.0, 2.0, 3.0};
 
 	const CMatrixDouble33 COV(cov_vals);
-	const CMatrixFixedNumeric<double, 3, 1> x0;
-	const CMatrixFixedNumeric<double, 3, 1> x1(x1_vals);
-	const CMatrixFixedNumeric<double, 3, 1> x2(x2_vals);
+	const CMatrixFixed<double, 3, 1> x0;
+	const CMatrixFixed<double, 3, 1> x1(x1_vals);
+	const CMatrixFixed<double, 3, 1> x2(x2_vals);
 
 	EXPECT_NEAR(
 		normalPDF(x0, x0, COV), 0.02592116832548877620,

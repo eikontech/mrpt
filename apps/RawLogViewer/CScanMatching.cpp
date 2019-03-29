@@ -731,7 +731,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 			poseEst->getCovarianceAndMean(estCov, estMean);
 
 			m_gl_map_new->setPose(CPose3D(estMean));
-			const mrpt::math::CMatrixFixedNumeric<double, 2, 2> C =
+			const mrpt::math::CMatrixFixed<double, 2, 2> C =
 				estCov.block<2, 2>(0, 0);
 			gl_ellipse->setCovMatrix(C);
 

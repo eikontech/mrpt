@@ -19,7 +19,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -100,7 +100,7 @@ struct CObservation3DRangeScan_Ranges_MemPoolParams
 };
 struct CObservation3DRangeScan_Ranges_MemPoolData
 {
-	mrpt::math::CMatrix rangeImage;
+	mrpt::math::CMatrixF rangeImage;
 };
 using TMyRangesMemPool = mrpt::system::CGenericMemoryPool<
 	CObservation3DRangeScan_Ranges_MemPoolParams,
@@ -456,13 +456,13 @@ void CObservation3DRangeScan::load() const
 		if (mrpt::system::strCmpI(
 				"txt", mrpt::system::extractFileExtension(fil, true)))
 		{
-			const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
+			const_cast<CMatrixF&>(rangeImage).loadFromTextFile(fil);
 		}
 		else
 		{
 			mrpt::io::CFileGZInputStream fi(fil);
 			auto f = mrpt::serialization::archiveFrom(fi);
-			f >> const_cast<CMatrix&>(rangeImage);
+			f >> const_cast<CMatrixF&>(rangeImage);
 		}
 	}
 }

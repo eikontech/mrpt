@@ -464,7 +464,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 					if (obs->hasRangeImage)
 					{
 						// Convert to range [0,255]
-						mrpt::math::CMatrix normalized_range = obs->rangeImage;
+						mrpt::math::CMatrixF normalized_range = obs->rangeImage;
 						const float max_rang =
 							std::max(obs->maxRange, normalized_range.maximum());
 						if (max_rang > 0) normalized_range *= 255. / max_rang;

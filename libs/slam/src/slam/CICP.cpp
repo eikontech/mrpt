@@ -602,8 +602,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 	q = grossEst;
 
 	// For LM inverse
-	CMatrixFixedNumeric<float, 3, 3> C;
-	CMatrixFixedNumeric<float, 3, 3>
+	CMatrixFixed<float, 3, 3> C;
+	CMatrixFixed<float, 3, 3>
 		C_inv;  // This will keep the cov. matrix at the end
 
 	// Asure maps are not empty!
@@ -778,7 +778,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 				CMatrixFloat H_(3, 3);
 				H_.multiply_AAt(dJ_dq);
 
-				auto H = CMatrixFixedNumeric<float, 3, 3>(H_);
+				auto H = CMatrixFixed<float, 3, 3>(H_);
 
 				bool keepIteratingLM = true;
 

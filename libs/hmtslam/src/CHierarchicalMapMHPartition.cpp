@@ -401,7 +401,7 @@ void CHierarchicalMapMHPartition::saveAreasDiagramWithEllipsedForMATLAB(
 		{
 			const CHMHMapNode			*node = getNodeByID( it->first );
 			CPosePDFGaussian	posePDF = it->second;
-			CMatrix				C( posePDF.cov );
+			CMatrixF				C( posePDF.cov );
 			CPose2D				pose( posePDF.mean );
 
 			if (C.det()==0)

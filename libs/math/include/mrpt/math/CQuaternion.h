@@ -11,8 +11,8 @@
 
 #include <mrpt/core/bits_math.h>  // square()
 #include <mrpt/core/exceptions.h>
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/CMatrixDynamic.h>
 
 namespace mrpt::math
 {
@@ -41,9 +41,9 @@ enum TConstructorFlags_Quaternions
  * \sa mrpt::poses::CPose3D
  */
 template <class T>
-class CQuaternion : public CArrayNumeric<T, 4>
+class CQuaternion : public CVectorFixed<T, 4>
 {
-	using Base = CArrayNumeric<T, 4>;
+	using Base = CVectorFixed<T, 4>;
 
    public:
 	/* @{ Constructors

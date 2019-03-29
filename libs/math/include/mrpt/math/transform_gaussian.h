@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/num_jacobian.h>

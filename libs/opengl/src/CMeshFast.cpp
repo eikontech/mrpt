@@ -142,7 +142,7 @@ void CMeshFast::assignImage(const CImage& img)
 }
 
 void CMeshFast::assignImageAndZ(
-	const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
+	const CImage& img, const mrpt::math::CMatrixDynamic<float>& in_Z)
 {
 	MRPT_START
 
@@ -267,7 +267,7 @@ void CMeshFast::updateColorsMatrix() const
 	pointsUpToDate = false;
 }
 
-void CMeshFast::setZ(const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
+void CMeshFast::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
 {
 	Z = in_Z;
 	m_modified_Z = true;

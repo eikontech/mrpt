@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_allocator.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
 #include <mrpt/core/format.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/matrix_size_t.h>
+#include <mrpt/typemeta/TTypeName.h>
 #include <algorithm>  // swap()
 #include <array>
 #include <cstring>  // memset()
@@ -25,19 +26,18 @@ namespace mrpt::math
  *any-size, resizable container of numerical or non-numerical elements.
  * NOTES:
  * - This class is not serializable since it is a template. For using
- *serialization, see mrpt::math::CMatrixNumeric
+ *serialization, see mrpt::math::CMatrixD.
  * - First row or column index is "0".
  * - This class includes range checks with ASSERT_() if compiling with "_DEBUG"
  *or "MRPT_ALWAYS_CHECKS_DEBUG_MATRICES=1".
+ * - Use asEigen() to get an `Eigen::Map<>` object and to access full Algebra
+ *functionality.
  *
- * \note Memory blocks for each row are 16-bytes aligned (since MRPT 0.7.0).
- * \note For a complete introduction to Matrices and vectors in MRPT, see:
- *http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \sa CMatrixTemplateNumeric
  * \ingroup mrpt_math_grp
  */
 template <class T>
-class CMatrixTemplate
+class CMatrixDynamic
 {
    public:
 	// type definitions
@@ -48,8 +48,10 @@ class CMatrixTemplate
 	using size_type = std::size_t;
 	using difference_type = std::ptrdiff_t;
 
-   protected:
-	T** m_Val;
+   private:
+	/** RowMajor matrix data */
+	//	mrpt::aligned_std_vector<T> m_data;
+	std::basic_string<T> m_data;
 	size_t m_Rows{0}, m_Cols{0};
 
 	/** Internal use only: It reallocs the memory for the 2D matrix, maintaining
@@ -57,118 +59,97 @@ class CMatrixTemplate
 	 */
 	void realloc(size_t row, size_t col, bool newElementsToZero = false)
 	{
-		MRPT_TODO("Refactor storage to simple T*, not T** -> Map<> compatib.");
+		if (row == m_Rows && col == m_Cols) return;
+		const auto old_rows = m_Rows, old_cols = m_Cols;
+		m_Rows = row;
+		m_Cols = col;
 
-		if (row != m_Rows || col != m_Cols || m_Val == nullptr)
+		// New buffer:
+		decltype(m_data) newData;
+		newData.resize(m_Rows * m_Cols);
+		// Copy old content:
+		for (size_t r = 0; r < old_rows; r++)
 		{
-			size_t r;
-			bool doZeroColumns = newElementsToZero && (col > m_Cols);
-
-			// If we are reducing rows, free that memory:
-			for (r = row; r < m_Rows; r++) mrpt::aligned_free(m_Val[r]);
-
-			// Realloc the vector of pointers:
-			if (!row)
-			{
-				mrpt::aligned_free(m_Val);
-				m_Val = nullptr;
-			}
+			if constexpr (std::is_trivial_v<T>)
+			    ::memcpy(
+			        &newData[r * m_Cols], &m_data[r * old_cols],
+			        sizeof(T) * old_cols);
 			else
-				m_Val = static_cast<T**>(
-					mrpt::aligned_realloc(m_Val, sizeof(T*) * row, 16));
-
-			// How many new rows/cols?
-			size_t row_size = col * sizeof(T);
-
-			// Alloc new ROW pointers & resize previously existing rows, as
-			// required:
-			for (r = 0; r < row; r++)
-			{
-				if (r < m_Rows)
-				{
-					// This was an existing row: Resize the memory:
-					m_Val[r] = static_cast<T*>(
-						mrpt::aligned_realloc(m_Val[r], row_size, 16));
-
-					if (doZeroColumns)
-					{
-						// Fill with zeros:
-						if constexpr (std::is_trivial_v<T>)
-							::memset(
-								&m_Val[r][m_Cols], 0,
-								sizeof(T) * (col - m_Cols));
-						else
-							for (size_t k = m_Cols; k < col; k++)
-								m_Val[r][k] = T();
-					}
-				}
-				else
-				{
-					// This is a new row, alloc the memory for the first time:
-					m_Val[r] =
-						static_cast<T*>(mrpt::aligned_malloc(row_size, 16));
-					if constexpr (std::is_trivial_v<T>)
-						::memset(m_Val[r], 0, row_size);
-					else
-						for (size_t k = 0; k < col; k++) m_Val[r][k] = T();
-				}
-			}
-			// Done!
-			m_Rows = row;
-			m_Cols = col;
+			    for (size_t c = 0; c < old_cols; c++)
+					newData[r * m_Cols + c] = m_data[r * old_cols + c];
 		}
+		// New rows to zero?
+		if (m_Rows > old_rows)
+		{
+			if constexpr (std::is_trivial_v<T>)
+			    ::memset(
+			        &newData[old_rows * m_Cols], 0,
+			        sizeof(T) * (m_Rows - old_rows));
+			else
+			    for (size_t r = old_rows; r < m_Rows; r++)
+					for (size_t c = 0; c < m_Cols; c++)
+						newData[r * m_Cols + c] = T();
+		}
+		// New cols to zero?
+		if (m_Cols > old_cols)
+		{
+			for (size_t r = 0; r < old_rows; r++)
+				if constexpr (std::is_trivial_v<T>)
+			        ::memset(
+			            &newData[r * m_Cols + old_cols], 0,
+			            sizeof(T) * (m_Cols - old_cols));
+			    else
+			        for (size_t c = old_cols; c < m_Cols; c++)
+						newData[r * m_Cols + c] = T();
+		}
+		// Swap:
+		m_data.swap(newData);
 	}
 
    public:
 	/*! Fill all the elements with a given value (Note: named "fillAll" since
 	 * "fill" will be used by child classes) */
-	void fill(const T& val)
+	void fill(const T& val) { std::fill(m_data.begin(), m_data.end(), val); }
+
+	inline void setZero() { fill(0); }
+	inline void setZero(size_t nrows, size_t ncols)
 	{
-		for (size_t r = 0; r < m_Rows; r++)
-			for (size_t c = 0; c < m_Cols; c++) m_Val[r][c] = val;
+		realloc(nrows, ncols);
+		fill(0);
 	}
 
 	/** Swap with another matrix very efficiently (just swaps a pointer and two
 	 * integer values). */
-	inline void swap(CMatrixTemplate<T>& o)
+	inline void swap(CMatrixDynamic<T>& o)
 	{
-		std::swap(m_Val, o.m_Val);
+		std::swap(m_data, o.m_data);
 		std::swap(m_Rows, o.m_Rows);
 		std::swap(m_Cols, o.m_Cols);
 	}
 
 	/** Constructors */
-	CMatrixTemplate(const CMatrixTemplate& m)
-		: m_Val(nullptr), m_Rows(0), m_Cols(0)
-	{
-		(*this) = m;
-	}
+	CMatrixDynamic(const CMatrixDynamic& m) { (*this) = m; }
 
-	CMatrixTemplate(size_t row = 1, size_t col = 1) : m_Val(nullptr)
-	{
-		realloc(row, col);
-	}
+	CMatrixDynamic(size_t row = 1, size_t col = 1) { realloc(row, col); }
 
 	/** Copy (casting from if needed) from another matrix  */
 	template <typename U>
-	explicit CMatrixTemplate(const CMatrixTemplate<U>& m)
-		: m_Val(nullptr), m_Rows(0), m_Cols(0)
+	explicit CMatrixDynamic(const CMatrixDynamic<U>& m)
 	{
 		(*this) = m;
 	}
 
 	/** Copy constructor & crop from another matrix
 	 */
-	CMatrixTemplate(
-		const CMatrixTemplate& m, const size_t cropRowCount,
-		const size_t cropColCount)
-		: m_Val(nullptr), m_Rows(0), m_Cols(0)
+	CMatrixDynamic(
+		const CMatrixDynamic& m, const size_t cropRowCount,
+	    const size_t cropColCount)
 	{
 		ASSERT_(m.m_Rows >= cropRowCount);
 		ASSERT_(m.m_Cols >= cropColCount);
 		realloc(cropRowCount, cropColCount);
 		for (size_t i = 0; i < m_Rows; i++)
-			for (size_t j = 0; j < m_Cols; j++) m_Val[i][j] = m.m_Val[i][j];
+			for (size_t j = 0; j < m_Cols; j++) (*this)(i, j) = m(i, j);
 	}
 
 	/** Constructor from a given size and a C array. The array length must match
@@ -177,12 +158,11 @@ class CMatrixTemplate
 	 *  const double numbers[] = {
 	 *    1,2,3,
 	 *    4,5,6 };
-	 *	 CMatrixDouble   M(3,2, numbers);
+	 *  CMatrixDouble   M(3,2, numbers);
 	 * \endcode
 	 */
 	template <typename V, size_t N>
-	CMatrixTemplate(size_t row, size_t col, V (&theArray)[N])
-		: m_Val(nullptr), m_Rows(0), m_Cols(0)
+	CMatrixDynamic(size_t row, size_t col, V (&theArray)[N])
 	{
 		static_assert(N != 0, "Empty array!");
 		realloc(row, col);
@@ -196,7 +176,7 @@ class CMatrixTemplate
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
-				m_Val[i][j] = static_cast<T>(theArray[idx++]);
+				(*this)(i, j) = static_cast<T>(theArray[idx++]);
 	}
 
 	/** Constructor from a given size and a STL container (std::vector,
@@ -204,8 +184,7 @@ class CMatrixTemplate
 	 * x row.
 	 */
 	template <typename V>
-	CMatrixTemplate(size_t row, size_t col, const V& theVector)
-		: m_Val(nullptr), m_Rows(0), m_Cols(0)
+	CMatrixDynamic(size_t row, size_t col, const V& theVector)
 	{
 		const size_t N = theVector.size();
 		realloc(row, col);
@@ -219,16 +198,16 @@ class CMatrixTemplate
 		typename V::const_iterator it = theVector.begin();
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
-				m_Val[i][j] = static_cast<T>(*(it++));
+				(*this)(i, j) = static_cast<T>(*(it++));
 	}
 
 	/** Destructor */
-	virtual ~CMatrixTemplate() { realloc(0, 0); }
+	virtual ~CMatrixDynamic() { realloc(0, 0); }
 
 	/** Assignment operator from another matrix (possibly of a different type)
 	 */
 	template <typename U>
-	CMatrixTemplate& operator=(const CMatrixTemplate<U>& m)
+	CMatrixDynamic& operator=(const CMatrixDynamic<U>& m)
 	{
 		realloc(m.rows(), m.cols());
 		for (size_t i = 0; i < m_Rows; i++)
@@ -247,10 +226,10 @@ class CMatrixTemplate
 	 *  M = numbers;
 	 * \endcode
 	 *  Refer also to the constructor with initialization data
-	 *CMatrixTemplate::CMatrixTemplate
+	 *CMatrixDynamic::CMatrixDynamic
 	 */
 	template <typename V, size_t N>
-	CMatrixTemplate& operator=(V (&theArray)[N])
+	CMatrixDynamic& operator=(V (&theArray)[N])
 	{
 		static_assert(N != 0, "Empty array!");
 		if (m_Rows * m_Cols != N)
@@ -263,7 +242,7 @@ class CMatrixTemplate
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
-				m_Val[i][j] = static_cast<T>(theArray[idx++]);
+				(*this)(i, j) = static_cast<T>(theArray[idx++]);
 		return *this;
 	}
 
@@ -310,7 +289,7 @@ class CMatrixTemplate
 				static_cast<unsigned long>(m_Rows),
 				static_cast<unsigned long>(m_Cols)));
 #endif
-		return m_Val[row][col];
+		return m_data[row * m_Cols + col];
 	}
 
 	/** Subscript operator to get individual elements
@@ -326,7 +305,7 @@ class CMatrixTemplate
 				static_cast<unsigned long>(m_Rows),
 				static_cast<unsigned long>(m_Cols)));
 #endif
-		return m_Val[row][col];
+		return m_data[row * m_Cols + col];
 	}
 
 	/** Subscript operator to get/set an individual element from a row or column
@@ -346,7 +325,6 @@ class CMatrixTemplate
 				THROW_EXCEPTION_FMT(
 					"Index %u out of range!", static_cast<unsigned>(ith));
 #endif
-			return m_Val[0][ith];
 		}
 		else
 		{
@@ -356,15 +334,15 @@ class CMatrixTemplate
 				THROW_EXCEPTION_FMT(
 					"Index %u out of range!", static_cast<unsigned>(ith));
 #endif
-			return m_Val[ith][0];
 		}
+		return m_data[ith];
 	}
 
 	/** Subscript operator to get/set an individual element from a row or column
 	 * matrix.
 	 * \exception std::exception If the object is not a column or row matrix.
 	 */
-	inline T operator[](size_t ith) const
+	inline const T& operator[](size_t ith) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		ASSERT_(m_Rows == 1 || m_Cols == 1);
@@ -377,7 +355,6 @@ class CMatrixTemplate
 				THROW_EXCEPTION_FMT(
 					"Index %u out of range!", static_cast<unsigned>(ith));
 #endif
-			return m_Val[0][ith];
 		}
 		else
 		{
@@ -387,8 +364,8 @@ class CMatrixTemplate
 				THROW_EXCEPTION_FMT(
 					"Index %u out of range!", static_cast<unsigned>(ith));
 #endif
-			return m_Val[ith][0];
 		}
+		return m_data[ith];
 	}
 
 	/** Fast but unsafe method to write a value in the matrix
@@ -404,7 +381,7 @@ class CMatrixTemplate
 				static_cast<unsigned long>(m_Rows),
 				static_cast<unsigned long>(m_Cols)));
 #endif
-		m_Val[row][col] = v;
+		m_data[row][col] = v;
 	}
 
 	/** Fast but unsafe method to read a value from the matrix
@@ -420,7 +397,7 @@ class CMatrixTemplate
 				static_cast<unsigned long>(m_Rows),
 				static_cast<unsigned long>(m_Cols)));
 #endif
-		return m_Val[row][col];
+		return m_data[row][col];
 	}
 
 	/** Fast but unsafe method to get a reference from the matrix
@@ -436,7 +413,7 @@ class CMatrixTemplate
 				static_cast<unsigned long>(m_Rows),
 				static_cast<unsigned long>(m_Cols)));
 #endif
-		return m_Val[row][col];
+		return m_data[row][col];
 	}
 
 	/** Fast but unsafe method to obtain a pointer to a given row of the matrix
@@ -452,13 +429,13 @@ class CMatrixTemplate
 				static_cast<unsigned long>(m_Rows),
 				static_cast<unsigned long>(m_Cols)));
 #endif
-		return m_Val[row];
+		return m_data[row];
 	}
 
 	/** Fast but unsafe method to obtain a pointer to a given row of the matrix
 	 * (Use only in critical applications)
 	 */
-	inline const T* get_unsafe_row(size_t row) const { return m_Val[row]; }
+	inline const T* get_unsafe_row(size_t row) const { return m_data[row]; }
 
 	/** Appends a new row to the MxN matrix from a 1xN vector.
 	 *  The lenght of the vector must match the width of the matrix, unless
@@ -483,7 +460,7 @@ class CMatrixTemplate
 
 		const auto row = m_Rows;
 		realloc(row + 1, m_Cols = in.size());
-		for (size_t i = 0; i < m_Cols; i++) m_Val[row][i] = in[i];
+		for (size_t i = 0; i < m_Cols; i++) m_data[row][i] = in[i];
 	}
 
 	/** Appends a new column to the matrix from a vector.
@@ -505,7 +482,7 @@ class CMatrixTemplate
 		else
 			ASSERT_(in.size() == m_Rows);
 		realloc(r, c + 1);
-		for (size_t i = 0; i < m_Rows; i++) m_Val[i][m_Cols - 1] = in[i];
+		for (size_t i = 0; i < m_Rows; i++) m_data[i][m_Cols - 1] = in[i];
 	}
 
 	/** Returns a vector containing the matrix's values.
@@ -515,7 +492,7 @@ class CMatrixTemplate
 		out.clear();
 		out.reserve(m_Rows * m_Cols);
 		for (size_t i = 0; i < m_Rows; i++)
-			out.insert(out.end(), &(m_Val[i][0]), &(m_Val[i][m_Cols]));
+			out.insert(out.end(), &(m_data[i][0]), &(m_data[i][m_Cols]));
 	}
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
@@ -525,22 +502,65 @@ class CMatrixTemplate
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
 	{
-		return EIGEN_MAP(m_Val, m_Rows, m_Cols);
+		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 	/** \overload (const version) */
 	template <
-		typename EIGEN_MATRIX,
+		typename EIGEN_MATRIX = Eigen::Matrix<T, -1, -1, 1, -1, -1>,
 		typename EIGEN_MAP = Eigen::Map<
 			const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
 	{
-		return EIGEN_MAP(m_Val, m_Rows, m_Cols);
+		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 
-};  // end of class CMatrixTemplate
+};  // end of class CMatrixDynamic
 
 /** Declares a matrix of booleans (non serializable).
  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB */
-using CMatrixBool = CMatrixTemplate<bool>;
+using CMatrixBool = CMatrixDynamic<bool>;
 
+/** Declares a matrix of float numbers (non serializable).
+ *  For a serializable version, use math::CMatrixF
+ *  \sa CMatrixDouble, CMatrixF, CMatrixD
+ */
+using CMatrixFloat = CMatrixDynamic<float>;
+
+/** Declares a matrix of double numbers (non serializable).
+ *  For a serializable version, use math::CMatrixD
+ *  \sa CMatrixFloat, CMatrixF, CMatrixD
+ */
+using CMatrixDouble = CMatrixDynamic<double>;
+
+/** Declares a matrix of unsigned ints (non serializable).
+ *  \sa CMatrixDouble, CMatrixFloat
+ */
+using CMatrixUInt = CMatrixDynamic<unsigned int>;
+
+#ifdef HAVE_LONG_DOUBLE
+/** Declares a matrix of "long doubles" (non serializable), or of "doubles" if
+ * the compiler does not support "long double".
+ *  \sa CMatrixDouble, CMatrixFloat
+ */
+using CMatrixLongDouble = CMatrixDynamic<long double>;
+#else
+/** Declares a matrix of "long doubles" (non serializable), or of "doubles" if
+ * the compiler does not support "long double".
+ *  \sa CMatrixDouble, CMatrixFloat
+ */
+using CMatrixLongDouble = CMatrixDynamic<double>;
+#endif
 }  // namespace mrpt::math
+
+namespace mrpt::typemeta
+{
+// Extensions to mrpt::typemeta::TTypeName for matrices:
+template <typename T>
+struct TTypeName<mrpt::math::CMatrixDynamic<T>>
+{
+	static auto get()
+	{
+		return literal("CMatrixDynamic<") + TTypeName<T>::get() + literal(">");
+	}
+};
+}  // namespace mrpt::typemeta

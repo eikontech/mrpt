@@ -8,24 +8,24 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::math
 {
 /**  This class is a "CSerializable" wrapper for
- * "CMatrixTemplateNumeric<double>".
+ * "CMatrixDynamic<double>".
  * \note For a complete introduction to Matrices and vectors in MRPT, see:
  * https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
  * \ingroup mrpt_math_grp
  */
 class CMatrixD : public mrpt::serialization::CSerializable,
-				 public CMatrixTemplateNumeric<double>
+				 public CMatrixDynamic<double>
 {
 	DEFINE_SERIALIZABLE(CMatrixD)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
-	using Base = CMatrixTemplateNumeric<double>;
+	using Base = CMatrixDynamic<double>;
 
 	/** Constructor */
 	CMatrixD() : Base(1, 1) {}

@@ -82,19 +82,4 @@ class dynamic_vector : public Eigen::Matrix<T, Eigen::Dynamic, 1>
 	}
 };
 
-/** Column vector, like Eigen::MatrixXf, but automatically initialized to zeros
- * since construction */
-using CVectorFloat = dynamic_vector<float>;
-/** Column vector, like Eigen::MatrixXd, but automatically initialized to zeros
- * since construction */
-using CVectorDouble = dynamic_vector<double>;
-
-mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& s, const mrpt::math::CVectorFloat& a);
-mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& s, const mrpt::math::CVectorDouble& a);
-mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::CVectorDouble& a);
-mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, mrpt::math::CVectorFloat& a);
 }  // namespace mrpt::math

@@ -595,7 +595,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 						Hc(1, 0) = ssin;
 						Hc(0, 1) = -ssin;
 
-						CMatrixFixedNumeric<double, 2, 3>
+						CMatrixFixed<double, 2, 3>
 							Hq;  // Jacobian wrt transformation q
 						Hq(0, 0) = 1;
 						Hq(1, 1) = 1;
@@ -1034,7 +1034,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 		m1->getResolution());
 	size_t map2_lx = map2_mod.getSizeX();
 	size_t map2_ly = map2_mod.getSizeY();
-	CMatrix outCrossCorr, bestCrossCorr;
+	CMatrixF outCrossCorr, bestCrossCorr;
 	float map2width_2 = 0.5f * (map2_mod.getXMax() - map2_mod.getXMin());
 
 #ifdef CORRELATION_SHOW_DEBUG
@@ -1113,7 +1113,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 #endif
 
 	// Transform the best corr matrix peak into coordinates:
-	CMatrix::Index uMax, vMax;
+	CMatrixF::Index uMax, vMax;
 	currentMaxCorr = bestCrossCorr.maxCoeff(&uMax, &vMax);
 
 	PDF->mean.x(m1->idx2x(uMax));

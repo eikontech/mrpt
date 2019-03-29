@@ -608,7 +608,7 @@ float CFeature::descriptorSpinImgDistanceTo(
 //        descriptorPolarImgDistanceTo
 // --------------------------------------------------
 float CFeature::internal_distanceBetweenPolarImages(
-	const CMatrix& desc1, const CMatrix& desc2, float& minDistAngle,
+	const CMatrixF& desc1, const CMatrixF& desc2, float& minDistAngle,
 	bool normalize_distances, bool dont_shift_angle)
 {
 	MRPT_START

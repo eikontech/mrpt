@@ -132,7 +132,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
 		mean = CPose3D(ptr->mean);
 
 		// 3x3 inv_cov -> 6x6 inv_cov
-		cov_inv.zeros();
+		cov_inv.setZero();
 		cov_inv(0, 0) = ptr->cov_inv(0, 0);
 		cov_inv(1, 1) = ptr->cov_inv(1, 1);
 		cov_inv(3, 3) = ptr->cov_inv(2, 2);

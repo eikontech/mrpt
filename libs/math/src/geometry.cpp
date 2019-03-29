@@ -9,9 +9,9 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/data_utils.h>
@@ -984,7 +984,7 @@ bool math::conformAPlane(const std::vector<TPoint3D>& points)
 {
 	size_t N = points.size();
 	if (N < 3) return false;
-	CMatrixTemplateNumeric<double> mat(N - 1, 3);
+	CMatrixDynamic<double> mat(N - 1, 3);
 	const TPoint3D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -1005,7 +1005,7 @@ bool math::areAligned(const std::vector<TPoint2D>& points)
 {
 	size_t N = points.size();
 	if (N < 2) return false;
-	CMatrixTemplateNumeric<double> mat(N - 1, 2);
+	CMatrixDynamic<double> mat(N - 1, 2);
 	const TPoint2D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -1034,7 +1034,7 @@ bool math::areAligned(const std::vector<TPoint3D>& points)
 {
 	size_t N = points.size();
 	if (N < 2) return false;
-	CMatrixTemplateNumeric<double> mat(N - 1, 3);
+	CMatrixDynamic<double> mat(N - 1, 3);
 	const TPoint3D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -2095,8 +2095,8 @@ void math::generateAxisBaseFromDirectionAndAxis(
 
 double math::getRegressionLine(const vector<TPoint2D>& points, TLine2D& line)
 {
-	CArrayDouble<2> means;
-	CMatrixTemplateNumeric<double> covars(2, 2), eigenVal(2, 2), eigenVec(2, 2);
+	CVectorFixedDouble<2> means;
+	CMatrixDynamic<double> covars(2, 2), eigenVal(2, 2), eigenVec(2, 2);
 	covariancesAndMean(points, covars, means);
 	covars.eigenVectors(eigenVec, eigenVal);
 	size_t selected = (eigenVal(0, 0) >= eigenVal(1, 1)) ? 0 : 1;
@@ -2121,8 +2121,8 @@ inline size_t getIndexOfMax(const T& e1, const T& e2, const T& e3)
 
 double math::getRegressionLine(const vector<TPoint3D>& points, TLine3D& line)
 {
-	CArrayDouble<3> means;
-	CMatrixTemplateNumeric<double> covars(3, 3), eigenVal(3, 3), eigenVec(3, 3);
+	CVectorFixedDouble<3> means;
+	CMatrixDynamic<double> covars(3, 3), eigenVal(3, 3), eigenVec(3, 3);
 	covariancesAndMean(points, covars, means);
 	covars.eigenVectors(eigenVec, eigenVal);
 	size_t selected =

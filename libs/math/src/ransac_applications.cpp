@@ -24,9 +24,8 @@ namespace math
 {
 template <typename T>
 void ransac3Dplane_fit(
-	const CMatrixTemplateNumeric<T>& allData,
-	const std::vector<size_t>& useIndices,
-	vector<CMatrixTemplateNumeric<T>>& fitModels)
+	const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices,
+	vector<CMatrixDynamic<T>>& fitModels)
 {
 	ASSERT_(useIndices.size() == 3);
 
@@ -44,7 +43,7 @@ void ransac3Dplane_fit(
 	{
 		TPlane plane(p1, p2, p3);
 		fitModels.resize(1);
-		CMatrixTemplateNumeric<T>& M = fitModels[0];
+		CMatrixDynamic<T>& M = fitModels[0];
 
 		M.setSize(1, 4);
 		for (size_t i = 0; i < 4; i++) M(0, i) = T(plane.coefs[i]);
@@ -58,14 +57,13 @@ void ransac3Dplane_fit(
 
 template <typename T>
 void ransac3Dplane_distance(
-	const CMatrixTemplateNumeric<T>& allData,
-	const vector<CMatrixTemplateNumeric<T>>& testModels,
-	const T distanceThreshold, unsigned int& out_bestModelIndex,
-	std::vector<size_t>& out_inlierIndices)
+	const CMatrixDynamic<T>& allData,
+	const vector<CMatrixDynamic<T>>& testModels, const T distanceThreshold,
+	unsigned int& out_bestModelIndex, std::vector<size_t>& out_inlierIndices)
 {
 	ASSERT_(testModels.size() == 1);
 	out_bestModelIndex = 0;
-	const CMatrixTemplateNumeric<T>& M = testModels[0];
+	const CMatrixDynamic<T>& M = testModels[0];
 
 	ASSERT_(M.rows() == 1 && M.cols() == 4);
 
@@ -90,8 +88,7 @@ void ransac3Dplane_distance(
  */
 template <typename T>
 bool ransac3Dplane_degenerate(
-	const CMatrixTemplateNumeric<T>& allData,
-	const std::vector<size_t>& useIndices)
+	const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices)
 {
 	MRPT_UNUSED_PARAM(allData);
 	MRPT_UNUSED_PARAM(useIndices);
@@ -120,7 +117,7 @@ void mrpt::math::ransac_detect_3D_planes(
 	if (x.empty()) return;
 
 	// The running lists of remaining points after each plane, as a matrix:
-	CMatrixTemplateNumeric<NUMTYPE> remainingPoints(3, x.size());
+	CMatrixDynamic<NUMTYPE> remainingPoints(3, x.size());
 	remainingPoints.insertRow(0, x);
 	remainingPoints.insertRow(1, y);
 	remainingPoints.insertRow(2, z);
@@ -131,7 +128,7 @@ void mrpt::math::ransac_detect_3D_planes(
 	for (;;)
 	{
 		std::vector<size_t> this_best_inliers;
-		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
+		CMatrixDynamic<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;
 		ransac.setVerbosityLevel(mrpt::system::LVL_INFO);
@@ -194,9 +191,8 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 	{
 	template <typename T>
 	void ransac2Dline_fit(
-		const CMatrixTemplateNumeric<T>& allData,
-		const std::vector<size_t>& useIndices,
-		vector<CMatrixTemplateNumeric<T>>& fitModels)
+		const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices,
+		vector<CMatrixDynamic<T>>& fitModels)
 	{
 		ASSERT_(useIndices.size() == 2);
 
@@ -207,7 +203,7 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 		{
 			TLine2D line(p1, p2);
 			fitModels.resize(1);
-			CMatrixTemplateNumeric<T>& M = fitModels[0];
+			CMatrixDynamic<T>& M = fitModels[0];
 
 			M.setSize(1, 3);
 			for (size_t i = 0; i < 3; i++) M(0, i) = line.coefs[i];
@@ -221,9 +217,9 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 
 	template <typename T>
 	void ransac2Dline_distance(
-		const CMatrixTemplateNumeric<T>& allData,
-		const vector<CMatrixTemplateNumeric<T>>& testModels,
-		const T distanceThreshold, unsigned int& out_bestModelIndex,
+		const CMatrixDynamic<T>& allData,
+		const vector<CMatrixDynamic<T>>& testModels, const T distanceThreshold,
+		unsigned int& out_bestModelIndex,
 		std::vector<size_t>& out_inlierIndices)
 	{
 		out_inlierIndices.clear();
@@ -236,7 +232,7 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 			format(
 				"Expected testModels.size()=1, but it's = %u",
 				static_cast<unsigned int>(testModels.size())));
-		const CMatrixTemplateNumeric<T>& M = testModels[0];
+		const CMatrixDynamic<T>& M = testModels[0];
 
 		ASSERT_(M.rows() == 1 && M.cols() == 3);
 
@@ -259,8 +255,7 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 	 */
 	template <typename T>
 	bool ransac2Dline_degenerate(
-		const CMatrixTemplateNumeric<T>& allData,
-		const std::vector<size_t>& useIndices)
+		const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices)
 	{
 		MRPT_UNUSED_PARAM(allData);
 		MRPT_UNUSED_PARAM(useIndices);
@@ -286,7 +281,7 @@ void mrpt::math::ransac_detect_2D_lines(
 	if (x.empty()) return;
 
 	// The running lists of remaining points after each plane, as a matrix:
-	CMatrixTemplateNumeric<NUMTYPE> remainingPoints(2, x.size());
+	CMatrixDynamic<NUMTYPE> remainingPoints(2, x.size());
 	remainingPoints.insertRow(0, x);
 	remainingPoints.insertRow(1, y);
 
@@ -296,7 +291,7 @@ void mrpt::math::ransac_detect_2D_lines(
 	while (remainingPoints.cols() >= 2)
 	{
 		std::vector<size_t> this_best_inliers;
-		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
+		CMatrixDynamic<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;
 		ransac.setVerbosityLevel(mrpt::system::LVL_INFO);

@@ -168,7 +168,7 @@ class CEnhancedMetaFile : public CCanvas
 	 */
 	template <class T>
 	void ellipseGaussian(
-		math::CMatrixTemplateNumeric<T>* cov2D, T mean_x, T mean_y,
+		math::CMatrixDynamic<T>* cov2D, T mean_x, T mean_y,
 		float confIntervalStds = 2,
 		const mrpt::img::TColor& color = mrpt::img::TColor(255, 255, 255),
 		unsigned int width = 1, int nEllipsePoints = 20)
@@ -176,14 +176,14 @@ class CEnhancedMetaFile : public CCanvas
 		MRPT_START
 		int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 		double ang;
-		math::CMatrixTemplateNumeric<T> eigVal, eigVec;
+		math::CMatrixDynamic<T> eigVal, eigVec;
 		int i;
 
 		// Compute the eigen-vectors & values:
 		cov2D->eigenVectors(eigVec, eigVal);
 
 		eigVal.Sqrt();
-		math::CMatrixTemplateNumeric<T> M(eigVal * (~eigVec));
+		math::CMatrixDynamic<T> M(eigVal * (~eigVec));
 
 		// Compute the points of the 2D ellipse:
 		for (i = 0, ang = 0; i < nEllipsePoints;

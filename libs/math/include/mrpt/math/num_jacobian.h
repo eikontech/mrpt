@@ -20,9 +20,9 @@ namespace mrpt::math
  *   If it is not required, set to "int" or any other basic type.
  *
  *  This is a generic template which works with:
- *    VECTORLIKE: vector_float, CVectorDouble, CArrayNumeric<>, double [N],
+ *    VECTORLIKE: vector_float, CVectorDouble, CVectorFixed<>, double [N],
  * ...
- *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
+ *    MATRIXLIKE: CMatrixDynamic, CMatrixFixed
  */
 template <
 	class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3, class MATRIXLIKE,

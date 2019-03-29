@@ -12,7 +12,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/tfest/TMatchingPair.h>
