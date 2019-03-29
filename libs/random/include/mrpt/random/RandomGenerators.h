@@ -156,7 +156,7 @@ class CRandomGenerator
 	{
 		for (size_t r = 0; r < matrix.rows(); r++)
 			for (size_t c = 0; c < matrix.cols(); c++)
-				matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
+				matrix(r, c) = static_cast<typename MAT::Scalar>(
 					drawUniform(unif_min, unif_max));
 	}
 
@@ -206,7 +206,7 @@ class CRandomGenerator
 	{
 		for (decltype(matrix.rows()) r = 0; r < matrix.rows(); r++)
 			for (decltype(matrix.cols()) c = 0; c < matrix.cols(); c++)
-				matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
+				matrix(r, c) = static_cast<typename MAT::Scalar>(
 					drawGaussian1D(mean, std));
 	}
 
@@ -277,8 +277,7 @@ class CRandomGenerator
 		for (size_t i = 0; i < dim; i++)
 		{
 			T rnd = this->drawGaussian1D_normalized();
-			for (size_t d = 0; d < dim; d++)
-				out_result[d] += (Z.get_unsafe(d, i) * rnd);
+			for (size_t d = 0; d < dim; d++) out_result[d] += (Z(d, i) * rnd);
 		}
 		if (mean)
 			for (size_t d = 0; d < dim; d++) out_result[d] += (*mean)[d];
@@ -426,7 +425,7 @@ void matrixRandomUni(
 {
 	for (size_t r = 0; r < matrix.rows(); r++)
 		for (size_t c = 0; c < matrix.cols(); c++)
-			matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
+			matrix(r, c) = static_cast<typename MAT::Scalar>(
 				getRandomGenerator().drawUniform(unif_min, unif_max));
 }
 
@@ -453,7 +452,7 @@ void matrixRandomNormal(
 {
 	for (size_t r = 0; r < matrix.rows(); r++)
 		for (size_t c = 0; c < matrix.cols(); c++)
-			matrix.get_unsafe(r, c) = static_cast<typename MAT::Scalar>(
+			matrix(r, c) = static_cast<typename MAT::Scalar>(
 				mean + std * getRandomGenerator().drawGaussian1D_normalized());
 }
 

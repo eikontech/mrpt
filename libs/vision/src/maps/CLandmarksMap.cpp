@@ -798,15 +798,15 @@ void CLandmarksMap::changeCoordinatesReference(const CPose3D& newOrg)
 	newOrg.getHomogeneousMatrix(HM);
 
 	// Build the rotation only transformation:
-	double R11 = HM.get_unsafe(0, 0);
-	double R12 = HM.get_unsafe(0, 1);
-	double R13 = HM.get_unsafe(0, 2);
-	double R21 = HM.get_unsafe(1, 0);
-	double R22 = HM.get_unsafe(1, 1);
-	double R23 = HM.get_unsafe(1, 2);
-	double R31 = HM.get_unsafe(2, 0);
-	double R32 = HM.get_unsafe(2, 1);
-	double R33 = HM.get_unsafe(2, 2);
+	double R11 = HM(0, 0);
+	double R12 = HM(0, 1);
+	double R13 = HM(0, 2);
+	double R21 = HM(1, 0);
+	double R22 = HM(1, 1);
+	double R23 = HM(1, 2);
+	double R31 = HM(2, 0);
+	double R32 = HM(2, 1);
+	double R33 = HM(2, 2);
 
 	double c11, c22, c33, c12, c13, c23;
 
@@ -881,15 +881,15 @@ void CLandmarksMap::changeCoordinatesReference(
 	newOrg.getHomogeneousMatrix(HM);
 
 	// Build the rotation only transformation:
-	double R11 = HM.get_unsafe(0, 0);
-	double R12 = HM.get_unsafe(0, 1);
-	double R13 = HM.get_unsafe(0, 2);
-	double R21 = HM.get_unsafe(1, 0);
-	double R22 = HM.get_unsafe(1, 1);
-	double R23 = HM.get_unsafe(1, 2);
-	double R31 = HM.get_unsafe(2, 0);
-	double R32 = HM.get_unsafe(2, 1);
-	double R33 = HM.get_unsafe(2, 2);
+	double R11 = HM(0, 0);
+	double R12 = HM(0, 1);
+	double R13 = HM(0, 2);
+	double R21 = HM(1, 0);
+	double R22 = HM(1, 1);
+	double R23 = HM(1, 2);
+	double R31 = HM(2, 0);
+	double R32 = HM(2, 1);
+	double R33 = HM(2, 2);
 
 	double c11, c22, c33, c12, c13, c23;
 
@@ -2638,9 +2638,9 @@ float CLandmarksMap::compute3DMatchingRatio(
 	// The transformation:
 	CMatrixDouble44 pose3DMatrix;
 	otherMapPose.getHomogeneousMatrix(pose3DMatrix);
-	float Tx = pose3DMatrix.get_unsafe(0, 3);
-	float Ty = pose3DMatrix.get_unsafe(1, 3);
-	float Tz = pose3DMatrix.get_unsafe(2, 3);
+	float Tx = pose3DMatrix(0, 3);
+	float Ty = pose3DMatrix(1, 3);
+	float Tz = pose3DMatrix(2, 3);
 
 	// ---------------------------------------------------------------------------------------------------------------
 	// Is there any "contact" between the spheres that contain all the points

@@ -572,9 +572,8 @@ void CBeacon::generateRingSOG(
 				{  // We are in 2D:
 					// 3rd column/row = 0
 					CMatrixDouble33& C33 = outPDF.get(modeIdx).val.cov;
-					C33.get_unsafe(0, 2) = C33.get_unsafe(2, 0) =
-						C33.get_unsafe(1, 2) = C33.get_unsafe(2, 1) =
-							C33.get_unsafe(2, 2) = 0;
+					C33(0, 2) = C33(2, 0) = C33(1, 2) = C33(2, 1) = C33(2, 2) =
+						0;
 				}
 
 				// Add covariance for uncertainty composition?

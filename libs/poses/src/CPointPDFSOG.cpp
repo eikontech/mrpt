@@ -277,10 +277,10 @@ void CPointPDFSOG::bayesianFusion(
 		CMatrixDouble33 c = m.val.cov;
 
 		// Is a 2D covariance??
-		if (c.get_unsafe(2, 2) == 0)
+		if (c(2, 2) == 0)
 		{
 			is2D = true;
-			c.set_unsafe(2, 2, 1);
+			c(2, 2) = 1;
 		}
 
 		ASSERT_(c(0, 0) != 0 && c(0, 0) != 0);
@@ -299,9 +299,9 @@ void CPointPDFSOG::bayesianFusion(
 		for (const auto& m2 : p2->m_modes)
 		{
 			auxSOG_Kernel_i = m2.val;
-			if (auxSOG_Kernel_i.cov.get_unsafe(2, 2) == 0)
+			if (auxSOG_Kernel_i.cov(2, 2) == 0)
 			{
-				auxSOG_Kernel_i.cov.set_unsafe(2, 2, 1);
+				auxSOG_Kernel_i.cov(2, 2) = 1;
 				is2D = true;
 			}
 			ASSERT_(
@@ -314,23 +314,18 @@ void CPointPDFSOG::bayesianFusion(
 				// Approximate (fast) mahalanobis distance (square):
 				float mahaDist2;
 
-				float stdX2 =
-					max(auxSOG_Kernel_i.cov.get_unsafe(0, 0),
-						m.val.cov.get_unsafe(0, 0));
+				float stdX2 = max(auxSOG_Kernel_i.cov(0, 0), m.val.cov(0, 0));
 				mahaDist2 =
 					square(auxSOG_Kernel_i.mean.x() - m.val.mean.x()) / stdX2;
 
-				float stdY2 =
-					max(auxSOG_Kernel_i.cov.get_unsafe(1, 1),
-						m.val.cov.get_unsafe(1, 1));
+				float stdY2 = max(auxSOG_Kernel_i.cov(1, 1), m.val.cov(1, 1));
 				mahaDist2 +=
 					square(auxSOG_Kernel_i.mean.y() - m.val.mean.y()) / stdY2;
 
 				if (!is2D)
 				{
 					float stdZ2 =
-						max(auxSOG_Kernel_i.cov.get_unsafe(2, 2),
-							m.val.cov.get_unsafe(2, 2));
+						max(auxSOG_Kernel_i.cov(2, 2), m.val.cov(2, 2));
 					mahaDist2 +=
 						square(auxSOG_Kernel_i.mean.z() - m.val.mean.z()) /
 						stdZ2;

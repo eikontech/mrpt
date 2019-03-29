@@ -298,15 +298,15 @@ void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
 {
 	m.unit(4, 1.0);
 
-	m.set_unsafe(0, 3, m_coords[0]);
-	m.set_unsafe(1, 3, m_coords[1]);
+	m(0, 3) = m_coords[0];
+	m(1, 3) = m_coords[1];
 
 	update_cached_cos_sin();
 
-	m.get_unsafe(0, 0) = m_cosphi;
-	m.get_unsafe(0, 1) = -m_sinphi;
-	m.get_unsafe(1, 0) = m_sinphi;
-	m.get_unsafe(1, 1) = m_cosphi;
+	m(0, 0) = m_cosphi;
+	m(0, 1) = -m_sinphi;
+	m(1, 0) = m_sinphi;
+	m(1, 1) = m_cosphi;
 }
 
 /** Forces "phi" to be in the range [-pi,pi];
@@ -404,9 +404,9 @@ void CPose2D::fromString(const std::string& s)
 	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 3, "Expected vector length=3");
-	x(m.get_unsafe(0, 0));
-	y(m.get_unsafe(0, 1));
-	phi(DEG2RAD(m.get_unsafe(0, 2)));
+	x(m(0, 0));
+	y(m(0, 1));
+	phi(DEG2RAD(m(0, 2)));
 }
 
 void CPose2D::fromStringRaw(const std::string& s)

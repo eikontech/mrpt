@@ -670,7 +670,7 @@ void createPlaneFromPoseAndNormal(
  * \sa generateAxisBaseFromDirectionAndAxis()
  */
 void generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], char coord, CMatrixDouble44& matrix);
+	const double (&vec)[3], uint8_t coord, CMatrixDouble44& matrix);
 /** @}
  */
 
@@ -855,15 +855,15 @@ inline void skew_symmetric3(const VECTOR& v, MATRIX& M)
 {
 	ASSERT_(v.size() == 3);
 	M.setSize(3, 3);
-	M.set_unsafe(0, 0, 0);
-	M.set_unsafe(0, 1, -v[2]);
-	M.set_unsafe(0, 2, v[1]);
-	M.set_unsafe(1, 0, v[2]);
-	M.set_unsafe(1, 1, 0);
-	M.set_unsafe(1, 2, -v[0]);
-	M.set_unsafe(2, 0, -v[1]);
-	M.set_unsafe(2, 1, v[0]);
-	M.set_unsafe(2, 2, 0);
+	M(0, 0) = 0;
+	M(0, 1) = -v[2];
+	M(0, 2) = v[1];
+	M(1, 0) = v[2];
+	M(1, 1) = 0;
+	M(1, 2) = -v[0];
+	M(2, 0) = -v[1];
+	M(2, 1) = v[0];
+	M(2, 2) = 0;
 }
 //! \overload
 template <class VECTOR>
@@ -889,15 +889,15 @@ inline void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
 {
 	ASSERT_(v.size() == 3);
 	M.setSize(3, 3);
-	M.set_unsafe(0, 0, 0);
-	M.set_unsafe(0, 1, v[2]);
-	M.set_unsafe(0, 2, -v[1]);
-	M.set_unsafe(1, 0, -v[2]);
-	M.set_unsafe(1, 1, 0);
-	M.set_unsafe(1, 2, v[0]);
-	M.set_unsafe(2, 0, v[1]);
-	M.set_unsafe(2, 1, -v[0]);
-	M.set_unsafe(2, 2, 0);
+	M(0, 0) = 0;
+	M(0, 1) = v[2];
+	M(0, 2) = -v[1];
+	M(1, 0) = -v[2];
+	M(1, 1) = 0;
+	M(1, 2) = v[0];
+	M(2, 0) = v[1];
+	M(2, 1) = -v[0];
+	M(2, 2) = 0;
 }
 //! \overload
 template <class VECTOR>

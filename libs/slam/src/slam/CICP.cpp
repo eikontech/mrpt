@@ -721,7 +721,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 						((q1 - q2) / ((w1 - w2) * (w3 - w1)));
 					B = ((q1 - q2) + (A * ((w2 * w2) - (w1 * w1)))) / (w1 - w2);
 
-					dJ_dq.get_unsafe(0, i) = (2 * A * *other_x_trans) + B;
+					dJ_dq(0, i) = (2 * A * *other_x_trans) + B;
 
 					// Jacobian: dJ_dy
 					// --------------------------------------
@@ -761,15 +761,14 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 						((q1 - q2) / ((w1 - w2) * (w3 - w1)));
 					B = ((q1 - q2) + (A * ((w2 * w2) - (w1 * w1)))) / (w1 - w2);
 
-					dJ_dq.get_unsafe(1, i) = (2 * A * *other_y_trans) + B;
+					dJ_dq(1, i) = (2 * A * *other_y_trans) + B;
 
 					// Jacobian: dR_dphi
 					// --------------------------------------
-					dJ_dq.get_unsafe(2, i) =
-						dJ_dq.get_unsafe(0, i) *
+					dJ_dq(2, i) =
+						dJ_dq(0, i) *
 							(-csin * it->other_x - ccos * it->other_y) +
-						dJ_dq.get_unsafe(1, i) *
-							(ccos * it->other_x - csin * it->other_y);
+						dJ_dq(1, i) * (ccos * it->other_x - csin * it->other_y);
 
 				}  // end for each corresp.
 

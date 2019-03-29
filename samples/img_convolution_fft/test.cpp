@@ -79,13 +79,13 @@ void TestImageConvolutionFFT()
 		for (y = 0; y < ly; y++)
 			for (x = 0; x < lx; x++)
 			{
-				float r1 = I1_R.get_unsafe(y, x);
-				float r2 = I2_R.get_unsafe(y, x);
-				float i1 = I1_I.get_unsafe(y, x);
-				float i2 = I2_I.get_unsafe(y, x);
+				float r1 = I1_R(y, x);
+				float r2 = I2_R(y, x);
+				float i1 = I1_I(y, x);
+				float i2 = I2_I(y, x);
 
-				I2_R.set_unsafe(y, x, r1 * r2 - i1 * i2);
-				I2_I.set_unsafe(y, x, r2 * i1 + r1 * i2);
+				I2_R(y, x) = r1 * r2 - i1 * i2;
+				I2_I(y, x) = r2 * i1 + r1 * i2;
 			}
 
 		// IFFT:

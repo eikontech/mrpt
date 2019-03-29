@@ -700,7 +700,7 @@ void CActionRobotMovement2D::fastDrawSingleSample_modelGaussian(
 	{
 		float rnd = getRandomGenerator().drawGaussian1D_normalized();
 		for (size_t d = 0; d < 3; d++)
-			rndVector[d] += (m_fastDrawGauss_Z.get_unsafe(d, i) * rnd);
+			rndVector[d] += (m_fastDrawGauss_Z(d, i) * rnd);
 	}
 
 	outSample = CPose2D(

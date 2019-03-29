@@ -28,17 +28,6 @@
  * mrpt::math::CArray, mrpt::math::CMatrixFixedNumeric,
  * mrpt::math::CMatrixTemplate.
  *
- *  In general, any container having a type "mrpt_autotype" self-referencing to
- * the type itself, and a dummy struct mrpt_container<>
- *   which is only used as a way to force the compiler to assure that BOTH
- * containers are valid ones in binary operators.
- *   This restrictions
- *   have been designed as a way to provide "polymorphism" at a template level,
- * so the "+,-,..." operators do not
- *   generate ambiguities for ANY type, and limiting them to MRPT containers.
- *
- *   In some cases, the containers provide specializations of some operations,
- * for increased performance.
  */
 
 #include <algorithm>
@@ -368,16 +357,15 @@ void meanAndCovVec(
 	for (size_t i = 0; i < N; i++)
 	{
 		for (size_t j = 0; j < M; j++)
-			out_cov.get_unsafe(j, j) += square(v[i][j] - out_mean[j]);
+			out_cov(j, j) += square(v[i][j] - out_mean[j]);
 
 		for (size_t j = 0; j < M; j++)
 			for (size_t k = j + 1; k < M; k++)
-				out_cov.get_unsafe(j, k) +=
+				out_cov(j, k) +=
 					(v[i][j] - out_mean[j]) * (v[i][k] - out_mean[k]);
 	}
 	for (size_t j = 0; j < M; j++)
-		for (size_t k = j + 1; k < M; k++)
-			out_cov.get_unsafe(k, j) = out_cov.get_unsafe(j, k);
+		for (size_t k = j + 1; k < M; k++) out_cov(k, j) = out_cov(j, k);
 	out_cov *= N_inv;
 }
 

@@ -162,8 +162,8 @@ void CPoint2DPDFGaussian::bayesianFusion(
 	const Eigen::Vector2d x2{p2.mean.x(), p2.mean.y()};
 	CMatrixDouble21 x = cov * (C1_inv * x1 + C2_inv * x2);
 
-	mean.x(x.get_unsafe(0, 0));
-	mean.y(x.get_unsafe(1, 0));
+	mean.x(x(0, 0));
+	mean.y(x(1, 0));
 
 	MRPT_END
 }
@@ -187,8 +187,8 @@ double CPoint2DPDFGaussian::productIntegralWith(
 	C.inv(C_inv);
 
 	CMatrixDouble21 MU(UNINITIALIZED_MATRIX);  // Diff. of means
-	MU.get_unsafe(0, 0) = mean.x() - p.mean.x();
-	MU.get_unsafe(1, 0) = mean.y() - p.mean.y();
+	MU(0, 0) = mean.x() - p.mean.x();
+	MU(1, 0) = mean.y() - p.mean.y();
 
 	return std::pow(M_2PI, -0.5 * state_length) * (1.0 / std::sqrt(C.det())) *
 		   exp(-0.5 * MU.multiply_HtCH_scalar(C_inv));

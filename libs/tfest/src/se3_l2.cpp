@@ -100,45 +100,41 @@ bool se3_l2_internal(
 		points_this[i] -= ct_this;
 		points_other[i] -= ct_others;
 
-		S.get_unsafe(0, 0) += points_other[i].x * points_this[i].x;
-		S.get_unsafe(0, 1) += points_other[i].x * points_this[i].y;
-		S.get_unsafe(0, 2) += points_other[i].x * points_this[i].z;
+		S(0, 0) += points_other[i].x * points_this[i].x;
+		S(0, 1) += points_other[i].x * points_this[i].y;
+		S(0, 2) += points_other[i].x * points_this[i].z;
 
-		S.get_unsafe(1, 0) += points_other[i].y * points_this[i].x;
-		S.get_unsafe(1, 1) += points_other[i].y * points_this[i].y;
-		S.get_unsafe(1, 2) += points_other[i].y * points_this[i].z;
+		S(1, 0) += points_other[i].y * points_this[i].x;
+		S(1, 1) += points_other[i].y * points_this[i].y;
+		S(1, 2) += points_other[i].y * points_this[i].z;
 
-		S.get_unsafe(2, 0) += points_other[i].z * points_this[i].x;
-		S.get_unsafe(2, 1) += points_other[i].z * points_this[i].y;
-		S.get_unsafe(2, 2) += points_other[i].z * points_this[i].z;
+		S(2, 0) += points_other[i].z * points_this[i].x;
+		S(2, 1) += points_other[i].z * points_this[i].y;
+		S(2, 2) += points_other[i].z * points_this[i].z;
 	}
 
 	// Construct the N matrix
 	CMatrixDouble44 N;  // Zeroed by default
 
-	N.set_unsafe(
-		0, 0, S.get_unsafe(0, 0) + S.get_unsafe(1, 1) + S.get_unsafe(2, 2));
-	N.set_unsafe(0, 1, S.get_unsafe(1, 2) - S.get_unsafe(2, 1));
-	N.set_unsafe(0, 2, S.get_unsafe(2, 0) - S.get_unsafe(0, 2));
-	N.set_unsafe(0, 3, S.get_unsafe(0, 1) - S.get_unsafe(1, 0));
+	N.set_unsafe(0, 0, S(0, 0) + S(1, 1) + S(2, 2));
+	N(0, 1, S(1, 2) - S(2) = 1);
+	N(0, 2, S(2, 0) - S(0) = 2);
+	N(0, 3, S(0, 1) - S(1) = 0);
 
-	N.set_unsafe(1, 0, N.get_unsafe(0, 1));
-	N.set_unsafe(
-		1, 1, S.get_unsafe(0, 0) - S.get_unsafe(1, 1) - S.get_unsafe(2, 2));
-	N.set_unsafe(1, 2, S.get_unsafe(0, 1) + S.get_unsafe(1, 0));
-	N.set_unsafe(1, 3, S.get_unsafe(2, 0) + S.get_unsafe(0, 2));
+	N(1, 0, N(0) = 1);
+	N.set_unsafe(1, 1, S(0, 0) - S(1, 1) - S(2, 2));
+	N(1, 2, S(0, 1) + S(1) = 0);
+	N(1, 3, S(2, 0) + S(0) = 2);
 
-	N.set_unsafe(2, 0, N.get_unsafe(0, 2));
-	N.set_unsafe(2, 1, N.get_unsafe(1, 2));
-	N.set_unsafe(
-		2, 2, -S.get_unsafe(0, 0) + S.get_unsafe(1, 1) - S.get_unsafe(2, 2));
-	N.set_unsafe(2, 3, S.get_unsafe(1, 2) + S.get_unsafe(2, 1));
+	N(2, 0, N(0) = 2);
+	N(2, 1, N(1) = 2);
+	N.set_unsafe(2, 2, -S(0, 0) + S(1, 1) - S(2, 2));
+	N(2, 3, S(1, 2) + S(2) = 1);
 
-	N.set_unsafe(3, 0, N.get_unsafe(0, 3));
-	N.set_unsafe(3, 1, N.get_unsafe(1, 3));
-	N.set_unsafe(3, 2, N.get_unsafe(2, 3));
-	N.set_unsafe(
-		3, 3, -S.get_unsafe(0, 0) - S.get_unsafe(1, 1) + S.get_unsafe(2, 2));
+	N(3, 0, N(0) = 3);
+	N(3, 1, N(1) = 3);
+	N(3, 2, N(2) = 3);
+	N.set_unsafe(3, 3, -S(0, 0) - S(1, 1) + S(2, 2));
 
 	// q is the quaternion correspondent to the greatest eigenvector of the N
 	// matrix (last column in Z)

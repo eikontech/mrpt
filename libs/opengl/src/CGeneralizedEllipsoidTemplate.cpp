@@ -163,8 +163,8 @@ void generalizedEllipsoidPoints<2>(
 
 		Eigen::Matrix<float, 2, 1>& pt = out_params_pts.back();
 
-		pt[0] = mean[0] + ccos * U.get_unsafe(0, 0) + ssin * U.get_unsafe(0, 1);
-		pt[1] = mean[1] + ccos * U.get_unsafe(1, 0) + ssin * U.get_unsafe(1, 1);
+		pt[0] = mean[0] + ccos * U(0, 0) + ssin * U(0, 1);
+		pt[1] = mean[1] + ccos * U(1, 0) + ssin * U(1, 1);
 	}
 }
 
@@ -176,12 +176,9 @@ inline void aux_add3DpointWithEigenVectors(
 {
 	pts.resize(pts.size() + 1);
 	mrpt::math::CMatrixFixedNumeric<float, 3, 1>& pt = pts.back();
-	pt[0] = mean[0] + x * M.get_unsafe(0, 0) + y * M.get_unsafe(0, 1) +
-			z * M.get_unsafe(0, 2);
-	pt[1] = mean[1] + x * M.get_unsafe(1, 0) + y * M.get_unsafe(1, 1) +
-			z * M.get_unsafe(1, 2);
-	pt[2] = mean[2] + x * M.get_unsafe(2, 0) + y * M.get_unsafe(2, 1) +
-			z * M.get_unsafe(2, 2);
+	pt[0] = mean[0] + x * M(0, 0) + y * M(0, 1) + z * M(0, 2);
+	pt[1] = mean[1] + x * M(1, 0) + y * M(1, 1) + z * M(1, 2);
+	pt[2] = mean[2] + x * M(2, 0) + y * M(2, 1) + z * M(2, 2);
 }
 
 /*---------------------------------------------------------------

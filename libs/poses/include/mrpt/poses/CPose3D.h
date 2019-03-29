@@ -475,15 +475,15 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	template <class ARRAYORVECTOR>
 	inline void setFrom12Vector(const ARRAYORVECTOR& vec12)
 	{
-		m_ROT.set_unsafe(0, 0, vec12[0]);
-		m_ROT.set_unsafe(0, 1, vec12[3]);
-		m_ROT.set_unsafe(0, 2, vec12[6]);
-		m_ROT.set_unsafe(1, 0, vec12[1]);
-		m_ROT.set_unsafe(1, 1, vec12[4]);
-		m_ROT.set_unsafe(1, 2, vec12[7]);
-		m_ROT.set_unsafe(2, 0, vec12[2]);
-		m_ROT.set_unsafe(2, 1, vec12[5]);
-		m_ROT.set_unsafe(2, 2, vec12[8]);
+		m_ROT(0, 0) = vec12[0];
+		m_ROT(0, 1) = vec12[3];
+		m_ROT(0, 2) = vec12[6];
+		m_ROT(1, 0) = vec12[1];
+		m_ROT(1, 1) = vec12[4];
+		m_ROT(1, 2) = vec12[7];
+		m_ROT(2, 0) = vec12[2];
+		m_ROT(2, 1) = vec12[5];
+		m_ROT(2, 2) = vec12[8];
 		m_ypr_uptodate = false;
 		m_coords[0] = vec12[9];
 		m_coords[1] = vec12[10];
@@ -499,15 +499,15 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	template <class ARRAYORVECTOR>
 	inline void getAs12Vector(ARRAYORVECTOR& vec12) const
 	{
-		vec12[0] = m_ROT.get_unsafe(0, 0);
-		vec12[3] = m_ROT.get_unsafe(0, 1);
-		vec12[6] = m_ROT.get_unsafe(0, 2);
-		vec12[1] = m_ROT.get_unsafe(1, 0);
-		vec12[4] = m_ROT.get_unsafe(1, 1);
-		vec12[7] = m_ROT.get_unsafe(1, 2);
-		vec12[2] = m_ROT.get_unsafe(2, 0);
-		vec12[5] = m_ROT.get_unsafe(2, 1);
-		vec12[8] = m_ROT.get_unsafe(2, 2);
+		vec12[0] = m_ROT(0, 0);
+		vec12[3] = m_ROT(0, 1);
+		vec12[6] = m_ROT(0, 2);
+		vec12[1] = m_ROT(1, 0);
+		vec12[4] = m_ROT(1, 1);
+		vec12[7] = m_ROT(1, 2);
+		vec12[2] = m_ROT(2, 0);
+		vec12[5] = m_ROT(2, 1);
+		vec12[8] = m_ROT(2, 2);
 		vec12[9] = m_coords[0];
 		vec12[10] = m_coords[1];
 		vec12[11] = m_coords[2];
@@ -622,9 +622,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 			THROW_EXCEPTION("Malformed expression in ::fromString");
 		ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
 		this->setFromValues(
-			m.get_unsafe(0, 0), m.get_unsafe(0, 1), m.get_unsafe(0, 2),
-			DEG2RAD(m.get_unsafe(0, 3)), DEG2RAD(m.get_unsafe(0, 4)),
-			DEG2RAD(m.get_unsafe(0, 5)));
+			m(0, 0), m(0, 1), m(0, 2), DEG2RAD(m(0, 3)), DEG2RAD(m(0, 4)),
+			DEG2RAD(m(0, 5)));
 	}
 	/** Same as fromString, but without requiring the square brackets in the
 	 * string */

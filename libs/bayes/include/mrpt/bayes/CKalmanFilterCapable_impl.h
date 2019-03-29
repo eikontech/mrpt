@@ -672,12 +672,11 @@ void CKalmanFilterCapable<
 								for (size_t c = 0; c < stat_len; c++)
 								{
 									if (r == c)
-										m_aux_K_dh_dx.get_unsafe(r, c) =
-											-m_aux_K_dh_dx.get_unsafe(r, c) +
-											kftype(1);
+										m_aux_K_dh_dx(r, c) =
+											-m_aux_K_dh_dx(r, c) + kftype(1);
 									else
-										m_aux_K_dh_dx.get_unsafe(r, c) =
-											-m_aux_K_dh_dx.get_unsafe(r, c);
+										m_aux_K_dh_dx(r, c) =
+											-m_aux_K_dh_dx(r, c);
 								}
 							}
 
@@ -798,16 +797,15 @@ void CKalmanFilterCapable<
 							}
 #endif
 							// R:
-							KFTYPE Sij = R.get_unsafe(j, j);
+							KFTYPE Sij = R(j, j);
 
 							// TERM 1:
 							for (size_t k = 0; k < VEH_SIZE; k++)
 							{
 								KFTYPE accum = 0;
 								for (size_t q = 0; q < VEH_SIZE; q++)
-									accum += Hx.get_unsafe(j, q) *
-											 m_pkk.get_unsafe(q, k);
-								Sij += Hx.get_unsafe(j, k) * accum;
+									accum += Hx(j, q) * m_pkk(q, k);
+								Sij += Hx(j, k) * accum;
 							}
 
 							// TERM 2:
@@ -816,9 +814,8 @@ void CKalmanFilterCapable<
 							{
 								KFTYPE accum = 0;
 								for (size_t q = 0; q < FEAT_SIZE; q++)
-									accum += Hy.get_unsafe(j, q) *
-											 m_pkk.get_unsafe(idx_off + q, k);
-								term2 += Hx.get_unsafe(j, k) * accum;
+									accum += Hy(j, q) * m_pkk(idx_off + q, k);
+								term2 += Hx(j, k) * accum;
 							}
 							Sij += 2 * term2;
 
@@ -827,10 +824,9 @@ void CKalmanFilterCapable<
 							{
 								KFTYPE accum = 0;
 								for (size_t q = 0; q < FEAT_SIZE; q++)
-									accum += Hy.get_unsafe(j, q) *
-											 m_pkk.get_unsafe(
-												 idx_off + q, idx_off + k);
-								Sij += Hy.get_unsafe(j, k) * accum;
+									accum += Hy(j, q) *
+											 m_pkk(idx_off + q, idx_off + k);
+								Sij += Hy(j, k) * accum;
 							}
 
 							// Compute the Kalman gain "Kij" for this
@@ -846,13 +842,11 @@ void CKalmanFilterCapable<
 								// dhi_dxv term
 								size_t q;
 								for (q = 0; q < VEH_SIZE; q++)
-									K_tmp += m_pkk.get_unsafe(k, q) *
-											 Hx.get_unsafe(j, q);
+									K_tmp += m_pkk(k, q) * Hx(j, q);
 
 								// dhi_dyi term
 								for (q = 0; q < FEAT_SIZE; q++)
-									K_tmp += m_pkk.get_unsafe(k, idx_off + q) *
-											 Hy.get_unsafe(j, q);
+									K_tmp += m_pkk(k, idx_off + q) * Hy(j, q);
 
 								Kij[k] = K_tmp / Sij;
 							}  // end for k
@@ -1046,13 +1040,13 @@ void CKalmanFilterCapable<
 
 												// dhi_dxv term
 												for (q=0;q<VEH_SIZE;q++)
-													K_tmp+= m_pkk.get_unsafe(k,q) * Hx.get_unsafe(c,q);
+													K_tmp+= m_pkk(k,q) * Hx(c,q);
 
 												// dhi_dyi term
 												for (q=0;q<FEAT_SIZE;q++)
-													K_tmp+= m_pkk.get_unsafe(k,idx_off+q) * Hy.get_unsafe(c,q);
+													K_tmp+= m_pkk(k,idx_off+q) * Hy(c,q);
 
-												Ki.set_unsafe(k,c, K_tmp);
+												Ki(k,c)= K_tmp;
 											} // end for c
 										} // end for k
 
@@ -1066,7 +1060,7 @@ void CKalmanFilterCapable<
 											//  x' = x + Kij * ytilde(ij)
 											for (k=0;k<N;k++)
 												for (size_t q=0;q<OBS_SIZE;q++)
-													m_xkk[k] += Ki.get_unsafe(k,q) * ytilde[q];
+													m_xkk[k] += Ki(k,q) * ytilde[q];
 										}
 										else
 										{
@@ -1078,10 +1072,10 @@ void CKalmanFilterCapable<
 											{
 												KFTYPE	tmp = 0;
 												for (q=0;q<VEH_SIZE;q++)
-													tmp += Hx.get_unsafe(o,q) * (xkk_0[q] - m_xkk[q]);
+													tmp += Hx(o,q) * (xkk_0[q] - m_xkk[q]);
 
 												for (q=0;q<FEAT_SIZE;q++)
-													tmp += Hy.get_unsafe(o,q) * (xkk_0[idx_off+q] - m_xkk[idx_off+q]);
+													tmp += Hy(o,q) * (xkk_0[idx_off+q] - m_xkk[idx_off+q]);
 
 												HAx[o] = tmp;
 											}
@@ -1097,7 +1091,7 @@ void CKalmanFilterCapable<
 												KFTYPE	 tmp = xkk_next_iter[k];
 												//m_xkk[k] = xkk_0[k] + Kij[k] * (ytilde[j] - HAx );
 												for (o=0;o<OBS_SIZE;o++)
-													tmp += Ki.get_unsafe(k,o) * HAx[o];
+													tmp += Ki(k,o) * HAx[o];
 
 												xkk_next_iter[k] = tmp;
 											}

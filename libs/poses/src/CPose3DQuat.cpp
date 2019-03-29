@@ -38,9 +38,9 @@ CPose3DQuat::CPose3DQuat(const CPose3D& p)
 CPose3DQuat::CPose3DQuat(const CMatrixDouble44& M)
 	: m_quat(UNINITIALIZED_QUATERNION)
 {
-	m_coords[0] = M.get_unsafe(0, 3);
-	m_coords[1] = M.get_unsafe(1, 3);
-	m_coords[2] = M.get_unsafe(2, 3);
+	m_coords[0] = M(0, 3);
+	m_coords[1] = M(1, 3);
+	m_coords[2] = M(2, 3);
 	CPose3D p(M);
 	p.getAsQuaternion(m_quat);
 }
@@ -52,12 +52,11 @@ CPose3DQuat::CPose3DQuat(const CMatrixDouble44& M)
 void CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44& out_HM) const
 {
 	m_quat.rotationMatrixNoResize(out_HM);
-	out_HM.get_unsafe(0, 3) = m_coords[0];
-	out_HM.get_unsafe(1, 3) = m_coords[1];
-	out_HM.get_unsafe(2, 3) = m_coords[2];
-	out_HM.get_unsafe(3, 0) = out_HM.get_unsafe(3, 1) =
-		out_HM.get_unsafe(3, 2) = 0;
-	out_HM.get_unsafe(3, 3) = 1;
+	out_HM(0, 3) = m_coords[0];
+	out_HM(1, 3) = m_coords[1];
+	out_HM(2, 3) = m_coords[2];
+	out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0;
+	out_HM(3, 3) = 1;
 }
 
 /** Returns a 1x7 vector with [x y z qr qx qy qz] */

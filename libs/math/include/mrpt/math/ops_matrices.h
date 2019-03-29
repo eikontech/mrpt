@@ -121,17 +121,15 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 	for (size_t i = 0; i < N; i++)
 	{
 		for (size_t j = 0; j < M; j++)
-			out_cov.get_unsafe(j, j) +=
-				square(v.get_unsafe(i, j) - out_mean[j]);
+			out_cov(j, j) += square(v(i, j) - out_mean[j]);
 
 		for (size_t j = 0; j < M; j++)
 			for (size_t k = j + 1; k < M; k++)
-				out_cov.get_unsafe(j, k) += (v.get_unsafe(i, j) - out_mean[j]) *
-											(v.get_unsafe(i, k) - out_mean[k]);
+				out_cov(j, k) +=
+					(v(i, j) - out_mean[j]) * (v(i, k) - out_mean[k]);
 	}
 	for (size_t j = 0; j < M; j++)
-		for (size_t k = j + 1; k < M; k++)
-			out_cov.get_unsafe(k, j) = out_cov.get_unsafe(j, k);
+		for (size_t k = j + 1; k < M; k++) out_cov(k, j) = out_cov(j, k);
 	out_cov *= N_inv;
 }
 
@@ -173,12 +171,9 @@ void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
 	out.setSize(N, 3);
 	for (size_t i = 0; i < N; i++)
 	{
-		out.set_unsafe(
-			i, 0, A.get_unsafe(i, 1) * v[2] - A.get_unsafe(i, 2) * v[1]);
-		out.set_unsafe(
-			i, 1, -A.get_unsafe(i, 0) * v[2] + A.get_unsafe(i, 2) * v[0]);
-		out.set_unsafe(
-			i, 2, A.get_unsafe(i, 0) * v[1] - A.get_unsafe(i, 1) * v[0]);
+		out.set_unsafe(i, 0, A(i, 1) * v[2] - A(i, 2) * v[1]);
+		out.set_unsafe(i, 1, -A(i, 0) * v[2] + A(i, 2) * v[0]);
+		out.set_unsafe(i, 2, A(i, 0) * v[1] - A(i, 1) * v[0]);
 	}
 	MRPT_END
 }
@@ -197,12 +192,9 @@ void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out)
 	out.setSize(3, N);
 	for (size_t i = 0; i < N; i++)
 	{
-		out.set_unsafe(
-			0, i, -A.get_unsafe(1, i) * v[2] + A.get_unsafe(2, i) * v[1]);
-		out.set_unsafe(
-			1, i, A.get_unsafe(0, i) * v[2] - A.get_unsafe(2, i) * v[0]);
-		out.set_unsafe(
-			2, i, -A.get_unsafe(0, i) * v[1] + A.get_unsafe(1, i) * v[0]);
+		out.set_unsafe(0, i, -A(1, i) * v[2] + A(2, i) * v[1]);
+		out.set_unsafe(1, i, A(0, i) * v[2] - A(2, i) * v[0]);
+		out.set_unsafe(2, i, -A(0, i) * v[1] + A(1, i) * v[0]);
 	}
 	MRPT_END
 }

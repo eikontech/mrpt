@@ -120,8 +120,8 @@ inline void createMesh(
 	size_t C=in.cols();
 	out.setSize(R,C);
 	for (size_t i=0;i<R;i++) for (size_t j=0;j<C;j++)	{
-		TPoint3D pIn=in.get_unsafe(i,j);
-		TPoint3D &pOut=out.get_unsafe(i,j);
+		TPoint3D pIn=in(i,j);
+		TPoint3D &pOut=out(i,j);
 		pose.composePoint(pIn.x,pIn.y,pIn.z,pOut.x,pOut.y,pOut.z);
 	}
 }*/
@@ -146,7 +146,7 @@ void CGeneralizedCylinder::updateMesh() const
 		pointsMesh = CMatrixTemplate<TPoint3D>(A, G);
 		for (size_t i = 0; i < A; i++)
 			for (size_t j = 0; j < G; j++)
-				axis[i].composePoint(genX[j], pointsMesh.get_unsafe(i, j));
+				axis[i].composePoint(genX[j], pointsMesh(i, j));
 		createMesh(pointsMesh, A - 1, G - 1, mesh);
 	}
 	meshUpToDate = true;

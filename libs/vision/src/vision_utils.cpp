@@ -141,9 +141,9 @@ TPoint3D vision::pixelTo3D(const TPixelCoordf& xy, const CMatrixDouble33& A)
 	TPoint3D res;
 
 	// Build the vector:
-	res.x = xy.x - A.get_unsafe(0, 2);
-	res.y = xy.y - A.get_unsafe(1, 2);
-	res.z = A.get_unsafe(0, 0);
+	res.x = xy.x - A(0, 2);
+	res.y = xy.y - A(1, 2);
+	res.z = A(0, 0);
 
 	// Normalize:
 	const double u = res.norm();
@@ -329,15 +329,12 @@ double vision::computeMsd(
 	TPoint3D err;
 	for (it = feat_list.begin(); it != feat_list.end(); it++)
 	{
-		err.x = it->other_x - (it->this_x * mat.get_unsafe(0, 0) +
-							   it->this_y * mat.get_unsafe(0, 1) +
-							   it->this_z * mat.get_unsafe(0, 2) + Rt.x());
-		err.y = it->other_y - (it->this_x * mat.get_unsafe(1, 0) +
-							   it->this_y * mat.get_unsafe(1, 1) +
-							   it->this_z * mat.get_unsafe(1, 2) + Rt.y());
-		err.z = it->other_z - (it->this_x * mat.get_unsafe(2, 0) +
-							   it->this_y * mat.get_unsafe(2, 1) +
-							   it->this_z * mat.get_unsafe(2, 2) + Rt.z());
+		err.x = it->other_x - (it->this_x * mat(0, 0) + it->this_y * mat(0, 1) +
+							   it->this_z * mat(0, 2) + Rt.x());
+		err.y = it->other_y - (it->this_x * mat(1, 0) + it->this_y * mat(1, 1) +
+							   it->this_z * mat(1, 2) + Rt.y());
+		err.z = it->other_z - (it->this_x * mat(2, 0) + it->this_y * mat(2, 1) +
+							   it->this_z * mat(2, 2) + Rt.z());
 
 		acum += err.norm();
 
@@ -415,7 +412,7 @@ void vision::normalizeImage(const CImage& image, CImage& nimage)
 
 	for (int k1 = 0; k1 < (int)nim.cols(); ++k1)
 		for (int k2 = 0; k2 < (int)nim.rows(); ++k2)
-			nim.set_unsafe(k2, k1, (im.get_unsafe(k2, k1) - m) / s);
+			nim(k2, k1, (im(k2) = k1) - m) / s;
 
 	nimage.setFromMatrix(nim);
 }  // end normalizeImage
@@ -831,7 +828,7 @@ void vision::generateMask(
 				idx = (int)(it->first->x) + ii;
 				idy = (int)(it->first->y) + jj;
 				if (idx >= 0 && idy >= 0 && idx < mx && idy < my)
-					mask1.set_unsafe(idy, idx, false);
+					mask1(idy, idx) = false;
 			}
 
 		for (int ii = -hwsize; ii < hwsize; ++ii)
@@ -840,7 +837,7 @@ void vision::generateMask(
 				idx = (int)(it->second->x) + ii;
 				idy = (int)(it->second->y) + jj;
 				if (idx >= 0 && idy >= 0 && idx < mx && idy < my)
-					mask2.set_unsafe(idy, idx, false);
+					mask2(idy, idx) = false;
 			}
 	}  // end-for
 }  // end generateMask
@@ -944,12 +941,11 @@ void vision::projectMatchedFeature(
 	const double yd = rightFeat->y * f0;  // y' = (y' / f0) * f0   y' = y'
 
 	const double f2 = f0 * f0;
-	const double p9 = f2 * params.F.get_unsafe(2, 2);
+	const double p9 = f2 * params.F(2, 2);
 	const double Q00 =
-		f2 * (params.F.get_unsafe(0, 2) * params.F.get_unsafe(0, 2) +
-			  params.F.get_unsafe(1, 2) * params.F.get_unsafe(1, 2) +
-			  params.F.get_unsafe(2, 0) * params.F.get_unsafe(2, 0) +
-			  params.F.get_unsafe(2, 1) * params.F.get_unsafe(2, 1));
+		f2 *
+		(params.F(0, 2) * params.F(0, 2) + params.F(1, 2) * params.F(1, 2) +
+		 params.F(2, 0) * params.F(2, 0) + params.F(2, 1) * params.F(2, 1));
 
 	double Jh = (std::numeric_limits<double>::max)();  // J hat = 
 	double xh = x;  // x hat = x
@@ -963,53 +959,37 @@ void vision::projectMatchedFeature(
 			0;  // x tilde = 0, y tilde = 0, x tilde dash = 0, y tilde dash = 0
 	for (;;)
 	{
-		const double p1 =
-			(xh * xhd + xhd * xt + xh * xtd) * params.F.get_unsafe(0, 0);
-		const double p2 =
-			(xh * yhd + yhd * xt + xh * ytd) * params.F.get_unsafe(0, 1);
-		const double p3 = (f0 * (xh + xt)) * params.F.get_unsafe(0, 2);
-		const double p4 =
-			(yh * xhd + xhd * yt + yh * xtd) * params.F.get_unsafe(1, 0);
-		const double p5 =
-			(yh * yhd + yhd * yt + yh * ytd) * params.F.get_unsafe(1, 1);
-		const double p6 = (f0 * (yh + yt)) * params.F.get_unsafe(1, 2);
-		const double p7 = (f0 * (xhd + xtd)) * params.F.get_unsafe(2, 0);
-		const double p8 = (f0 * (yhd + ytd)) * params.F.get_unsafe(2, 1);
+		const double p1 = (xh * xhd + xhd * xt + xh * xtd) * params.F(0, 0);
+		const double p2 = (xh * yhd + yhd * xt + xh * ytd) * params.F(0, 1);
+		const double p3 = (f0 * (xh + xt)) * params.F(0, 2);
+		const double p4 = (yh * xhd + xhd * yt + yh * xtd) * params.F(1, 0);
+		const double p5 = (yh * yhd + yhd * yt + yh * ytd) * params.F(1, 1);
+		const double p6 = (f0 * (yh + yt)) * params.F(1, 2);
+		const double p7 = (f0 * (xhd + xtd)) * params.F(2, 0);
+		const double p8 = (f0 * (yhd + ytd)) * params.F(2, 1);
 
 		const double udotxi = p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
 
-		const double Q11 = (xh * xh + xhd * xhd) * params.F.get_unsafe(0, 0) *
-						   params.F.get_unsafe(0, 0);
-		const double Q22 = (xh * xh + yhd * yhd) * params.F.get_unsafe(0, 1) *
-						   params.F.get_unsafe(0, 1);
-		const double Q44 = (yh * yh + xhd * xhd) * params.F.get_unsafe(1, 0) *
-						   params.F.get_unsafe(1, 0);
-		const double Q55 = (yh * yh + yhd * yhd) * params.F.get_unsafe(1, 1) *
-						   params.F.get_unsafe(1, 1);
-		const double Q12 =
-			xhd * yhd * params.F.get_unsafe(0, 0) * params.F.get_unsafe(0, 1);
-		const double Q13 =
-			f0 * xhd * params.F.get_unsafe(0, 0) * params.F.get_unsafe(0, 2);
-		const double Q14 =
-			xh * yh * params.F.get_unsafe(0, 0) * params.F.get_unsafe(1, 0);
-		const double Q17 =
-			f0 * xh * params.F.get_unsafe(0, 0) * params.F.get_unsafe(2, 0);
-		const double Q23 =
-			f0 * yhd * params.F.get_unsafe(0, 1) * params.F.get_unsafe(0, 2);
-		const double Q25 =
-			xh * yh * params.F.get_unsafe(0, 1) * params.F.get_unsafe(1, 1);
-		const double Q28 =
-			f0 * xh * params.F.get_unsafe(0, 1) * params.F.get_unsafe(2, 1);
-		const double Q45 =
-			xhd * yhd * params.F.get_unsafe(1, 0) * params.F.get_unsafe(1, 1);
-		const double Q46 =
-			f0 * xhd * params.F.get_unsafe(1, 0) * params.F.get_unsafe(1, 2);
-		const double Q47 =
-			f0 * yh * params.F.get_unsafe(1, 0) * params.F.get_unsafe(2, 0);
-		const double Q56 =
-			f0 * yhd * params.F.get_unsafe(1, 1) * params.F.get_unsafe(1, 2);
-		const double Q58 =
-			f0 * yh * params.F.get_unsafe(1, 1) * params.F.get_unsafe(2, 1);
+		const double Q11 =
+			(xh * xh + xhd * xhd) * params.F(0, 0) * params.F(0, 0);
+		const double Q22 =
+			(xh * xh + yhd * yhd) * params.F(0, 1) * params.F(0, 1);
+		const double Q44 =
+			(yh * yh + xhd * xhd) * params.F(1, 0) * params.F(1, 0);
+		const double Q55 =
+			(yh * yh + yhd * yhd) * params.F(1, 1) * params.F(1, 1);
+		const double Q12 = xhd * yhd * params.F(0, 0) * params.F(0, 1);
+		const double Q13 = f0 * xhd * params.F(0, 0) * params.F(0, 2);
+		const double Q14 = xh * yh * params.F(0, 0) * params.F(1, 0);
+		const double Q17 = f0 * xh * params.F(0, 0) * params.F(2, 0);
+		const double Q23 = f0 * yhd * params.F(0, 1) * params.F(0, 2);
+		const double Q25 = xh * yh * params.F(0, 1) * params.F(1, 1);
+		const double Q28 = f0 * xh * params.F(0, 1) * params.F(2, 1);
+		const double Q45 = xhd * yhd * params.F(1, 0) * params.F(1, 1);
+		const double Q46 = f0 * xhd * params.F(1, 0) * params.F(1, 2);
+		const double Q47 = f0 * yh * params.F(1, 0) * params.F(2, 0);
+		const double Q56 = f0 * yhd * params.F(1, 1) * params.F(1, 2);
+		const double Q58 = f0 * yh * params.F(1, 1) * params.F(2, 1);
 
 		const double udotV0xiu = Q00 + Q11 + Q22 + Q44 + Q55 +
 								 2.0 * (Q12 + Q13 + Q14 + Q17 + Q23 + Q25 +
@@ -1019,18 +999,14 @@ void vision::projectMatchedFeature(
 
 		const double C = udotxi / udotV0xiu;
 
-		xt = C *
-			 (params.F.get_unsafe(0, 0) * xhd +
-			  params.F.get_unsafe(0, 1) * yhd + f0 * params.F.get_unsafe(0, 2));
-		yt = C *
-			 (params.F.get_unsafe(1, 0) * xhd +
-			  params.F.get_unsafe(1, 1) * yhd + f0 * params.F.get_unsafe(1, 2));
+		xt = C * (params.F(0, 0) * xhd + params.F(0, 1) * yhd +
+				  f0 * params.F(0, 2));
+		yt = C * (params.F(1, 0) * xhd + params.F(1, 1) * yhd +
+				  f0 * params.F(1, 2));
 		xtd = C *
-			  (params.F.get_unsafe(0, 0) * xh + params.F.get_unsafe(1, 0) * yh +
-			   f0 * params.F.get_unsafe(2, 0));
+			  (params.F(0, 0) * xh + params.F(1, 0) * yh + f0 * params.F(2, 0));
 		ytd = C *
-			  (params.F.get_unsafe(0, 1) * xh + params.F.get_unsafe(1, 1) * yh +
-			   f0 * params.F.get_unsafe(2, 1));
+			  (params.F(0, 1) * xh + params.F(1, 1) * yh + f0 * params.F(2, 1));
 
 		const double Jt = xt * xt + yt * yt + xtd * xtd + ytd * ytd;
 		//        cout << "Jt:" << Jt << " and Jh: " << Jh << endl;
@@ -1806,62 +1782,32 @@ void vision::StereoObs2BRObs(
 		// Jacobian equations according to a standard CAMERA coordinate axis (+Z
 		// forward & +Y downwards)
 		// -------------------------------------------------------------------------------------------------------
-		aux.get_unsafe(0, 0) = k * (sg_c2 + sg_d2 * square(x - x0) / d2);
-		aux.get_unsafe(0, 1) = aux.get_unsafe(1, 0) =
-			k * (sg_d2 * (x - x0) * (y - y0) / d2);
-		aux.get_unsafe(0, 2) = aux.get_unsafe(2, 0) =
-			k * (sg_d2 * (x - x0) * f / d2);
+		aux(0, 0) = k * (sg_c2 + sg_d2 * square(x - x0) / d2);
+		aux(0, 1) = aux(1, 0) = k * (sg_d2 * (x - x0) * (y - y0) / d2);
+		aux(0, 2) = aux(2, 0) = k * (sg_d2 * (x - x0) * f / d2);
 
-		aux.get_unsafe(1, 1) = k * (sg_r2 + sg_d2 * square(y - y0) / d2);
-		aux.get_unsafe(1, 2) = aux.get_unsafe(2, 1) =
-			k * (sg_d2 * (y - y0) * f / d2);
+		aux(1, 1) = k * (sg_r2 + sg_d2 * square(y - y0) / d2);
+		aux(1, 2) = aux(2, 1) = k * (sg_d2 * (y - y0) * f / d2);
 
-		aux.get_unsafe(2, 2) = k * (sg_d2 * square(f) / d2);
+		aux(2, 2) = k * (sg_d2 * square(f) / d2);
 
 		// Jacobian equations according to a standard coordinate axis (+X
 		// forward & +Z upwards)
 		// -------------------------------------------------------------------------------------------------------
-		// aux.get_unsafe( 0, 0 ) = k*(sg_d2*square(f)/d2);
-		// aux.get_unsafe( 0, 1 ) = aux.get_unsafe( 1, 0 ) =
-		// k*sg_d2*(x0-x)*f/d2;
-		// aux.get_unsafe( 0, 2 ) = aux.get_unsafe( 2, 0 ) =
-		// k*sg_d2*(y0-y)*f/d2;
-
-		// aux.get_unsafe( 1, 1 ) = k*(sg_c2 + sg_d2*square(x0-x)/d2);
-		// aux.get_unsafe( 1, 2 ) = aux.get_unsafe( 2, 1 ) =
-		// k*sg_d2*(x0-x)*(y0-y)/d2;
-
-		// aux.get_unsafe( 2, 2 ) = k*(sg_r2 + sg_d2*square(y0-y)/d2);
-
-		// CMatrixDouble33 JF;
-		// JF.set_unsafe(0,0) = JF.set_unsafe(1,1) = JF.set_unsafe(2,0) =
-		// JF.set_unsafe(2,1) = 0.0f;
-		// JF.set_unsafe(0,1) = JF.set_unsafe(1,0) = b/d;
-		// JF.set_unsafe(0,2) = -X/d;
-		// JF.set_unsafe(1,2) = -Y/d;
-		// JF.set_unsafe(2,2) = -Z/d;
-
 		CMatrixDouble33 JG;
-		JG.set_unsafe(0, 0, X / m.range);
-		JG.set_unsafe(0, 1, Y / m.range);
-		JG.set_unsafe(0, 2, Z / m.range);
+		JG(0, 0) = X / m.range;
+		JG(0, 1) = Y / m.range;
+		JG(0, 2) = Z / m.range;
 
-		JG.set_unsafe(1, 0, -Y / (square(X) + square(Y)));
-		JG.set_unsafe(1, 1, X / (square(X) + square(Y)));
-		JG.set_unsafe(1, 2, 0);
+		JG(1, 0) = -Y / (square(X) + square(Y));
+		JG(1, 1) = X / (square(X) + square(Y));
+		JG(1, 2) = 0;
 
 		JG.set_unsafe(
 			2, 0, Z * X / (square(m.range) * sqrt(square(X) + square(Y))));
 		JG.set_unsafe(
 			2, 1, Z * Y / (square(m.range) * sqrt(square(X) + square(Y))));
-		JG.set_unsafe(2, 2, -sqrt(square(X) + square(Y)) / square(m.range));
-
-		// CMatrixDouble33 aux;
-		// CMatrixDouble33 diag;
-		// diag.zeros();
-		// diag.set_unsafe(0,0) = square( sg_r );
-		// diag.set_unsafe(1,1) = square( sg_c );
-		// diag.set_unsafe(2,2) = square( sg_d );
+		JG(2, 2) = -sqrt(square(X) + square(Y)) / square(m.range);
 
 		// JF.multiply_HCHt( diag, aux );
 		JG.multiply_HCHt(aux, m.covariance);
@@ -1954,55 +1900,52 @@ void vision::StereoObs2BRObs(
 		// Jacobian equations according to a standard CAMERA coordinate axis (+Z
 		// forward & +Y downwards)
 		// -------------------------------------------------------------------------------------------------------
-		aux.get_unsafe(0, 0) = k * (sg_c2 + sg_d2 * square(x - x0) / d2);
-		aux.get_unsafe(0, 1) = aux.get_unsafe(1, 0) =
-			k * (sg_d2 * (x - x0) * (y - y0) / d2);
-		aux.get_unsafe(0, 2) = aux.get_unsafe(2, 0) =
-			k * (sg_d2 * (x - x0) * f / d2);
+		aux(0, 0) = k * (sg_c2 + sg_d2 * square(x - x0) / d2);
+		aux(0, 1) = aux(1, 0) = k * (sg_d2 * (x - x0) * (y - y0) / d2);
+		aux(0, 2) = aux(2, 0) = k * (sg_d2 * (x - x0) * f / d2);
 
-		aux.get_unsafe(1, 1) = k * (sg_r2 + sg_d2 * square(y - y0) / d2);
-		aux.get_unsafe(1, 2) = aux.get_unsafe(2, 1) =
-			k * (sg_d2 * (y - y0) * f / d2);
+		aux(1, 1) = k * (sg_r2 + sg_d2 * square(y - y0) / d2);
+		aux(1, 2) = aux(2, 1) = k * (sg_d2 * (y - y0) * f / d2);
 
-		aux.get_unsafe(2, 2) = k * (sg_d2 * square(f) / d2);
+		aux(2, 2) = k * (sg_d2 * square(f) / d2);
 
 		// Jacobian equations according to a standard coordinate axis (+X
 		// forward & +Z upwards)
 		// -------------------------------------------------------------------------------------------------------
-		// aux.get_unsafe( 0, 0 ) = k*(sg_d2*square(f)/d2);
-		// aux.get_unsafe( 0, 1 ) = aux.get_unsafe( 1, 0 ) =
+		// aux( 0, 0 ) = k*(sg_d2*square(f)/d2);
+		// aux( 0, 1 ) = aux( 1, 0 ) =
 		// k*sg_d2*(x0-x)*f/d2;
-		// aux.get_unsafe( 0, 2 ) = aux.get_unsafe( 2, 0 ) =
+		// aux( 0, 2 ) = aux( 2, 0 ) =
 		// k*sg_d2*(y0-y)*f/d2;
 
-		// aux.get_unsafe( 1, 1 ) = k*(sg_c2 + sg_d2*square(x0-x)/d2);
-		// aux.get_unsafe( 1, 2 ) = aux.get_unsafe( 2, 1 ) =
+		// aux( 1, 1 ) = k*(sg_c2 + sg_d2*square(x0-x)/d2);
+		// aux( 1, 2 ) = aux( 2, 1 ) =
 		// k*sg_d2*(x0-x)*(y0-y)/d2;
 
-		// aux.get_unsafe( 2, 2 ) = k*(sg_r2 + sg_d2*square(y0-y)/d2);
+		// aux( 2, 2 ) = k*(sg_r2 + sg_d2*square(y0-y)/d2);
 
 		// CMatrixDouble33 JF;
-		// JF.set_unsafe(0,0) = JF.set_unsafe(1,1) = JF.set_unsafe(2,0) =
+		// JF(0,0) = JF.set_unsafe(1,1) = JF.set_unsafe(2)=0 =
 		// JF.set_unsafe(2,1) = 0.0f;
-		// JF.set_unsafe(0,1) = JF.set_unsafe(1,0) = b/d;
+		// JF(0,1) = JF.set_unsafe(1)=0 = b/d;
 		// JF.set_unsafe(0,2) = -X/d;
 		// JF.set_unsafe(1,2) = -Y/d;
 		// JF.set_unsafe(2,2) = -Z/d;
 
 		CMatrixDouble33 JG;
-		JG.set_unsafe(0, 0, X / m.range);
-		JG.set_unsafe(0, 1, Y / m.range);
-		JG.set_unsafe(0, 2, Z / m.range);
+		JG(0, 0) = X / m.range;
+		JG(0, 1) = Y / m.range;
+		JG(0, 2) = Z / m.range;
 
-		JG.set_unsafe(1, 0, -Y / (square(X) + square(Y)));
-		JG.set_unsafe(1, 1, X / (square(X) + square(Y)));
-		JG.set_unsafe(1, 2, 0);
+		JG(1, 0) = -Y / (square(X) + square(Y));
+		JG(1, 1) = X / (square(X) + square(Y));
+		JG(1, 2) = 0;
 
 		JG.set_unsafe(
 			2, 0, Z * X / (square(m.range) * sqrt(square(X) + square(Y))));
 		JG.set_unsafe(
 			2, 1, Z * Y / (square(m.range) * sqrt(square(X) + square(Y))));
-		JG.set_unsafe(2, 2, -sqrt(square(X) + square(Y)) / square(m.range));
+		JG(2, 2) = -sqrt(square(X) + square(Y)) / square(m.range);
 
 		// CMatrixDouble33 aux;
 		// CMatrixDouble33 diag;
@@ -2169,8 +2112,8 @@ TStereoSystemParams::TStereoSystemParams()
 {
 	K = defaultIntrinsicParamsMatrix(0, 640, 480);
 	F.zeros();
-	F.set_unsafe(1, 2, -1);
-	F.set_unsafe(2, 1, 1);
+	F(1, 2) = -1;
+	F(2, 1) = 1;
 }
 
 /*-------------------------------------------------------------

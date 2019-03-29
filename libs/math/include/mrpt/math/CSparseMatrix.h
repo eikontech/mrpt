@@ -111,7 +111,7 @@ class CSparseMatrix
 		{
 			col_list.push_back(row_list.size());
 			for (int r = 0; r < nRow; ++r)
-				if (C.get_unsafe(r, c) != 0)
+				if (C(r, c) != 0)
 				{
 					row_list.push_back(r);
 					content_list.push_back(C(r, c));
@@ -323,7 +323,7 @@ class CSparseMatrix
 		const size_t nC = M.cols();
 		for (size_t r = 0; r < nR; r++)
 			for (size_t c = 0; c < nC; c++)
-				insert_entry_fast(row + r, col + c, M.get_unsafe(r, c));
+				insert_entry_fast(row + r, col + c, M(r, c));
 		// If needed, extend the size of the matrix:
 		sparse_matrix.m = std::max(sparse_matrix.m, int(row + nR));
 		sparse_matrix.n = std::max(sparse_matrix.n, int(col + nC));

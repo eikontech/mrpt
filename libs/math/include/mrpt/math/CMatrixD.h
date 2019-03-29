@@ -25,36 +25,29 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 	DEFINE_SERIALIZABLE(CMatrixD)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
+	using Base = CMatrixTemplateNumeric<double>;
+
 	/** Constructor */
-	CMatrixD() : CMatrixTemplateNumeric<double>(1, 1) {}
+	CMatrixD() : Base(1, 1) {}
 	/** Constructor */
-	CMatrixD(size_t row, size_t col) : CMatrixTemplateNumeric<double>(row, col)
-	{
-	}
+	CMatrixD(size_t row, size_t col) : Base(row, col) {}
 
 	/** Copy constructor */
-	CMatrixD(const CMatrixTemplateNumeric<double>& m)
-		: CMatrixTemplateNumeric<double>(m)
-	{
-	}
+	explicit CMatrixD(const Base& m) : Base(m) {}
 
 	/** Copy constructor  */
-	CMatrixD(const CMatrixFloat& m) : CMatrixTemplateNumeric<double>(0, 0)
-	{
-		*this = m.eval().cast<double>();
-	}
+	explicit CMatrixD(const CMatrixFloat& m) : Base(0, 0) { *this = m; }
 
 	/*! Assignment operator from any other Eigen class */
-	template <typename OtherDerived>
-	inline CMatrixD& operator=(const Eigen::MatrixBase<OtherDerived>& other)
+	template <typename Other>
+	inline CMatrixD& operator=(const Other& other)
 	{
-		CMatrixTemplateNumeric<double>::operator=(other);
+		Base::operator=(other);
 		return *this;
 	}
 	/*! Constructor from any other Eigen class */
-	template <typename OtherDerived>
-	inline CMatrixD(const Eigen::MatrixBase<OtherDerived>& other)
-		: CMatrixTemplateNumeric<double>(other)
+	template <typename Other>
+	explicit CMatrixD(const Other& other) : Base(other)
 	{
 	}
 

@@ -267,8 +267,8 @@ void CRangeBearingKFSLAM2D::OnTransitionJacobian(KFMatrix_VxV& F) const
 
 	F.setIdentity();  // Unit diagonal
 
-	F.get_unsafe(0, 2) = -Ax * sy - Ay * cy;
-	F.get_unsafe(1, 2) = Ax * cy - Ay * sy;
+	F(0, 2) = -Ax * sy - Ay * cy;
+	F(1, 2) = Ax * cy - Ay * sy;
 
 	MRPT_END
 }
@@ -296,7 +296,7 @@ void CRangeBearingKFSLAM2D::OnTransitionNoise(KFMatrix_VxV& Q) const
 		Q.zeros();
 		ASSERT_(int(options.stds_Q_no_odo.size()) == Q.cols());
 		for (size_t i = 0; i < 3; i++)
-			Q.get_unsafe(i, i) = square(options.stds_Q_no_odo[i]);
+			Q(i, i) = square(options.stds_Q_no_odo[i]);
 		return;
 	}
 	else
@@ -472,17 +472,16 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 
 	const kftype EXP4 = kftype(1) / (1 + EXP3sq / EXP2sq);
 
-	Hx.get_unsafe(0, 0) = (-xi - sphi0 * y0s + cphi0 * x0s + x0) * sqrtEXP1_1;
-	Hx.get_unsafe(0, 1) = (-yi + cphi0 * y0s + y0 + sphi0 * x0s) * sqrtEXP1_1;
-	Hx.get_unsafe(0, 2) =
-		(y0s * xi * cphi0 + y0s * yi * sphi0 - y0 * y0s * sphi0 -
-		 x0 * y0s * cphi0 + x0s * xi * sphi0 - x0s * yi * cphi0 +
-		 y0 * x0s * cphi0 - x0s * x0 * sphi0) *
-		sqrtEXP1_1;
+	Hx(0, 0) = (-xi - sphi0 * y0s + cphi0 * x0s + x0) * sqrtEXP1_1;
+	Hx(0, 1) = (-yi + cphi0 * y0s + y0 + sphi0 * x0s) * sqrtEXP1_1;
+	Hx(0, 2) = (y0s * xi * cphi0 + y0s * yi * sphi0 - y0 * y0s * sphi0 -
+				x0 * y0s * cphi0 + x0s * xi * sphi0 - x0s * yi * cphi0 +
+				y0 * x0s * cphi0 - x0s * x0 * sphi0) *
+			   sqrtEXP1_1;
 
-	Hx.get_unsafe(1, 0) = (sphi0s / (EXP2) + (EXP3) / EXP2sq * cphi0s) * EXP4;
-	Hx.get_unsafe(1, 1) = (-cphi0s / (EXP2) + (EXP3) / EXP2sq * sphi0s) * EXP4;
-	Hx.get_unsafe(1, 2) =
+	Hx(1, 0) = (sphi0s / (EXP2) + (EXP3) / EXP2sq * cphi0s) * EXP4;
+	Hx(1, 1) = (-cphi0s / (EXP2) + (EXP3) / EXP2sq * sphi0s) * EXP4;
+	Hx(1, 2) =
 		((-cphi0s * xi - sphi0s * yi + y0 * sphi0s + x0 * cphi0s) / (EXP2) -
 		 (EXP3) / EXP2sq *
 			 (-sphi0s * xi + cphi0s * yi - y0 * cphi0s + x0 * sphi0s)) *
@@ -491,11 +490,11 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 	// ---------------------------------------------------
 	// Generate dhi_dyi: A 2x2 block
 	// ---------------------------------------------------
-	Hy.get_unsafe(0, 0) = (xi + sphi0 * y0s - cphi0 * x0s - x0) * sqrtEXP1_1;
-	Hy.get_unsafe(0, 1) = (yi - cphi0 * y0s - y0 - sphi0 * x0s) * sqrtEXP1_1;
+	Hy(0, 0) = (xi + sphi0 * y0s - cphi0 * x0s - x0) * sqrtEXP1_1;
+	Hy(0, 1) = (yi - cphi0 * y0s - y0 - sphi0 * x0s) * sqrtEXP1_1;
 
-	Hy.get_unsafe(1, 0) = (-sphi0s / (EXP2) - (EXP3) / EXP2sq * cphi0s) * EXP4;
-	Hy.get_unsafe(1, 1) = (cphi0s / (EXP2) - (EXP3) / EXP2sq * sphi0s) * EXP4;
+	Hy(1, 0) = (-sphi0s / (EXP2) - (EXP3) / EXP2sq * cphi0s) * EXP4;
+	Hy(1, 1) = (cphi0s / (EXP2) - (EXP3) / EXP2sq * sphi0s) * EXP4;
 
 	MRPT_END
 }
@@ -658,7 +657,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		{
 			const size_t idx = obs_idxs_needing_data_assoc[i];
 			for (unsigned k = 0; k < obs_size; k++)
-				Z_obs_means.get_unsafe(i, k) = Z[idx][k];
+				Z_obs_means(i, k) = Z[idx][k];
 		}
 
 		// Vehicle uncertainty
@@ -679,7 +678,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		{
 			const size_t i = lm_indices_in_S[q];
 			for (size_t w = 0; w < obs_size; w++)
-				m_last_data_association.Y_pred_means.get_unsafe(q, w) =
+				m_last_data_association.Y_pred_means(q, w) =
 					all_predictions[i][w];
 			m_last_data_association.predictions_IDs.push_back(
 				i);  // for the conversion of indices...
@@ -871,20 +870,20 @@ void CRangeBearingKFSLAM2D::OnInverseObservationModel(
 	yn[1] = hr * sphi_0sa + sphi0 * x0s + cphi0 * y0s + y0;
 
 	// Jacobian wrt xv:
-	dyn_dxv.get_unsafe(0, 0) = 1;
-	dyn_dxv.get_unsafe(0, 1) = 0;
-	dyn_dxv.get_unsafe(0, 2) = -hr * sphi_0sa - sphi0 * x0s - cphi0 * y0s;
+	dyn_dxv(0, 0) = 1;
+	dyn_dxv(0, 1) = 0;
+	dyn_dxv(0, 2) = -hr * sphi_0sa - sphi0 * x0s - cphi0 * y0s;
 
-	dyn_dxv.get_unsafe(1, 0) = 0;
-	dyn_dxv.get_unsafe(1, 1) = 1;
-	dyn_dxv.get_unsafe(1, 2) = hr * cphi_0sa + cphi0 * x0s - sphi0 * y0s;
+	dyn_dxv(1, 0) = 0;
+	dyn_dxv(1, 1) = 1;
+	dyn_dxv(1, 2) = hr * cphi_0sa + cphi0 * x0s - sphi0 * y0s;
 
 	// Jacobian wrt hn:
-	dyn_dhn.get_unsafe(0, 0) = cphi_0sa;
-	dyn_dhn.get_unsafe(0, 1) = -hr * sphi_0sa;
+	dyn_dhn(0, 0) = cphi_0sa;
+	dyn_dhn(0, 1) = -hr * sphi_0sa;
 
-	dyn_dhn.get_unsafe(1, 0) = sphi_0sa;
-	dyn_dhn.get_unsafe(1, 1) = hr * cphi_0sa;
+	dyn_dhn(1, 0) = sphi_0sa;
+	dyn_dhn(1, 1) = hr * cphi_0sa;
 
 	MRPT_END
 }
@@ -1142,9 +1141,8 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 	const double fov_yaw = obs->fieldOfView_yaw;
 
 	const double max_vehicle_loc_uncertainty =
-		4 * std::sqrt(m_pkk.get_unsafe(0, 0) + m_pkk.get_unsafe(1, 1));
-	const double max_vehicle_ang_uncertainty =
-		4 * std::sqrt(m_pkk.get_unsafe(2, 2));
+		4 * std::sqrt(m_pkk(0, 0) + m_pkk(1, 1));
+	const double max_vehicle_ang_uncertainty = 4 * std::sqrt(m_pkk(2, 2));
 
 	out_LM_indices_to_predict.clear();
 	for (size_t i = 0; i < prediction_means.size(); i++)

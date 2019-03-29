@@ -69,7 +69,7 @@ void estimateJacobian(
 		}
 
 		for (size_t i = 0; i < m; i++)
-			out_Jacobian.get_unsafe(i, j) = Ax_2_inv * (f_plus[i] - f_minus[i]);
+			out_Jacobian(i, j) = Ax_2_inv * (f_plus[i] - f_minus[i]);
 
 	}  // end for j
 

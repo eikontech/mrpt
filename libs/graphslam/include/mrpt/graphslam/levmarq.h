@@ -436,8 +436,7 @@ void optimize_graph_spa_levmarq(
 						{
 							for (size_t k = 0; k < DIMS_POSE; k++)
 								mrpt::keep_max(
-									H_diagonal_max,
-									it->second.get_unsafe(k, k));
+									H_diagonal_max, it->second(k, k));
 						}
 					}
 				lambda = tau * H_diagonal_max;
@@ -492,13 +491,12 @@ void optimize_graph_spa_levmarq(
 						// c=r: add lambda from LM
 						sp_H.insert_entry_fast(
 							j_offset + r, i_offset + r,
-							it->second.get_unsafe(r, r) + lambda);
+							it->second(r, r) + lambda);
 						// c>r:
 						for (size_t c = r + 1; c < DIMS_POSE; c++)
 						{
 							sp_H.insert_entry_fast(
-								j_offset + r, i_offset + c,
-								it->second.get_unsafe(r, c));
+								j_offset + r, i_offset + c, it->second(r, c));
 						}
 					}
 				}

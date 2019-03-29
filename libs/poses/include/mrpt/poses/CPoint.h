@@ -78,11 +78,10 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	void getHomogeneousMatrix(MATRIX44& out_HM) const
 	{
 		out_HM.unit(4, 1.0);
-		out_HM.get_unsafe(0, 3) = static_cast<const DERIVEDCLASS*>(this)->x();
-		out_HM.get_unsafe(1, 3) = static_cast<const DERIVEDCLASS*>(this)->y();
+		out_HM(0, 3) = static_cast<const DERIVEDCLASS*>(this)->x();
+		out_HM(1, 3) = static_cast<const DERIVEDCLASS*>(this)->y();
 		if (DERIVEDCLASS::is3DPoseOrPoint())
-			out_HM.get_unsafe(2, 3) =
-				static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
+			out_HM(2, 3) = static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
 	}
 
 	/** Returns a human-readable textual representation of the object (eg:

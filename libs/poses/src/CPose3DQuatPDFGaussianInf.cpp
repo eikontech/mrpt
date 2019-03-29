@@ -69,10 +69,9 @@ void CPose3DQuatPDFGaussianInf::serializeTo(
 {
 	out << mean;
 
-	for (int r = 0; r < cov_inv.rows(); r++) out << cov_inv.get_unsafe(r, r);
+	for (int r = 0; r < cov_inv.rows(); r++) out << cov_inv(r, r);
 	for (int r = 0; r < cov_inv.rows(); r++)
-		for (int c = r + 1; c < cov_inv.cols(); c++)
-			out << cov_inv.get_unsafe(r, c);
+		for (int c = r + 1; c < cov_inv.cols(); c++) out << cov_inv(r, c);
 }
 void CPose3DQuatPDFGaussianInf::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -83,14 +82,13 @@ void CPose3DQuatPDFGaussianInf::serializeFrom(
 		{
 			in >> mean;
 
-			for (int r = 0; r < cov_inv.rows(); r++)
-				in >> cov_inv.get_unsafe(r, r);
+			for (int r = 0; r < cov_inv.rows(); r++) in >> cov_inv(r, r);
 			for (int r = 0; r < cov_inv.rows(); r++)
 				for (int c = r + 1; c < cov_inv.cols(); c++)
 				{
 					double x;
 					in >> x;
-					cov_inv.get_unsafe(r, c) = cov_inv.get_unsafe(c, r) = x;
+					cov_inv(r, c) = cov_inv(c, r) = x;
 				}
 		}
 		break;
@@ -219,10 +217,10 @@ void CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF& o) const
 
 	CMatrixFixedNumeric<double, 7, 7> jacob;
 	jacob.insertMatrix(0, 0, df_dpose);
-	jacob.set_unsafe(3, 3, 1);
-	jacob.set_unsafe(4, 4, -1);
-	jacob.set_unsafe(5, 5, -1);
-	jacob.set_unsafe(6, 6, -1);
+	jacob(3, 3) = 1;
+	jacob(4, 4) = -1;
+	jacob(5, 5) = -1;
+	jacob(6, 6) = -1;
 
 	// C(0:2,0:2): H C H^t
 	CMatrixDouble77 COV(UNINITIALIZED_MATRIX), NEW_COV(UNINITIALIZED_MATRIX);

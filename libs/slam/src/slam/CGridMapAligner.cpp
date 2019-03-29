@@ -466,7 +466,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				// Generic 2x2 covariance matrix for all features in their local
 				// coords:
 				CMatrixDouble22 COV_pnt;
-				COV_pnt.get_unsafe(0, 0) = COV_pnt.get_unsafe(1, 1) =
+				COV_pnt(0, 0) = COV_pnt(1, 1) =
 					square(options.ransac_SOG_sigma_m);
 
 				// The absolute number of trials.
@@ -590,10 +590,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 						const double ssin = sin(temptPose.mean.phi());
 
 						CMatrixDouble22 Hc;  // Jacobian wrt point_j
-						Hc.get_unsafe(1, 1) = ccos;
-						Hc.get_unsafe(0, 0) = ccos;
-						Hc.get_unsafe(1, 0) = ssin;
-						Hc.get_unsafe(0, 1) = -ssin;
+						Hc(1, 1) = ccos;
+						Hc(0, 0) = ccos;
+						Hc(1, 0) = ssin;
+						Hc(0, 1) = -ssin;
 
 						CMatrixFixedNumeric<double, 2, 3>
 							Hq;  // Jacobian wrt transformation q
@@ -634,9 +634,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 							pdf_M2_j.mean = mrpt::poses::CPoint2D(
 								temptPose.mean +
 								p2_j_local);  // In (temptative) global coords:
-							pdf_M2_j.cov.get_unsafe(0, 0) =
-								pdf_M2_j.cov.get_unsafe(1, 1) =
-									square(options.ransac_SOG_sigma_m);
+							pdf_M2_j.cov(0, 0) = pdf_M2_j.cov(1, 1) =
+								square(options.ransac_SOG_sigma_m);
 
 #ifdef SHOW_CORRS
 							win.plotEllipse(
@@ -659,9 +658,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 								if (used_landmarks1[u]) continue;
 
 								// Jacobian wrt transformation q
-								Hq.get_unsafe(0, 2) =
+								Hq(0, 2) =
 									-p2_j_local.x * ssin - p2_j_local.y * ccos;
-								Hq.get_unsafe(1, 2) =
+								Hq(1, 2) =
 									p2_j_local.x * ccos - p2_j_local.y * ssin;
 
 								// COV_j = Hq \Sigma_q Hq^t + Hc Cj Hc^t

@@ -86,16 +86,16 @@ CPose3D::CPose3D(const math::CMatrixDouble& m)
 	ASSERT_ABOVEEQ_(m.rows(), 3);
 	ASSERT_ABOVEEQ_(m.cols(), 4);
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) m_ROT(r, c) = m.get_unsafe(r, c);
-	for (int r = 0; r < 3; r++) m_coords[r] = m.get_unsafe(r, 3);
+		for (int c = 0; c < 3; c++) m_ROT(r, c) = m(r, c);
+	for (int r = 0; r < 3; r++) m_coords[r] = m(r, 3);
 }
 
 CPose3D::CPose3D(const math::CMatrixDouble44& m)
 	: m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 {
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) m_ROT(r, c) = m.get_unsafe(r, c);
-	for (int r = 0; r < 3; r++) m_coords[r] = m.get_unsafe(r, 3);
+		for (int c = 0; c < 3; c++) m_ROT(r, c) = m(r, c);
+	for (int r = 0; r < 3; r++) m_coords[r] = m(r, 3);
 }
 
 /** Constructor from a quaternion (which only represents the 3D rotation part)
@@ -141,9 +141,9 @@ void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 			m_ROT = HM2.block(0, 0, 3, 3).cast<double>();
 
-			m_coords[0] = HM2.get_unsafe(0, 3);
-			m_coords[1] = HM2.get_unsafe(1, 3);
-			m_coords[2] = HM2.get_unsafe(2, 3);
+			m_coords[0] = HM2(0, 3);
+			m_coords[1] = HM2(1, 3);
+			m_coords[2] = HM2(2, 3);
 			m_ypr_uptodate = false;
 		}
 		break;
@@ -155,9 +155,9 @@ void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 			m_ROT = HM.block(0, 0, 3, 3);
 
-			m_coords[0] = HM.get_unsafe(0, 3);
-			m_coords[1] = HM.get_unsafe(1, 3);
-			m_coords[2] = HM.get_unsafe(2, 3);
+			m_coords[0] = HM(0, 3);
+			m_coords[1] = HM(1, 3);
+			m_coords[2] = HM(2, 3);
 			m_ypr_uptodate = false;
 		}
 		break;

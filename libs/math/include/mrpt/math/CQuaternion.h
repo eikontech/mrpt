@@ -288,25 +288,25 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	{
 		const T n = 1.0 / std::pow(normSqr(), T(1.5));
 		J.setSize(4, 4);
-		J.get_unsafe(0, 0) = x() * x() + y() * y() + z() * z();
-		J.get_unsafe(0, 1) = -r() * x();
-		J.get_unsafe(0, 2) = -r() * y();
-		J.get_unsafe(0, 3) = -r() * z();
+		J(0, 0) = x() * x() + y() * y() + z() * z();
+		J(0, 1) = -r() * x();
+		J(0, 2) = -r() * y();
+		J(0, 3) = -r() * z();
 
-		J.get_unsafe(1, 0) = -x() * r();
-		J.get_unsafe(1, 1) = r() * r() + y() * y() + z() * z();
-		J.get_unsafe(1, 2) = -x() * y();
-		J.get_unsafe(1, 3) = -x() * z();
+		J(1, 0) = -x() * r();
+		J(1, 1) = r() * r() + y() * y() + z() * z();
+		J(1, 2) = -x() * y();
+		J(1, 3) = -x() * z();
 
-		J.get_unsafe(2, 0) = -y() * r();
-		J.get_unsafe(2, 1) = -y() * x();
-		J.get_unsafe(2, 2) = r() * r() + x() * x() + z() * z();
-		J.get_unsafe(2, 3) = -y() * z();
+		J(2, 0) = -y() * r();
+		J(2, 1) = -y() * x();
+		J(2, 2) = r() * r() + x() * x() + z() * z();
+		J(2, 3) = -y() * z();
 
-		J.get_unsafe(3, 0) = -z() * r();
-		J.get_unsafe(3, 1) = -z() * x();
-		J.get_unsafe(3, 2) = -z() * y();
-		J.get_unsafe(3, 3) = r() * r() + x() * x() + y() * y();
+		J(3, 0) = -z() * r();
+		J(3, 1) = -z() * x();
+		J(3, 2) = -z() * y();
+		J(3, 3) = r() * r() + x() * x() + y() * y();
 		J *= n;
 	}
 
@@ -319,22 +319,22 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	inline void rotationJacobian(MATRIXLIKE& J) const
 	{
 		J.setSize(4, 4);
-		J.get_unsafe(0, 0) = r();
-		J.get_unsafe(0, 1) = -x();
-		J.get_unsafe(0, 2) = -y();
-		J.get_unsafe(0, 3) = -z();
-		J.get_unsafe(1, 0) = x();
-		J.get_unsafe(1, 1) = r();
-		J.get_unsafe(1, 2) = -z();
-		J.get_unsafe(1, 3) = y();
-		J.get_unsafe(2, 0) = y();
-		J.get_unsafe(2, 1) = z();
-		J.get_unsafe(2, 2) = r();
-		J.get_unsafe(2, 3) = -x();
-		J.get_unsafe(3, 0) = z();
-		J.get_unsafe(3, 1) = -y();
-		J.get_unsafe(3, 2) = x();
-		J.get_unsafe(3, 3) = r();
+		J(0, 0) = r();
+		J(0, 1) = -x();
+		J(0, 2) = -y();
+		J(0, 3) = -z();
+		J(1, 0) = x();
+		J(1, 1) = r();
+		J(1, 2) = -z();
+		J(1, 3) = y();
+		J(2, 0) = y();
+		J(2, 1) = z();
+		J(2, 2) = r();
+		J(2, 3) = -x();
+		J(3, 0) = z();
+		J(3, 1) = -y();
+		J(3, 2) = x();
+		J(3, 3) = r();
 	}
 
 	/** Calculate the 3x3 rotation matrix associated to this quaternion: \f[
@@ -363,15 +363,15 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	template <class MATRIXLIKE>
 	inline void rotationMatrixNoResize(MATRIXLIKE& M) const
 	{
-		M.get_unsafe(0, 0) = r() * r() + x() * x() - y() * y() - z() * z();
-		M.get_unsafe(0, 1) = 2 * (x() * y() - r() * z());
-		M.get_unsafe(0, 2) = 2 * (z() * x() + r() * y());
-		M.get_unsafe(1, 0) = 2 * (x() * y() + r() * z());
-		M.get_unsafe(1, 1) = r() * r() - x() * x() + y() * y() - z() * z();
-		M.get_unsafe(1, 2) = 2 * (y() * z() - r() * x());
-		M.get_unsafe(2, 0) = 2 * (z() * x() - r() * y());
-		M.get_unsafe(2, 1) = 2 * (y() * z() + r() * x());
-		M.get_unsafe(2, 2) = r() * r() - x() * x() - y() * y() + z() * z();
+		M(0, 0) = r() * r() + x() * x() - y() * y() - z() * z();
+		M(0, 1) = 2 * (x() * y() - r() * z());
+		M(0, 2) = 2 * (z() * x() + r() * y());
+		M(1, 0) = 2 * (x() * y() + r() * z());
+		M(1, 1) = r() * r() - x() * x() + y() * y() - z() * z();
+		M(1, 2) = 2 * (y() * z() - r() * x());
+		M(2, 0) = 2 * (z() * x() - r() * y());
+		M(2, 1) = 2 * (y() * z() + r() * x());
+		M(2, 2) = r() * r() - x() * x() - y() * y() + z() * z();
 	}
 
 	/**	Return the conjugate quaternion  */

@@ -382,8 +382,8 @@ void mrpt::slam::data_association_full_covariance(
 					pred_cov_idx, pred_cov_idx, length_O, length_O, pred_i_cov);
 
 				for (size_t k = 0; k < length_O; k++)
-					diff_means_i_j[k] = Z_observations_mean.get_unsafe(j, k) -
-										Y_predictions_mean.get_unsafe(i, k);
+					diff_means_i_j[k] =
+						Z_observations_mean(j, k) - Y_predictions_mean(i, k);
 
 				double d2, ml;
 				// mrpt::math::productIntegralAndMahalanobisTwoGaussians(diff_means_i_j,pred_i_cov,obs_j_cov,
@@ -408,7 +408,7 @@ void mrpt::slam::data_association_full_covariance(
 		{
 			// Use a kd-tree and compute only the N closest ones:
 			for (size_t k = 0; k < length_O; k++)
-				kd_queryPoint[k] = Z_observations_mean.get_unsafe(j, k);
+				kd_queryPoint[k] = Z_observations_mean(j, k);
 
 			kd_tree->query(
 				&kd_queryPoint[0], N_KD_RESULTS, &kd_result_indices[0],
@@ -428,8 +428,8 @@ void mrpt::slam::data_association_full_covariance(
 					pred_cov_idx, pred_cov_idx, length_O, length_O, pred_i_cov);
 
 				for (size_t k = 0; k < length_O; k++)
-					diff_means_i_j[k] = Z_observations_mean.get_unsafe(j, k) -
-										Y_predictions_mean.get_unsafe(i, k);
+					diff_means_i_j[k] =
+						Z_observations_mean(j, k) - Y_predictions_mean(i, k);
 
 				double d2, ml;
 				//				mrpt::math::productIntegralAndMahalanobisTwoGaussians(diff_means_i_j,pred_i_cov,obs_j_cov,
@@ -488,9 +488,9 @@ void mrpt::slam::data_association_full_covariance(
 
 				for (prediction_index_t i = 0; i < nPredictions; ++i)
 				{
-					if (results.indiv_compatibility.get_unsafe(i, j))
+					if (results.indiv_compatibility(i, j))
 					{
-						double d2 = results.indiv_distances.get_unsafe(i, j);
+						double d2 = results.indiv_distances(i, j);
 						if (metric == metricML) d2 = -d2;
 						ICs.insert(make_pair(d2, i));
 					}

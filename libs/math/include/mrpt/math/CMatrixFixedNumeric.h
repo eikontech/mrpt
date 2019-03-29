@@ -11,15 +11,11 @@
 #include <mrpt/core/alignment_req.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
-#include <cstddef>  // std::size_t
-
-//#include <mrpt/math/eigen_frwds.h>
-//#include <mrpt/math/point_poses2vectors.h>  //
-// MRPT_MATRIX_CONSTRUCTORS_FROM_POSES() #include <mrpt/math/types_math.h>
-//#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 #include <array>
+#include <cstddef>  // std::size_t
 
 namespace mrpt::math
 {
@@ -35,11 +31,11 @@ template <typename T, std::size_t ROWS, std::size_t COLS>
 class CMatrixFixedNumeric
 {
    public:
+	/** @name Constructors
+	 *  @{ */
+
 	/** Default constructor, initializes all elements to zero */
 	inline CMatrixFixedNumeric() { fill(0); }
-
-	/** Constructor from an array in row major */
-	// inline CMatrixFixedNumeric(const T* vals) : Base(vals) {}
 
 	/** Constructor which leaves the matrix uninitialized.
 	 *  Example of usage: CMatrixFixedNumeric<double,3,2>
@@ -47,12 +43,16 @@ class CMatrixFixedNumeric
 	 */
 	inline CMatrixFixedNumeric(TConstructorFlags_Matrices) {}
 
+	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixTemplateNumeric)
+
+	/** @} */
+
 	/** @name Matrix element access & modifiers
 	 *  @{ */
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-		typename EIGEN_MATRIX,
+		typename EIGEN_MATRIX = Eigen::Matrix<T, ROWS, COLS>,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
@@ -61,7 +61,9 @@ class CMatrixFixedNumeric
 	}
 	/** \overload (const version) */
 	template <
-		typename EIGEN_MATRIX,
+		typename EIGEN_MATRIX = Eigen::Matrix<
+			T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
+			COLS>,
 		typename EIGEN_MAP = Eigen::Map<
 			const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
@@ -108,10 +110,10 @@ class CMatrixFixedNumeric
 	}
 
 	/** @} */
-
-	template <size_t LEN>
-	void loadFromArray(const T[LEN] & vals)
+	template <typename VECTOR>
+	void loadFromArray(const VECTOR& vals)
 	{
+		constexpr auto LEN = std::size(vals);
 		static_assert(LEN == ROWS * COLS, "Array of incorrect size.");
 		for (size_t r = 0, i = 0; r < ROWS; r++)
 			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i];

@@ -1223,7 +1223,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
 	// Update mean values:
 	// ---------------------------------------------------------
 	for (i = 0, it = m_map.begin(); it != m_map.end(); ++it, ++i)
-		// it->kf_mean =  it->kf_mean + yk * sk_1 * m_cov.get_unsafe(i,cellIdx);
+		// it->kf_mean =  it->kf_mean + yk * sk_1 * m_cov(i,cellIdx);
 		it->kf_mean += yk * sk_1 * m_cov(i, cellIdx);
 
 	MRPT_LOG_DEBUG_FMT("Done in %.03fms\n", tictac.Tac() * 1000);
@@ -1264,8 +1264,8 @@ void CRandomFieldGridMap2D::insertObservation_KF(
 				oldCov_row_i[j] - sk_1_oldCov_i_c * oldCov_row_c[j];
 
 			// Make symmetric:
-			m_cov.set_unsafe(i, j, new_cov_ij);
-			m_cov.set_unsafe(j, i, new_cov_ij);
+			m_cov(i, j) = new_cov_ij;
+			m_cov(j, i) = new_cov_ij;
 
 			// Update the "std" in the cell as well:
 			if (i == j)

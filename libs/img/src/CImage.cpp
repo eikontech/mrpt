@@ -1429,15 +1429,15 @@ void CImage::cross_correlation_FFT(
 	for (y = 0; y < ly; y++)
 		for (x = 0; x < lx; x++)
 		{
-			float r1 = I1_R.get_unsafe(y, x);
-			float r2 = I2_R.get_unsafe(y, x);
+			float r1 = I1_R(y, x);
+			float r2 = I2_R(y, x);
 
-			float ii1 = I1_I.get_unsafe(y, x);
-			float ii2 = I2_I.get_unsafe(y, x);
+			float ii1 = I1_I(y, x);
+			float ii2 = I2_I(y, x);
 
 			float den = square(r1) + square(ii1);
-			I2_R.set_unsafe(y, x, (r1 * r2 + ii1 * ii2) / den);
-			I2_I.set_unsafe(y, x, (ii2 * r1 - r2 * ii1) / den);
+			I2_R(y, x) = (r1 * r2 + ii1 * ii2) / den;
+			I2_I(y, x) = (ii2 * r1 - r2 * ii1) / den;
 		}
 
 	// IFFT:
@@ -1478,7 +1478,7 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 				aux = *pixels++ * 0.30f;
 				aux += *pixels++ * 0.59f;
 				aux += *pixels++ * 0.11f;
-				outMatrix.set_unsafe(y, x, aux);
+				outMatrix(y, x) = aux;
 				if (pixels >= max_pixels) pixels = min_pixels;
 			}
 		}
@@ -1492,7 +1492,7 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 			unsigned char* pixels = min_pixels;
 			for (unsigned int x = 0; x < matrix_lx; x++)
 			{
-				outMatrix.set_unsafe(y, x, *pixels++);
+				outMatrix(y, x) = *pixels++;
 				if (pixels >= max_pixels) pixels = min_pixels;
 			}
 		}

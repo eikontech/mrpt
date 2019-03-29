@@ -14,7 +14,7 @@
 TEST(CMatrixFixedNumeric, CtorUninit)
 {
 	mrpt::math::CMatrixFixedNumeric<double, 2, 2> M(
-	    mrpt::math::UNINITIALIZED_MATRIX);
+		mrpt::math::UNINITIALIZED_MATRIX);
 	// do nothing, just test that the ctor above compiles
 	(void)M(0, 0);
 }

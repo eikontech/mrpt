@@ -18,6 +18,7 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 #include <mrpt/serialization/stl_serialization.h>
+#include <Eigen/Dense>
 
 using namespace std;  // For min/max, etc...
 using namespace mrpt::serialization;  // CArchive, << operator for STL
@@ -46,8 +47,8 @@ void TPoint2D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 2, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
+	x = m(0, 0);
+	y = m(0, 1);
 }
 
 TPose2D::TPose2D(const TPoint2D& p) : x(p.x), y(p.y), phi(0.0) {}
@@ -64,9 +65,9 @@ void TPose2D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
-	phi = DEG2RAD(m.get_unsafe(0, 2));
+	x = m(0, 0);
+	y = m(0, 1);
+	phi = DEG2RAD(m(0, 2));
 }
 mrpt::math::TPose2D mrpt::math::TPose2D::operator+(
 	const mrpt::math::TPose2D& b) const
@@ -106,9 +107,9 @@ void TTwist2D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
-	vx = m.get_unsafe(0, 0);
-	vy = m.get_unsafe(0, 1);
-	omega = DEG2RAD(m.get_unsafe(0, 2));
+	vx = m(0, 0);
+	vy = m(0, 1);
+	omega = DEG2RAD(m(0, 2));
 }
 // Transform the (vx,vy) components for a counterclockwise rotation of `ang`
 // radians
@@ -143,9 +144,8 @@ void TTwist3D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
-	for (int i = 0; i < 3; i++) (*this)[i] = m.get_unsafe(0, i);
-	for (int i = 0; i < 3; i++)
-		(*this)[3 + i] = DEG2RAD(m.get_unsafe(0, 3 + i));
+	for (int i = 0; i < 3; i++) (*this)[i] = m(0, i);
+	for (int i = 0; i < 3; i++) (*this)[3 + i] = DEG2RAD(m(0, 3 + i));
 }
 // Transform all 6 components for a change of reference frame from "A" to
 // another frame "B" whose rotation with respect to "A" is given by `rot`. The
@@ -192,9 +192,9 @@ void TPoint3D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
-	z = m.get_unsafe(0, 2);
+	x = m(0, 0);
+	y = m(0, 1);
+	z = m(0, 2);
 }
 
 TPose3D::TPose3D(const TPoint2D& p)
@@ -362,7 +362,8 @@ void TPose3D::SO3_to_yaw_pitch_roll(
 
 void TPose3D::fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44& HG)
 {
-	SO3_to_yaw_pitch_roll(HG.block<3, 3>(0, 0), yaw, pitch, roll);
+	Eigen::Matrix<> SO3_to_yaw_pitch_roll(
+		HG.asEigen().block<3, 3>(0, 0), yaw, pitch, roll);
 	x = HG(0, 3);
 	y = HG(1, 3);
 	z = HG(2, 3);
@@ -398,12 +399,12 @@ void TPose3D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
-	z = m.get_unsafe(0, 2);
-	yaw = DEG2RAD(m.get_unsafe(0, 3));
-	pitch = DEG2RAD(m.get_unsafe(0, 4));
-	roll = DEG2RAD(m.get_unsafe(0, 5));
+	x = m(0, 0);
+	y = m(0, 1);
+	z = m(0, 2);
+	yaw = DEG2RAD(m(0, 3));
+	pitch = DEG2RAD(m(0, 4));
+	roll = DEG2RAD(m(0, 5));
 }
 
 void TPose3DQuat::fromString(const std::string& s)
@@ -413,7 +414,7 @@ void TPose3DQuat::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");
-	for (int i = 0; i < m.cols(); i++) (*this)[i] = m.get_unsafe(0, i);
+	for (int i = 0; i < m.cols(); i++) (*this)[i] = m(0, i);
 }
 TPose3D operator-(const TPose3D& p)
 {
@@ -860,7 +861,7 @@ void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose)
 	for (size_t i = 0; i < 3; i++)
 		if (abs(coefs[i]) >= getEpsilon())
 		{
-			AXIS.set_unsafe(i, 3, -coefs[3] / coefs[i]);
+			AXIS(i, 3) = -coefs[3] / coefs[i];
 			break;
 		}
 	outPose.fromHomogeneousMatrix(AXIS);
@@ -873,7 +874,7 @@ void TPlane::getAsPose3DForcingOrigin(const TPoint3D& newOrigin, TPose3D& pose)
 	getUnitaryNormalVector(normal);
 	CMatrixDouble44 AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
-	for (size_t i = 0; i < 3; i++) AXIS.set_unsafe(i, 3, newOrigin[i]);
+	for (size_t i = 0; i < 3; i++) AXIS(i, 3) = newOrigin[i];
 	pose.fromHomogeneousMatrix(AXIS);
 }
 TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)

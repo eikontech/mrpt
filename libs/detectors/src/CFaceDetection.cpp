@@ -403,7 +403,7 @@ bool CFaceDetection::checkIfFacePlaneCov(CObservation3DRangeScan* face)
 			CArrayDouble<3> aux;
 
 			// Don't take in account dark pixels
-			if (region.get_unsafe(j, k) &&
+			if (region(j, k) &&
 				(((!confidence) ||
 				  ((confidence) &&
 				   (face->confidenceImage.at<uint8_t>(k, j) >
@@ -558,15 +558,14 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	for (size_t r = 0; r < region.rows(); r++)
 		for (size_t c = 1; c < region.cols(); c++)
 		{
-			if ((!(region.get_unsafe(r, c - 1))) && (region.get_unsafe(r, c)))
+			if ((!(region(r, c - 1))) && (region(r, c)))
 			{
 				if (c < start) start = c;
 			}
-			else if (
-				(region.get_unsafe(r, c - 1)) && (!(region.get_unsafe(r, c))))
+			else if ((region(r, c - 1)) && (!(region(r, c))))
 				if (c > end) end = c;
 
-			if ((c > end) && (region.get_unsafe(r, c))) end = c;
+			if ((c > end) && (region(r, c))) end = c;
 		}
 
 	if (end == 0) end = faceWidth - 1;  // Check if the end has't changed
@@ -595,7 +594,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	size_t countHist = 0;
 	for (size_t i = 0; i < 60; i++)
 	{
-		countHist += hist.get_unsafe(0, i);
+		countHist += hist(0, i);
 	}
 
 	size_t upLimit = 0;
@@ -621,8 +620,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	{
 		for (unsigned int c = 0; c < faceWidth; c++, cont++)
 		{
-			if ((r >= upLimit) && (r <= downLimit) &&
-				(region.get_unsafe(r, c)) &&
+			if ((r >= upLimit) && (r <= downLimit) && (region(r, c)) &&
 				(face->confidenceImage.at<uint8_t>(c, r, 0) >
 				 m_options.confidenceThreshold) &&
 				(face->intensityImage.at<uint8_t>(c, r)) > 50)
@@ -978,13 +976,13 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 			//&& ( face->points3D_x[cont] > meanDepth - max_desv )
 			//&& ( face->points3D_x[cont] < meanDepth + max_desv ) )
 			{
-				valids.set_unsafe(i, j, true);
+				valids(i, j) = true;
 				points.emplace_back(
 					face->points3D_x[cont], face->points3D_y[cont],
 					face->points3D_z[cont]);
 			}
 			else
-				valids.set_unsafe(i, j, false);
+				valids(i, j) = false;
 		}
 		cont += faceWidth - x2 - 1;
 	}
@@ -1007,7 +1005,7 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 
 		for (unsigned int j = x1; j <= x2; j++, cont++)
 		{
-			if (valids.get_unsafe(i, j))
+			if (valids(i, j))
 			{
 				// experimental_calcDiagDist( face, i, j, faceWidth, faceHeight,
 				// valids, distance );
@@ -1015,7 +1013,7 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 				distance = 0;
 				if ((i + 1 <= y2) && (j + 1 <= x2))
 				{
-					if (valids.get_unsafe(i + 1, j + 1))
+					if (valids(i + 1, j + 1))
 					{
 						TPoint3D p1(
 							face->points3D_x[cont], face->points3D_y[cont],
@@ -1035,7 +1033,7 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 						{
 							if ((i + offset <= y2) && (j + offset <= x2))
 							{
-								if (valids.get_unsafe(i + offset, j + offset))
+								if (valids(i + offset, j + offset))
 								{
 									TPoint3D p1(
 										face->points3D_x[cont],
@@ -1149,7 +1147,7 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 	{
 		for (unsigned int col = 0; col < faceWidth; col++, cont++)
 		{
-			if ((region.get_unsafe(row, col)) &&
+			if ((region(row, col)) &&
 				(face->confidenceImage.at<uint8_t>(col, row) >
 				 m_options.confidenceThreshold))
 			{
@@ -1234,12 +1232,12 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 	{
 		for (unsigned int j = 0; j < faceWidth; j++, cont++)
 		{
-			if (region.get_unsafe(i, j))
+			if (region(i, j))
 			{
 				distance = 0;
 				if ((i + 1 < faceHeight) && (j + 1 < faceWidth))
 				{
-					if (region.get_unsafe(i + 1, j + 1))
+					if (region(i + 1, j + 1))
 					{
 						TPoint3D p1(
 							face->points3D_x[cont], face->points3D_y[cont],
@@ -1260,7 +1258,7 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 							if ((i + offset < faceHeight) &&
 								(j + offset < faceWidth))
 							{
-								if (region.get_unsafe(i + offset, j + offset))
+								if (region(i + offset, j + offset))
 								{
 									TPoint3D p1(
 										face->points3D_x[cont],
@@ -1507,15 +1505,9 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 	sphere->setColor(TColorf(0, 1, 0));
 	scene->insert(sphere);
 
-	TPoint3D E1(
-		eigenVect.get_unsafe(0, 0), eigenVect.get_unsafe(0, 1),
-		eigenVect.get_unsafe(0, 2));
-	TPoint3D E2(
-		eigenVect.get_unsafe(1, 0), eigenVect.get_unsafe(1, 1),
-		eigenVect.get_unsafe(1, 2));
-	TPoint3D E3(
-		eigenVect.get_unsafe(2, 0), eigenVect.get_unsafe(2, 1),
-		eigenVect.get_unsafe(2, 2));
+	TPoint3D E1(eigenVect(0, 0), eigenVect(0, 1), eigenVect(0, 2));
+	TPoint3D E2(eigenVect(1, 0), eigenVect(1, 1), eigenVect(1, 2));
+	TPoint3D E3(eigenVect(2, 0), eigenVect(2, 1), eigenVect(2, 2));
 
 	// vector<TSegment3D> sgms;
 
@@ -1702,7 +1694,7 @@ void CFaceDetection::experimental_segmentFace(
 			if (face.confidenceImage.at<uint8_t>(j, i) >
 				m_options.confidenceThreshold)
 			{
-				toExpand.set_unsafe(i, j, 1);
+				toExpand(i, j) = 1;
 			}
 		}
 		cont += faceWidth - x2;
@@ -1720,55 +1712,53 @@ void CFaceDetection::experimental_segmentFace(
 		{
 			for (size_t col = 0; col < faceWidth; col++)
 			{
-				if (toExpand.get_unsafe(row, col) == 1)
+				if (toExpand(row, col) == 1)
 				{
-					region.set_unsafe(row, col, true);
+					region(row, col) = true;
 
 					int value = img.at<uint8_t>(col, row);
 
-					if ((row > 0) && (toExpand.get_unsafe(row - 1, col) != 2))
+					if ((row > 0) && (toExpand(row - 1, col) != 2))
 					{
 						int value2 = img.at<uint8_t>(col, row - 1);
 						if (abs(value - value2) < 2)
 						{
-							toExpand.set_unsafe(row - 1, col, 1);
+							toExpand(row - 1, col) = 1;
 							newExpanded = true;
 						}
 					}
 
-					if ((row < faceWidth - 1) &&
-						(toExpand.get_unsafe(row + 1, col) != 2))
+					if ((row < faceWidth - 1) && (toExpand(row + 1, col) != 2))
 					{
 						int value2 = img.at<uint8_t>(col, row + 1);
 						if (abs(value - value2) < 2)
 						{
-							toExpand.set_unsafe(row + 1, col, 1);
+							toExpand(row + 1, col) = 1;
 							newExpanded = true;
 						}
 					}
 
-					if ((col > 0) && (toExpand.get_unsafe(row, col - 1) != 2))
+					if ((col > 0) && (toExpand(row, col - 1) != 2))
 					{
 						int value2 = img.at<uint8_t>(col - 1, row);
 						if (abs(value - value2) < 2)
 						{
-							toExpand.set_unsafe(row, col - 1, 1);
+							toExpand(row, col - 1) = 1;
 							newExpanded = true;
 						}
 					}
 
-					if ((col < faceHeight - 1) &&
-						(toExpand.get_unsafe(row, col + 1) != 2))
+					if ((col < faceHeight - 1) && (toExpand(row, col + 1) != 2))
 					{
 						int value2 = img.at<uint8_t>(col + 1, row);
 						if (abs(value - value2) < 2)
 						{
-							toExpand.set_unsafe(row, col + 1, 1);
+							toExpand(row, col + 1) = 1;
 							newExpanded = true;
 						}
 					}
 
-					toExpand.set_unsafe(row, col, 2);
+					toExpand(row, col) = 2;
 				}
 			}
 		}
@@ -1778,7 +1768,7 @@ void CFaceDetection::experimental_segmentFace(
 	{
 		for (unsigned int col = 0; col < faceWidth; col++)
 		{
-			if (!(region.get_unsafe(row, col)))
+			if (!(region(row, col)))
 			{
 				img.setPixel(col, row, 0);
 			}
@@ -1809,8 +1799,8 @@ void CFaceDetection::experimental_calcHist(
 		for (size_t col = c1; col <= c2; col++)
 		{
 			auto value = face.at<uint8_t>(col, row);
-			int count = hist.get_unsafe(0, value) + 1;
-			hist.set_unsafe(0, value, count);
+			int count = hist(0, value) + 1;
+			hist(0, value) = count;
 		}
 }
 

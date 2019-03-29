@@ -26,16 +26,16 @@ class CMatrix : public mrpt::serialization::CSerializable, public CMatrixFloat
    public:
 	/** Constructor  */
 	CMatrix() : CMatrixFloat(1, 1) {}
-	/** Constructor  */
+
+	/** Constructor */
 	CMatrix(size_t row, size_t col) : CMatrixFloat(row, col) {}
-	/** Copy constructor
-	 */
-	CMatrix(const CMatrixFloat& m) : CMatrixFloat(m) {}
-	/** Copy constructor
-	 */
-	CMatrix(const CMatrixTemplateNumeric<double>& m) : CMatrixFloat(0, 0)
+
+	/** Copy constructor */
+	explicit CMatrix(const CMatrixFloat& m) : CMatrixFloat(m) {}
+
+	/** Copy constructor */
+	explicit CMatrix(const CMatrixTemplateNumeric<double>& m) : CMatrixFloat(m)
 	{
-		*this = m.eval().cast<float>();
 	}
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrix)
 

@@ -114,19 +114,15 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF& o)
 
 			it2->val.cov.zeros();
 
-			it2->val.cov.get_unsafe(0, 0) = it1->cov.get_unsafe(0, 0);
-			it2->val.cov.get_unsafe(1, 1) = it1->cov.get_unsafe(1, 1);
-			it2->val.cov.get_unsafe(3, 3) =
-				it1->cov.get_unsafe(2, 2);  // yaw <- phi
+			it2->val.cov(0, 0) = it1->cov(0, 0);
+			it2->val.cov(1, 1) = it1->cov(1, 1);
+			it2->val.cov(3, 3) = it1->cov(2, 2);  // yaw <- phi
 
-			it2->val.cov.get_unsafe(0, 1) = it2->val.cov.get_unsafe(1, 0) =
-				it1->cov.get_unsafe(0, 1);
+			it2->val.cov(0, 1) = it2->val.cov(1, 0) = it1->cov(0, 1);
 
-			it2->val.cov.get_unsafe(0, 3) = it2->val.cov.get_unsafe(3, 0) =
-				it1->cov.get_unsafe(0, 2);
+			it2->val.cov(0, 3) = it2->val.cov(3, 0) = it1->cov(0, 2);
 
-			it2->val.cov.get_unsafe(1, 3) = it2->val.cov.get_unsafe(3, 1) =
-				it1->cov.get_unsafe(1, 2);
+			it2->val.cov(1, 3) = it2->val.cov(3, 1) = it1->cov(1, 2);
 		}
 
 		return newObj;
@@ -176,8 +172,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 		CMatrixFixedNumeric<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 		CQuaternionDouble q_dumm(UNINITIALIZED_QUATERNION);
 		x.getAsQuaternion(q_dumm, &dq_dr_sub);
-		J_E2Q_dx.get_unsafe(0, 0) = J_E2Q_dx.get_unsafe(1, 1) =
-			J_E2Q_dx.get_unsafe(2, 2) = 1;
+		J_E2Q_dx(0, 0) = J_E2Q_dx(1, 1) = J_E2Q_dx(2, 2) = 1;
 		J_E2Q_dx.insertMatrix(3, 3, dq_dr_sub);
 	}
 
@@ -187,8 +182,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 		CMatrixFixedNumeric<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 		CQuaternionDouble q_dumm(UNINITIALIZED_QUATERNION);
 		u.getAsQuaternion(q_dumm, &dq_dr_sub);
-		J_E2Q_du.get_unsafe(0, 0) = J_E2Q_du.get_unsafe(1, 1) =
-			J_E2Q_du.get_unsafe(2, 2) = 1;
+		J_E2Q_du(0, 0) = J_E2Q_du(1, 1) = J_E2Q_du(2, 2) = 1;
 		J_E2Q_du.insertMatrix(3, 3, dq_dr_sub);
 	}
 
@@ -209,8 +203,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 	//         [  0     | dr_dq_angles ]
 	//
 	CMatrixFixedNumeric<double, 6, 7> J_Q2E;  // Init to zeros
-	J_Q2E.get_unsafe(0, 0) = J_Q2E.get_unsafe(1, 1) = J_Q2E.get_unsafe(2, 2) =
-		1;
+	J_Q2E(0, 0) = J_Q2E(1, 1) = J_Q2E(2, 2) = 1;
 	{
 		// The end result of the pose composition, as a quaternion:
 		CQuaternionDouble q_xu(UNINITIALIZED_QUATERNION);

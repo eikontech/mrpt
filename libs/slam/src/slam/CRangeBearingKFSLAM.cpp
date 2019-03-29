@@ -381,7 +381,7 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 		Q.zeros();
 		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()));
 		for (size_t i = 0; i < get_vehicle_size(); i++)
-			Q.set_unsafe(i, i, square(options.stds_Q_no_odo[i]));
+			Q(i, i) = square(options.stds_Q_no_odo[i]);
 		return;
 	}
 	else
@@ -651,7 +651,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		{
 			const size_t idx = obs_idxs_needing_data_assoc[i];
 			for (unsigned k = 0; k < obs_size; k++)
-				Z_obs_means.get_unsafe(i, k) = Z[idx][k];
+				Z_obs_means(i, k) = Z[idx][k];
 		}
 
 		// Vehicle uncertainty
@@ -672,7 +672,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		{
 			const size_t i = lm_indices_in_S[q];
 			for (size_t w = 0; w < obs_size; w++)
-				m_last_data_association.Y_pred_means.get_unsafe(q, w) =
+				m_last_data_association.Y_pred_means(q, w) =
 					all_predictions[i][w];
 			m_last_data_association.predictions_IDs.push_back(
 				i);  // for the conversion of indices...
@@ -1382,9 +1382,7 @@ void CRangeBearingKFSLAM::OnPreComputingPredictions(
 	const double fov_pitch = obs->fieldOfView_pitch;
 
 	const double max_vehicle_loc_uncertainty =
-		4 * std::sqrt(
-				m_pkk.get_unsafe(0, 0) + m_pkk.get_unsafe(1, 1) +
-				m_pkk.get_unsafe(2, 2));
+		4 * std::sqrt(m_pkk(0, 0) + m_pkk(1, 1) + m_pkk(2, 2));
 #endif
 
 	out_LM_indices_to_predict.clear();

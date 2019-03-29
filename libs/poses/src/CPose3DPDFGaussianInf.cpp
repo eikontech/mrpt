@@ -342,7 +342,7 @@ void CPose3DPDFGaussianInf::assureSymmetry()
 	//  digit, so... just take one of them arbitrarily!
 	for (int i = 0; i < cov_inv.rows() - 1; i++)
 		for (int j = i + 1; j < cov_inv.rows(); j++)
-			cov_inv.get_unsafe(i, j) = cov_inv.get_unsafe(j, i);
+			cov_inv(i, j) = cov_inv(j, i);
 }
 
 /*---------------------------------------------------------------
@@ -361,12 +361,12 @@ double CPose3DPDFGaussianInf::mahalanobisDistanceTo(
 
 	for (int i = 0; i < 6; i++)
 	{
-		if (COV_.get_unsafe(i, i) == 0)
+		if (COV_(i, i) == 0)
 		{
-			if (MU.get_unsafe(i, 0) != 0)
+			if (MU(i, 0) != 0)
 				return std::numeric_limits<double>::infinity();
 			else
-				COV_.get_unsafe(i, i) = 1;  // Any arbitrary value since
+				COV_(i, i) = 1;  // Any arbitrary value since
 			// MU(i)=0, and this value doesn't
 			// affect the result.
 		}
@@ -401,9 +401,9 @@ void CPose3DPDFGaussianInf::getInvCovSubmatrix2D(CMatrixDouble& out_cov) const
 		for (int j = i; j < 3; j++)
 		{
 			int b = j == 2 ? 3 : j;
-			double f = cov_inv.get_unsafe(a, b);
-			out_cov.set_unsafe(i, j, f);
-			out_cov.set_unsafe(j, i, f);
+			double f = cov_inv(a, b);
+			out_cov(i, j) = f;
+			out_cov(j, i) = f;
 		}
 	}
 }

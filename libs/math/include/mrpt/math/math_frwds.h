@@ -19,13 +19,24 @@
  * ops_containers.h
  */
 
-// Frwd decls for MRPT matrices:
+// Minimum Eigen forward declarations for use in MRPT templates:
 namespace Eigen
 {
 template <typename PlainObjectType, int MapOptions, typename StrideType>
 class Map;
 template <int Value>
 class InnerStride;
+template <
+	typename _Scalar, int _Rows, int _Cols, int _Options,
+	int _MaxRows /*= _Rows*/, int _MaxCols /* = _Cols*/>
+class Matrix;
+// For reference: _Options =
+// /*AutoAlign*/ 0 | ((_Rows == 1 && _Cols != 1) ? /*Eigen::RowMajor*/ 1
+//  : (_Cols == 1 && _Rows != 1) ? /*Eigen::ColMajor*/ 0 : /*default: Col*/ 0)
+// ==> That is: _Options=1 for RowMajor as it's the default in MRPT matrices.
+
+template <typename Derived>
+class MatrixBase;
 }  // namespace Eigen
 
 namespace mrpt::system
@@ -35,43 +46,8 @@ std::string MRPT_getVersion();
 namespace mrpt::math
 {
 struct TPoseOrPoint;
-class CMatrix;  // mrpt-binary-serializable matrix
-class CMatrixD;  // mrpt-binary-serializable matrix
-
-namespace detail
-{
-/** Internal resize which compiles to nothing on fixed-size matrices. */
-template <typename MAT, int TypeSizeAtCompileTime>
-struct TAuxResizer
-{
-	static inline void internal_resize(MAT&, size_t, size_t) {}
-	static inline void internal_resize(MAT&, size_t) {}
-};
-template <typename MAT>
-struct TAuxResizer<MAT, -1>
-{
-	static inline void internal_resize(MAT& obj, size_t row, size_t col)
-	{
-		obj.derived().conservativeResize(row, col);
-	}
-	static inline void internal_resize(MAT& obj, size_t nsize)
-	{
-		obj.derived().conservativeResize(nsize);
-	}
-};
-}  // namespace detail
-
-/*! Selection of the number format in CMatrixTemplate::saveToTextFile
- */
-enum TMatrixTextFileFormat
-{
-	/** engineering format '%e' */
-	MATRIX_FORMAT_ENG = 0,
-	/** fixed floating point '%f' */
-	MATRIX_FORMAT_FIXED = 1,
-	/** intergers '%i' */
-	MATRIX_FORMAT_INT = 2
-};
+// class CMatrix;  // mrpt-binary-serializable matrix
+// class CMatrixD;  // mrpt-binary-serializable matrix
 
 /** For usage in one of the constructors of CMatrixFixedNumeric or
    CMatrixTemplate (and derived classes), if it's not required

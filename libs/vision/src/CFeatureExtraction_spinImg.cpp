@@ -164,7 +164,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 							double v = _2var_dist * square(pix_dist_cur_dist) +
 									   _2var_int * square(pix_val_cur_val);
 
-							hist2d.get_unsafe(bin_int, bin_dist) += exp(v);
+							hist2d(bin_int, bin_dist) += exp(v);
 						}
 					}
 					// hist2d(bin_int,bin_dist) *= ;
@@ -183,7 +183,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 
 		for (unsigned i = 0; i < HIST_N_DIS; i++)
 			for (unsigned j = 0; j < HIST_N_INT; j++)
-				ptr_trg[idx++] = hist2d.get_unsafe(j, i);
+				ptr_trg[idx++] = hist2d(j, i);
 
 		in_feature->descriptors.SpinImg_range_rows = HIST_N_DIS;
 

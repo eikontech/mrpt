@@ -28,8 +28,8 @@ void CMatrix::serializeTo(mrpt::serialization::CArchive& out) const
 	out << static_cast<uint32_t>(rows()) << static_cast<uint32_t>(cols());
 
 	if (rows() > 0 && cols() > 0)
-		for (Index i = 0; i < rows(); i++)
-			out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
+		for (size_t i = 0; i < rows(); i++)
+			out.WriteBufferFixEndianness<Scalar>(&(*this)(i, 0), cols());
 }
 
 void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -46,8 +46,8 @@ void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			setSize(nRows, nCols);
 
 			if (nRows > 0 && nCols > 0)
-				for (Index i = 0; i < rows(); i++)
-					in.ReadBufferFixEndianness<Scalar>(&coeffRef(i, 0), nCols);
+				for (size_t i = 0; i < rows(); i++)
+					in.ReadBufferFixEndianness<Scalar>(&(*this)(i, 0), nCols);
 		}
 		break;
 		default:

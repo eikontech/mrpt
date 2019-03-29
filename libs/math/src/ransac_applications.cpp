@@ -80,9 +80,8 @@ void ransac3Dplane_distance(
 	out_inlierIndices.reserve(100);
 	for (size_t i = 0; i < N; i++)
 	{
-		const double d = plane.distance(TPoint3D(
-			allData.get_unsafe(0, i), allData.get_unsafe(1, i),
-			allData.get_unsafe(2, i)));
+		const double d = plane.distance(
+			TPoint3D(allData(0, i), allData(1, i), allData(2, i)));
 		if (d < distanceThreshold) out_inlierIndices.push_back(i);
 	}
 }
@@ -250,8 +249,8 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
 		out_inlierIndices.reserve(100);
 		for (size_t i = 0; i < N; i++)
 		{
-			const double d = line.distance(
-				TPoint2D(allData.get_unsafe(0, i), allData.get_unsafe(1, i)));
+			const double d =
+				line.distance(TPoint2D(allData(0, i), allData(1, i)));
 			if (d < distanceThreshold) out_inlierIndices.push_back(i);
 		}
 	}

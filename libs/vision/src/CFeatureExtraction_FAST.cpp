@@ -154,7 +154,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 				continue;  // Already occupied! skip.
 
 			// Mark section as occupied
-			occupied_sections.set_unsafe(section_idx_x, section_idx_y, true);
+			occupied_sections(section_idx_x, section_idx_y) = true;
 			if (section_idx_x > 0)
 				occupied_sections.set_unsafe(
 					section_idx_x - 1, section_idx_y, true);

@@ -178,8 +178,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 									 k++, i++)
 								{
 									unsigned char c =
-										*(face.confidenceImage.get_unsafe(
-											k, j, 0));
+										*(face.confidenceImage(k, j, 0));
 									if (c > faceDetector.m_options
 												.confidenceThreshold)
 									{

@@ -133,8 +133,8 @@ NUMTYPE leastSquareLinearFit(
 	Xt.resize(2, N);
 	for (size_t i = 0; i < N; i++)
 	{
-		Xt.set_unsafe(0, i, 1);
-		Xt.set_unsafe(1, i, x[i] - x_min);
+		Xt(0, i)= 1;
+		Xt(1, i)= x[i] - x_min;
 	}
 
 	const auto B = ((Xt * Xt.transpose()).inv().eval() * Xt * y).eval();
@@ -172,8 +172,8 @@ void leastSquareLinearFit(
 	Xt.resize(2, N);
 	for (size_t i = 0; i < N; i++)
 	{
-		Xt.set_unsafe(0, i, 1);
-		Xt.set_unsafe(1, i, x[i] - x_min);
+		Xt(0, i)= 1;
+		Xt(1, i)= x[i] - x_min;
 	}
 
 	const auto B = ((Xt * Xt.transpose()).inv().eval() * Xt * y).eval();

@@ -265,15 +265,15 @@ void CPose3DPDFGaussian::copyFrom(const CPosePDF& o)
 	mean = CPose3D(p);
 
 	cov.zeros();
-	cov.get_unsafe(0, 0) = C.get_unsafe(0, 0);
-	cov.get_unsafe(1, 1) = C.get_unsafe(1, 1);
-	cov.get_unsafe(3, 3) = C.get_unsafe(2, 2);
+	cov(0, 0) = C(0, 0);
+	cov(1, 1) = C(1, 1);
+	cov(3, 3) = C(2, 2);
 
-	cov.get_unsafe(0, 1) = cov.get_unsafe(1, 0) = C.get_unsafe(0, 1);
+	cov(0, 1) = cov(1, 0) = C(0, 1);
 
-	cov.get_unsafe(0, 3) = cov.get_unsafe(3, 0) = C.get_unsafe(0, 2);
+	cov(0, 3) = cov(3, 0) = C(0, 2);
 
-	cov.get_unsafe(1, 3) = cov.get_unsafe(3, 1) = C.get_unsafe(1, 2);
+	cov(1, 3) = cov(3, 1) = C(1, 2);
 }
 
 /*---------------------------------------------------------------
@@ -557,8 +557,7 @@ void CPose3DPDFGaussian::assureSymmetry()
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (unsigned int i = 0; i < cov.rows() - 1; i++)
-		for (unsigned int j = i + 1; j < cov.rows(); j++)
-			cov.get_unsafe(i, j) = cov.get_unsafe(j, i);
+		for (unsigned int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------
@@ -574,12 +573,12 @@ double CPose3DPDFGaussian::mahalanobisDistanceTo(
 
 	for (int i = 0; i < 6; i++)
 	{
-		if (COV_.get_unsafe(i, i) == 0)
+		if (COV_(i, i) == 0)
 		{
-			if (MU.get_unsafe(i, 0) != 0)
+			if (MU(i, 0) != 0)
 				return std::numeric_limits<double>::infinity();
 			else
-				COV_.get_unsafe(i, i) = 1;  // Any arbitrary value since
+				COV_(i, i) = 1;  // Any arbitrary value since
 			// MU(i)=0, and this value doesn't
 			// affect the result.
 		}
@@ -614,9 +613,9 @@ void CPose3DPDFGaussian::getCovSubmatrix2D(CMatrixDouble& out_cov) const
 		for (int j = i; j < 3; j++)
 		{
 			int b = j == 2 ? 3 : j;
-			double f = cov.get_unsafe(a, b);
-			out_cov.set_unsafe(i, j, f);
-			out_cov.set_unsafe(j, i, f);
+			double f = cov(a, b);
+			out_cov(i, j) = f;
+			out_cov(j, i) = f;
 		}
 	}
 }

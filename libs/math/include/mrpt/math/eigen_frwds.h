@@ -37,14 +37,14 @@ struct ContainerType<Eigen::EigenBase<Derived>>
 };
 
 // Dynamic size:
-template <class T>
-class CMatrixTemplateNumeric;
-using CMatrixFloat = CMatrixTemplateNumeric<float>;
-using CMatrixDouble = CMatrixTemplateNumeric<double>;
-template <typename T>
-class dynamic_vector;
-using CVectorFloat = dynamic_vector<float>;
-using CVectorDouble = dynamic_vector<double>;
+// template <class T>
+// class CMatrixTemplateNumeric;
+// using CMatrixFloat = CMatrixTemplateNumeric<float>;
+// using CMatrixDouble = CMatrixTemplateNumeric<double>;
+// template <typename T>
+// class dynamic_vector;
+// using CVectorFloat = dynamic_vector<float>;
+// using CVectorDouble = dynamic_vector<double>;
 
 // Fixed size:
 template <typename T, size_t NROWS, size_t NCOLS>

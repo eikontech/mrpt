@@ -215,9 +215,9 @@ double CPointPDFGaussian::productIntegralWith(const CPointPDFGaussian& p) const
 	C.inv(C_inv);
 
 	CMatrixDouble31 MU(UNINITIALIZED_MATRIX);  // Diff. of means
-	MU.get_unsafe(0, 0) = mean.x() - p.mean.x();
-	MU.get_unsafe(1, 0) = mean.y() - p.mean.y();
-	MU.get_unsafe(2, 0) = mean.z() - p.mean.z();
+	MU(0, 0) = mean.x() - p.mean.x();
+	MU(1, 0) = mean.y() - p.mean.y();
+	MU(2, 0) = mean.z() - p.mean.z();
 
 	return std::pow(M_2PI, -0.5 * state_length) * (1.0 / std::sqrt(C.det())) *
 		   exp(-0.5 * MU.multiply_HtCH_scalar(C_inv));
@@ -246,8 +246,8 @@ double CPointPDFGaussian::productIntegralWith2D(
 	C.inv(C_inv);
 
 	CMatrixDouble21 MU(UNINITIALIZED_MATRIX);  // Diff. of means
-	MU.get_unsafe(0, 0) = mean.x() - p.mean.x();
-	MU.get_unsafe(1, 0) = mean.y() - p.mean.y();
+	MU(0, 0) = mean.x() - p.mean.x();
+	MU(1, 0) = mean.y() - p.mean.y();
 
 	return std::pow(M_2PI, -0.5 * (state_length - 1)) *
 		   (1.0 / std::sqrt(C.det())) *
@@ -319,9 +319,9 @@ double CPointPDFGaussian::mahalanobisDistanceTo(
 {
 	// The difference in means:
 	CMatrixDouble13 deltaX;
-	deltaX.get_unsafe(0, 0) = other.mean.x() - mean.x();
-	deltaX.get_unsafe(0, 1) = other.mean.y() - mean.y();
-	deltaX.get_unsafe(0, 2) = other.mean.z() - mean.z();
+	deltaX(0, 0) = other.mean.x() - mean.x();
+	deltaX(0, 1) = other.mean.y() - mean.y();
+	deltaX(0, 2) = other.mean.z() - mean.z();
 
 	// The inverse of the combined covs:
 	CMatrixDouble33 COV = other.cov;

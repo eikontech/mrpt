@@ -647,23 +647,20 @@ float CFeature::internal_distanceBetweenPolarImages(
 #ifdef LM_CORR_METHOD_EUCLID
 #ifdef LM_CORR_BIAS_MEAN
 				dist += square(
-					desc1.get_unsafe(i, j) - desc1_mean -
-					desc2.get_unsafe(ii, j) + desc2_mean);
+					desc1(i, j) - desc1_mean - desc2(ii, j) + desc2_mean);
 #else
-				dist +=
-					square(desc1.get_unsafe(i, j) - desc2.get_unsafe(ii, j));
+				dist += square(desc1(i, j) - desc2(ii, j));
 #endif
 #elif defined(LM_CORR_METHOD_MANHATTAN)
 #ifdef LM_CORR_BIAS_MEAN
 				dist +=
-					abs(desc1.get_unsafe(i, j) - desc1_mean -
-						desc2.get_unsafe(ii, j) + desc2_mean);
+					abs(desc1(i, j) - desc1_mean - desc2(ii, j) + desc2_mean);
 #else
-				dist += abs(desc1.get_unsafe(i, j) - desc2.get_unsafe(ii, j));
+				dist += abs(desc1(i, j) - desc2(ii, j));
 #endif
 #elif defined(LM_CORR_METHOD_CORRELATION)
-				float d1 = desc1.get_unsafe(i, j) - desc1_mean;
-				float d2 = desc2.get_unsafe(ii, j) - desc2_mean;
+				float d1 = desc1(i, j) - desc1_mean;
+				float d2 = desc2(ii, j) - desc2_mean;
 				s11 += square(d1);
 				s22 += square(d2);
 				s12 += d1 * d2;

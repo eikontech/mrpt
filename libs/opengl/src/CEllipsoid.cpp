@@ -79,10 +79,8 @@ void CEllipsoid::render_dl() const
 				double ccos = cos(ang);
 				double ssin = sin(ang);
 
-				const float x =
-					ccos * M.get_unsafe(0, 0) + ssin * M.get_unsafe(1, 0);
-				const float y =
-					ccos * M.get_unsafe(0, 1) + ssin * M.get_unsafe(1, 1);
+				const float x = ccos * M(0, 0) + ssin * M(1, 0);
+				const float y = ccos * M(0, 1) + ssin * M(1, 1);
 
 				glVertex2f(x, y);
 			}  // end for points on ellipse

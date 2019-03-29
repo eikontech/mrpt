@@ -165,8 +165,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 // Cov:
 #if 1
 		CMatrixFixedNumeric<double, 7, 6> dq_dr;
-		dq_dr.get_unsafe(0, 0) = dq_dr.get_unsafe(1, 1) =
-			dq_dr.get_unsafe(2, 2) = 1;
+		dq_dr(0, 0) = dq_dr(1, 1) = dq_dr(2, 2) = 1;
 		dq_dr.insertMatrix(3, 3, dq_dr_sub);
 		// Now for the covariance:
 		dq_dr.multiply_HCHt(o.cov, this->cov);
@@ -309,10 +308,10 @@ void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 
 	CMatrixFixedNumeric<double, 7, 7> jacob;
 	jacob.insertMatrix(0, 0, df_dpose);
-	jacob.set_unsafe(3, 3, 1);
-	jacob.set_unsafe(4, 4, -1);
-	jacob.set_unsafe(5, 5, -1);
-	jacob.set_unsafe(6, 6, -1);
+	jacob(3, 3) = 1;
+	jacob(4, 4) = -1;
+	jacob(5, 5) = -1;
+	jacob(6, 6) = -1;
 
 	// C(0:2,0:2): H C H^t
 	jacob.multiply_HCHt(this->cov, out.cov);
@@ -403,8 +402,7 @@ void CPose3DQuatPDFGaussian::assureSymmetry()
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (int i = 0; i < cov.rows() - 1; i++)
-		for (int j = i + 1; j < cov.rows(); j++)
-			cov.get_unsafe(i, j) = cov.get_unsafe(j, i);
+		for (int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------

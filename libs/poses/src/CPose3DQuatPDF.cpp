@@ -71,9 +71,9 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	df_dx.zeros();
 
 	// first part 3x7:  df_{qr} / dp
-	df_dx.set_unsafe(0, 0, 1);
-	df_dx.set_unsafe(1, 1, 1);
-	df_dx.set_unsafe(2, 2, 1);
+	df_dx(0, 0) = 1;
+	df_dx(1, 1) = 1;
+	df_dx(2, 2) = 1;
 
 	alignas(MRPT_MAX_ALIGN_BYTES)
 		const double vals2[3 * 4] = {2 * (-qz * ay + qy * az),
@@ -109,17 +109,17 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	df_du.zeros();
 
 	// first part 3x3:  df_{qr} / da
-	df_du.set_unsafe(0, 0, 1 - 2 * (qy2 + qz2));
-	df_du.set_unsafe(0, 1, 2 * (qx * qy - qr * qz));
-	df_du.set_unsafe(0, 2, 2 * (qr * qy + qx * qz));
+	df_du(0, 0) = 1 - 2 * (qy2 + qz2);
+	df_du(0, 1) = 2 * (qx * qy - qr * qz);
+	df_du(0, 2) = 2 * (qr * qy + qx * qz);
 
-	df_du.set_unsafe(1, 0, 2 * (qr * qz + qx * qy));
-	df_du.set_unsafe(1, 1, 1 - 2 * (qx2 + qz2));
-	df_du.set_unsafe(1, 2, 2 * (qy * qz - qr * qx));
+	df_du(1, 0) = 2 * (qr * qz + qx * qy);
+	df_du(1, 1) = 1 - 2 * (qx2 + qz2);
+	df_du(1, 2) = 2 * (qy * qz - qr * qx);
 
-	df_du.set_unsafe(2, 0, 2 * (qx * qz - qr * qy));
-	df_du.set_unsafe(2, 1, 2 * (qr * qx + qy * qz));
-	df_du.set_unsafe(2, 2, 1 - 2 * (qx2 + qy2));
+	df_du(2, 0) = 2 * (qx * qz - qr * qy);
+	df_du(2, 1) = 2 * (qr * qx + qy * qz);
+	df_du(2, 2) = 1 - 2 * (qx2 + qy2);
 
 	// Second part:
 	{

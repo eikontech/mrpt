@@ -270,7 +270,7 @@ void CPoseRandomSampler::do_sample_2D(CPose2D& p) const
 		{
 			double rnd = getRandomGenerator().drawGaussian1D_normalized();
 			for (size_t d = 0; d < 3; d++)
-				rndVector[d] += (m_fastdraw_gauss_Z3.get_unsafe(d, i) * rnd);
+				rndVector[d] += (m_fastdraw_gauss_Z3(d, i) * rnd);
 		}
 
 		p.x(m_fastdraw_gauss_M_2D.x() + rndVector[0]);
@@ -320,7 +320,7 @@ void CPoseRandomSampler::do_sample_3D(CPose3D& p) const
 		{
 			double rnd = getRandomGenerator().drawGaussian1D_normalized();
 			for (size_t d = 0; d < 6; d++)
-				rndVector[d] += (m_fastdraw_gauss_Z6.get_unsafe(d, i) * rnd);
+				rndVector[d] += (m_fastdraw_gauss_Z6(d, i) * rnd);
 		}
 
 		p.setFromValues(

@@ -149,6 +149,14 @@ class CMatrixTemplate
 		realloc(row, col);
 	}
 
+	/** Copy (casting from if needed) from another matrix  */
+	template <typename U>
+	explicit CMatrixTemplate(const CMatrixTemplate<U>& m)
+		: m_Val(nullptr), m_Rows(0), m_Cols(0)
+	{
+		(*this) = m;
+	}
+
 	/** Copy constructor & crop from another matrix
 	 */
 	CMatrixTemplate(
@@ -216,12 +224,16 @@ class CMatrixTemplate
 
 	/** Destructor */
 	virtual ~CMatrixTemplate() { realloc(0, 0); }
-	/** Assignment operator from another matrix */
-	CMatrixTemplate& operator=(const CMatrixTemplate& m)
+
+	/** Assignment operator from another matrix (possibly of a different type)
+	 */
+	template <typename U>
+	CMatrixTemplate& operator=(const CMatrixTemplate<U>& m)
 	{
-		realloc(m.m_Rows, m.m_Cols);
+		realloc(m.rows(), m.cols());
 		for (size_t i = 0; i < m_Rows; i++)
-			for (size_t j = 0; j < m_Cols; j++) m_Val[i][j] = m.m_Val[i][j];
+			for (size_t j = 0; j < m_Cols; j++)
+				(*this)(i, j) = static_cast<T>(m(i, j));
 		return *this;
 	}
 

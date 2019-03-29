@@ -362,8 +362,8 @@ inline void
 				}
 				elem *= NORM;
 			}
-			covariances.get_unsafe(i, j) = elem;
-			if (i != j) covariances.get_unsafe(j, i) = elem;
+			covariances(i, j) = elem;
+			if (i != j) covariances(j, i) = elem;
 		}
 }
 

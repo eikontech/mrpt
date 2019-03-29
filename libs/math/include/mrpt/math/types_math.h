@@ -9,6 +9,8 @@
 
 #pragma once
 
+#error Remove this header!
+
 #include <deque>  // For <Eigen/StdDeque>
 #include <vector>  // For <Eigen/StdVector>
 
@@ -36,8 +38,6 @@
 #error MRPT needs version 3.0.0-beta of Eigen or newer
 #endif
 
-// Template implementations that need to be after all Eigen includes:
-#include EIGEN_MATRIXBASE_PLUGIN_POST_IMPL
 // --------------------------------------------------
 //  End of Eigen includes
 // --------------------------------------------------
