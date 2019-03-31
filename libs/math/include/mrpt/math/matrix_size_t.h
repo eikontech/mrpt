@@ -17,6 +17,10 @@ namespace mrpt::math
  * behavior of STL-containers.
  * \ingroup mrpt_math_grp
  */
-using matrix_size_t = std::array<size_t, 2>;
+struct matrix_size_t : public std::array<size_t, 2>
+{
+	/** Cast to size_t as the overall number of matrix/vector elements */
+	operator std::size_t() const { return at(0) * at(1); }
+};
 
 }  // namespace mrpt::math

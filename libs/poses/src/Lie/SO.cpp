@@ -14,6 +14,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SO.h>
+#include <Eigen/Dense>
 #include <cmath>
 
 using namespace mrpt;

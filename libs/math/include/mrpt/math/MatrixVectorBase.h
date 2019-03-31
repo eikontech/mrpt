@@ -9,7 +9,7 @@
 #pragma once
 
 #include <algorithm>  // fill()
-#include <cstddef>	// size_t
+#include <cstddef>  // size_t
 
 namespace mrpt::math
 {
@@ -34,6 +34,16 @@ class MatrixVectorBase
 	void fill(const Scalar& val)
 	{
 		std::fill(derived().begin(), derived().end(), val);
+	}
+
+	template <
+		typename = std::enable_if_t<
+			(Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0)>>
+	static Derived Zero()
+	{
+		Derived m;
+		m.setZero();
+		return m;
 	}
 
 	inline void setZero() { fill(0); }

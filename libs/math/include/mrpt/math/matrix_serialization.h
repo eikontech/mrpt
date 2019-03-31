@@ -77,7 +77,7 @@ mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out,
 	const CMatrixFixed<double, NROWS, NCOLS>& M)
 {
-	CMatrixD aux = CMatrixDouble(M);
+	CMatrixD aux = CMatrixD(M);
 	out.WriteObject(&aux);
 	return out;
 }
