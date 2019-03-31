@@ -14,6 +14,7 @@
 #include <Eigen/Eigenvalues>  // EigenSolver
 #include <algorithm>
 #include <cstdio>  // fopen(),...
+#include <ctime>  // time(),...
 #include <fstream>  // ifstream
 #include <sstream>  // stringstream
 #include <stdexcept>

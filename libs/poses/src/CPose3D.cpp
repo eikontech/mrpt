@@ -7,37 +7,38 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"	// Precompiled headers
 
 #include <mrpt/config.h>  // for HAVE_SINCOS
 #include <mrpt/core/bits_math.h>  // for square
 #include <mrpt/math/CMatrixDynamic.h>  // for CMatrixD...
-#include <mrpt/math/CMatrixF.h>  // for CMatrixF
-#include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
-#include <mrpt/math/CQuaternion.h>  // for CQuatern...
-#include <mrpt/math/CVectorFixed.h>  // for CArrayDo...
-#include <mrpt/math/geometry.h>  // for skew_sym...
+#include <mrpt/math/CMatrixF.h>	 // for CMatrixF
+#include <mrpt/math/CMatrixFixed.h>	 // for CMatrixF...
+#include <mrpt/math/CQuaternion.h>	// for CQuatern...
+#include <mrpt/math/CVectorFixed.h>	 // for CArrayDo...
+#include <mrpt/math/eigen_extensions.h>
+#include <mrpt/math/geometry.h>	 // for skew_sym...
 #include <mrpt/math/homog_matrices.h>  // for homogene...
 #include <mrpt/math/lightweight_geom_data.h>  // for TPoint3D
-#include <mrpt/math/matrix_serialization.h>  // for operator>>
+#include <mrpt/math/matrix_serialization.h>	 // for operator>>
 #include <mrpt/math/ops_containers.h>  // for dotProduct
-//#include <mrpt/math/types_math.h>  // for CVectorD...
 #include <mrpt/math/utils_matlab.h>
-#include <mrpt/math/wrap2pi.h>  // for wrapToPi
+#include <mrpt/math/wrap2pi.h>	// for wrapToPi
 #include <mrpt/poses/CPoint2D.h>  // for CPoint2D
 #include <mrpt/poses/CPoint3D.h>  // for CPoint3D
-#include <mrpt/poses/CPose2D.h>  // for CPose2D
-#include <mrpt/poses/CPose3D.h>  // for CPose3D
-#include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
+#include <mrpt/poses/CPose2D.h>	 // for CPose2D
+#include <mrpt/poses/CPose3D.h>	 // for CPose3D
+#include <mrpt/poses/CPose3DQuat.h>	 // for CPose3DQuat
 #include <mrpt/poses/Lie/SO.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
+#include <Eigen/Dense>
 #include <algorithm>  // for move
 #include <cmath>  // for fabs
-#include <iomanip>  // for operator<<
+#include <iomanip>	// for operator<<
 #include <limits>  // for numeric_...
-#include <ostream>  // for operator<<
+#include <ostream>	// for operator<<
 #include <string>  // for allocator
 
 using namespace mrpt;
@@ -53,7 +54,7 @@ IMPLEMENTS_SERIALIZABLE(CPose3D, CSerializable, mrpt::poses)
 CPose3D::CPose3D()
 {
 	m_coords[0] = m_coords[1] = m_coords[2] = 0;
-	m_ROT.unit(3, 1.0);
+	m_ROT.setIdentity();
 }
 
 CPose3D::CPose3D(
@@ -410,26 +411,26 @@ void CPose3D::composePoint(
 				0,
 				0,
 				-lx * sy * cp + ly * (-sy * sp * sr - cy * cr) +
-					lz * (-sy * sp * cr + cy * sr),  // d_x'/d_yaw
+					lz * (-sy * sp * cr + cy * sr),	 // d_x'/d_yaw
 				-lx * cy * sp + ly * (cy * cp * sr) +
 					lz * (cy * cp * cr),  // d_x'/d_pitch
 				ly * (cy * sp * cr + sy * sr) +
-					lz * (-cy * sp * sr + sy * cr),  // d_x'/d_roll
+					lz * (-cy * sp * sr + sy * cr),	 // d_x'/d_roll
 				0,
 				1,
 				0,
 				lx * cy * cp + ly * (cy * sp * sr - sy * cr) +
-					lz * (cy * sp * cr + sy * sr),  // d_y'/d_yaw
+					lz * (cy * sp * cr + sy * sr),	// d_y'/d_yaw
 				-lx * sy * sp + ly * (sy * cp * sr) +
 					lz * (sy * cp * cr),  // d_y'/d_pitch
 				ly * (sy * sp * cr - cy * sr) +
-					lz * (-sy * sp * sr - cy * cr),  // d_y'/d_roll
+					lz * (-sy * sp * sr - cy * cr),	 // d_y'/d_roll
 				0,
 				0,
 				1,
-				0,  // d_z' / d_yaw
-				-lx * cp - ly * sp * sr - lz * sp * cr,  // d_z' / d_pitch
-				ly * cp * cr - lz * cp * sr  // d_z' / d_roll
+				0,	// d_z' / d_yaw
+				-lx * cp - ly * sp * sr - lz * sp * cr,	 // d_z' / d_pitch
+				ly * cp * cr - lz * cp * sr	 // d_z' / d_roll
 			};
 			out_jacobian_df_dpose->loadFromArray(nums);
 		}
@@ -462,7 +463,7 @@ _mm_shuffle_ps(in,in,_MM_SHUFFLE(2,2,2,2)));
 
 	return _mm_add_ps(_mm_add_ps(a0,a1),a2);
 }*/
-#endif  // SSE2
+#endif	// SSE2
 
 /*---------------------------------------------------------------
 		getAsVector
@@ -777,4 +778,13 @@ void CPose3D::fromString(const std::string& s)
 void CPose3D::fromStringRaw(const std::string& s)
 {
 	this->fromString("[" + s + "]");
+}
+
+void CPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
+{
+	auto M = out_HM.asEigen();
+	M.block<3, 3>(0, 0) = m_ROT.asEigen();
+	for (int i = 0; i < 3; i++) out_HM(i, 3) = m_coords[i];
+	out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0.;
+	out_HM(3, 3) = 1.;
 }

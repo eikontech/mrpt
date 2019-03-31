@@ -215,13 +215,7 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 * point(translation) or pose (translation+orientation).
 	 * \sa getInverseHomogeneousMatrix, getRotationMatrix
 	 */
-	inline void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
-	{
-		out_HM.insertMatrix(0, 0, m_ROT);
-		for (int i = 0; i < 3; i++) out_HM(i, 3) = m_coords[i];
-		out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0.;
-		out_HM(3, 3) = 1.;
-	}
+	void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
 
 	/** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
 	inline void getRotationMatrix(mrpt::math::CMatrixDouble33& ROT) const

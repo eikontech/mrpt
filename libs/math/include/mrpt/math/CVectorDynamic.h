@@ -10,12 +10,13 @@
 
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
+#include <mrpt/math/MatrixVectorBase.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <array>
-#include <cstring>  // memset()
+#include <cstring>	// memset()
 #include <type_traits>
 
 namespace mrpt::math
@@ -28,7 +29,7 @@ namespace mrpt::math
  * \ingroup mrpt_math_grp
  */
 template <class T>
-class CVectorDynamic
+class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 {
    protected:
 	using vec_t = mrpt::aligned_std_vector<T>;
@@ -80,8 +81,6 @@ class CVectorDynamic
 	}
 
    public:
-	void fill(const T& val) { std::fill(m_data.begin(), m_data.end(), val); }
-
 	void swap(CVectorDynamic<T>& o) { std::swap(m_data); }
 
 	CVectorDynamic() = default;

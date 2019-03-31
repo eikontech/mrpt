@@ -668,8 +668,8 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(
 	}
 	else
 	{
-		cov.unit(3, 1.0);
-		cov *= 1e20;
+		cov.setIdentity();
+		cov.asEigen() *= 1e20;
 		mean_point = CPose2D(0, 0, 0);
 	}
 }

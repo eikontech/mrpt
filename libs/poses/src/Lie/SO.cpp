@@ -168,7 +168,7 @@ SO<3>::mat2tang_jacob SO<3>::jacob_dlogv_dv(const SO<3>::type& R)
 	if (d > 0.99999)
 	{
 		a[0] = a[1] = a[2] = 0;
-		B.unit(3, -0.5);
+		B.setDiagonal(3, -0.5);
 	}
 	else
 	{
@@ -176,8 +176,8 @@ SO<3>::mat2tang_jacob SO<3>::jacob_dlogv_dv(const SO<3>::type& R)
 		const double d2 = square(d);
 		const double sq = std::sqrt(1 - d2);
 		a = SO<3>::vee_RmRt(R);
-		a *= (d * theta - sq) / (4 * (sq * sq * sq));
-		B.unit(3, -theta / (2 * sq));
+		a.asEigen() *= (d * theta - sq) / (4 * (sq * sq * sq));
+		B.setDiagonal(3, -theta / (2 * sq));
 	}
 	CMatrixDouble39 M(UNINITIALIZED_MATRIX);
 	M3x9(a, B, M);

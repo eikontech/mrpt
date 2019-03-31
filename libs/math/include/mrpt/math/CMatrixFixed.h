@@ -10,13 +10,14 @@
 
 #include <mrpt/core/alignment_req.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/math/MatrixVectorBase.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
 #include <mrpt/math/matrix_size_t.h>
-#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
+#include <mrpt/math/point_poses2vectors.h>	// MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 #include <array>
-#include <cstddef>  // std::size_t
+#include <cstddef>	// std::size_t
 
 namespace mrpt::math
 {
@@ -29,11 +30,12 @@ namespace mrpt::math
  * \ingroup mrpt_math_grp
  */
 template <typename T, std::size_t ROWS, std::size_t COLS>
-class CMatrixFixed
+class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 {
    private:
 	/** RowMajor matrix data */
-	alignas(MRPT_MAX_ALIGN_BYTES) std::array<T, ROWS * COLS> m_data;
+	using vec_t = std::array<T, ROWS * COLS>;
+	alignas(MRPT_MAX_ALIGN_BYTES) vec_t m_data;
 
    public:
 	/** @name Matrix type definitions
@@ -50,6 +52,18 @@ class CMatrixFixed
 	constexpr static int ColsAtCompileTime = COLS;
 	constexpr static int SizeAtCompileTime = ROWS * COLS;
 	constexpr static int is_mrpt_type = 1;
+	/** @} */
+
+	/** @name Iterators interface
+	 * @{ */
+	using iterator = typename vec_t::iterator;
+	using const_iterator = typename vec_t::const_iterator;
+	iterator begin() { return m_data.begin(); }
+	iterator end() { return m_data.end(); }
+	const_iterator begin() const { return m_data.begin(); }
+	const_iterator end() const { return m_data.end(); }
+	const_iterator cbegin() const { return m_data.begin(); }
+	const_iterator cend() const { return m_data.end(); }
 	/** @} */
 
 	/** @name Constructors, assignment operators, initializers
@@ -113,10 +127,12 @@ class CMatrixFixed
 	template <typename VECTOR>
 	void loadFromArray(const VECTOR& vals)
 	{
-		constexpr auto LEN = std::size(vals);
-		static_assert(LEN == ROWS * COLS, "Array of incorrect size.");
+		MRPT_START
+		const auto LEN = std::size(vals);
+		ASSERT_EQUAL_(LEN, ROWS * COLS);
 		for (size_t r = 0, i = 0; r < ROWS; r++)
 			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i];
+		MRPT_END
 	}
 
 	/** Throws if size does not match with the fixed matrix size */
@@ -126,6 +142,8 @@ class CMatrixFixed
 		ASSERT_EQUAL_(row, ROWS);
 		ASSERT_EQUAL_(col, COLS);
 	}
+
+	void swap(CMatrixFixed& o) { m_data.swap(o.m_data); }
 
 	// These ones are to make template code compatible with Eigen & mrpt:
 	CMatrixFixed& derived() { return *this; }
@@ -145,6 +163,10 @@ class CMatrixFixed
 	/** Throws if size does not match with the fixed matrix size */
 	inline void resize(
 		const matrix_size_t& siz, [[maybe_unused]] bool zeroNewElements = false)
+	{
+		resize(siz[0], siz[1]);
+	}
+	void resize(size_t row, size_t col)
 	{
 		ASSERT_EQUAL_(siz[0], ROWS);
 		ASSERT_EQUAL_(siz[1], COLS);
@@ -225,12 +247,25 @@ class CMatrixFixed
 
 	void fill(const T& value) { m_data.fill(value); }
 	void setZero() { m_data.fill(0); }
-	void setIdentity()
+	void setDiagonal(const std::size_t N, const T value)
 	{
+		ASSERT_EQUAL_(N, ROWS);
+		ASSERT_EQUAL_(N, COLS);
 		for (std::size_t r = 0; r < ROWS; r++)
 			for (std::size_t c = 0; c < COLS; c++)
-				(*this)(r, c) = (r == c) ? 1 : 0;
+				(*this)(r, c) = (r == c) ? value : 0;
 	}
+	void setDiagonal(const T value)
+	{
+		ASSERT_EQUAL_(ROWS, COLS);
+		setDiagonal(ROWS, value);
+	}
+	void setIdentity()
+	{
+		ASSERT_EQUAL_(ROWS, COLS);
+		setDiagonal(ROWS, 1);
+	}
+	void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
 
 	/** @} */
 };

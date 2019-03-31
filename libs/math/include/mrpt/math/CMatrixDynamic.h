@@ -11,12 +11,13 @@
 #include <mrpt/core/aligned_std_basicstring.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
 #include <mrpt/core/format.h>
+#include <mrpt/math/MatrixVectorBase.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <algorithm>  // swap()
 #include <array>
-#include <cstring>  // memset()
+#include <cstring>	// memset()
 #include <type_traits>
 
 namespace mrpt::math
@@ -36,8 +37,15 @@ namespace mrpt::math
  * \ingroup mrpt_math_grp
  */
 template <class T>
-class CMatrixDynamic
+class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 {
+   private:
+	using vec_t = mrpt::aligned_std_basicstring<T>;
+
+	/** RowMajor matrix data */
+	vec_t  m_data;
+	size_t m_Rows{0}, m_Cols{0};
+
    public:
 	/** @name Matrix type definitions
 	 * @{ */
@@ -55,11 +63,19 @@ class CMatrixDynamic
 	constexpr static int is_mrpt_type = 1;
 	/** @} */
 
-   private:
-	/** RowMajor matrix data */
-	mrpt::aligned_std_basicstring<T> m_data;
-	size_t m_Rows{0}, m_Cols{0};
+	/** @name Iterators interface
+	 * @{ */
+	using iterator = typename vec_t::iterator;
+	using const_iterator = typename vec_t::const_iterator;
+	iterator begin() { return m_data.begin(); }
+	iterator end() { return m_data.end(); }
+	const_iterator begin() const { return m_data.begin(); }
+	const_iterator end() const { return m_data.end(); }
+	const_iterator cbegin() const { return m_data.begin(); }
+	const_iterator cend() const { return m_data.end(); }
+	/** @} */
 
+   private:
 	/** Internal use only: It reallocs the memory for the 2D matrix, maintaining
 	 * the previous contents if posible.
 	 */
@@ -113,17 +129,6 @@ class CMatrixDynamic
 	}
 
    public:
-	/*! Fill all the elements with a given value (Note: named "fillAll" since
-	 * "fill" will be used by child classes) */
-	void fill(const T& val) { std::fill(m_data.begin(), m_data.end(), val); }
-
-	inline void setZero() { fill(0); }
-	inline void setZero(size_t nrows, size_t ncols)
-	{
-		realloc(nrows, ncols);
-		fill(0);
-	}
-
 	/** Swap with another matrix very efficiently (just swaps a pointer and two
 	 * integer values). */
 	inline void swap(CMatrixDynamic<T>& o)
@@ -214,7 +219,7 @@ class CMatrixDynamic
 				(*this)(i, j) = static_cast<T>(*(it++));
 	}
 
-	virtual ~CMatrixDynamic();
+	virtual ~CMatrixDynamic() = default;
 
 	template <class MAT>
 	void setFromMatrixLike(const MAT& m)
@@ -306,6 +311,7 @@ class CMatrixDynamic
 	{
 		realloc(row, col, zeroNewElements);
 	}
+	void resize(size_t row, size_t col) { setSize(row, col); }
 
 	/** Resize the matrix */
 	inline void resize(const matrix_size_t& siz, bool zeroNewElements = false)
@@ -572,7 +578,7 @@ class CMatrixDynamic
 		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 
-};  // end of class CMatrixDynamic
+};	// end of class CMatrixDynamic
 
 /** Declares a matrix of booleans (non serializable).
  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB */

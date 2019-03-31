@@ -44,7 +44,7 @@ void CPosePDF::jacobiansPoseComposition(
 			[ 0, 1,  cos(phi_x)*x_u-sin(phi_x)*y_u ]
 			[ 0, 0,                              1 ]
 		*/
-		df_dx.unit(3, 1.0);
+		df_dx.setIdentity();
 
 		const double xu = u.x();
 		const double yu = u.y();

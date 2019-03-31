@@ -34,7 +34,7 @@ class Matrix;
 template <typename Derived>
 class MatrixBase;
 template <typename Derived>
-class EigenBase;
+struct EigenBase;
 }  // namespace Eigen
 
 namespace mrpt::math
