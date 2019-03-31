@@ -11,11 +11,11 @@
 
 #include <mrpt/config.h>  // for HAVE_SINCOS
 #include <mrpt/core/bits_math.h>  // for square
-#include <mrpt/math/CVectorFixed.h>  // for CArrayDo...
 #include <mrpt/math/CMatrixDynamic.h>  // for CMatrixD...
 #include <mrpt/math/CMatrixF.h>  // for CMatrixF
 #include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
 #include <mrpt/math/CQuaternion.h>  // for CQuatern...
+#include <mrpt/math/CVectorFixed.h>  // for CArrayDo...
 #include <mrpt/math/geometry.h>  // for skew_sym...
 #include <mrpt/math/homog_matrices.h>  // for homogene...
 #include <mrpt/math/lightweight_geom_data.h>  // for TPoint3D
@@ -760,4 +760,21 @@ void CPose3D::setToNaN()
 mrpt::math::TPose3D CPose3D::asTPose() const
 {
 	return mrpt::math::TPose3D(x(), y(), z(), yaw(), pitch(), roll());
+}
+
+void CPose3D::fromString(const std::string& s)
+{
+	using mrpt::DEG2RAD;
+	mrpt::math::CMatrixDouble m;
+	if (!fromMatlabStringFormat(m, s))
+		THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
+	this->setFromValues(
+		m(0, 0), m(0, 1), m(0, 2), DEG2RAD(m(0, 3)), DEG2RAD(m(0, 4)),
+		DEG2RAD(m(0, 5)));
+}
+
+void CPose3D::fromStringRaw(const std::string& s)
+{
+	this->fromString("[" + s + "]");
 }

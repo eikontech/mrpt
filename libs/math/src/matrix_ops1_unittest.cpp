@@ -18,6 +18,7 @@
 #include <mrpt/math/matrix_serialization.h>  // serialization of matrices
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -35,7 +36,7 @@ TEST(Matrices, A_times_B_dyn)
 	// Dyn. size, double.
 	CMatrixDouble A(3, 2, dat_A);
 	CMatrixDouble B(2, 2, dat_B);
-	CMatrixDouble C = A * B;
+	CMatrixDouble C = A.asEigen() * B.asEigen();
 	CMatrixDouble C_ok(3, 2, dat_Cok);
 	CMatrixDouble err = C - C_ok;
 	EXPECT_NEAR(0, fabs(err.sum()), 1e-5)

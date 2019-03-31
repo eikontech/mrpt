@@ -60,14 +60,10 @@ struct TAuxResizer<MAT, -1>
 template <int R, int C>
 struct MatOrVecResizer
 {
-	template <typename S, int Opt, int MaxR, int MaxC>
-	static inline void doit(
-		Eigen::Matrix<S, R, C, Opt, MaxR, MaxC>& mat, size_t new_rows,
-		size_t new_cols)
+	template <typename MAT>
+	static inline void doit(MAT& mat, size_t new_rows, size_t new_cols)
 	{
-		::mrpt::math::detail::TAuxResizer<
-			Eigen::Matrix<S, R, C, Opt, MaxR, MaxC>,
-			Eigen::Matrix<S, R, C, Opt, MaxR, MaxC>::SizeAtCompileTime>::
+		::mrpt::math::detail::TAuxResizer<MAT, MAT::SizeAtCompileTime>::
 			internal_resize(mat, new_rows, new_cols);
 	}
 };
@@ -75,127 +71,44 @@ struct MatOrVecResizer
 template <int R>
 struct MatOrVecResizer<R, 1>
 {
-	template <typename S, int Opt, int MaxR, int MaxC>
-	static inline void doit(
-		Eigen::Matrix<S, R, 1, Opt, MaxR, MaxC>& mat, size_t new_rows, size_t)
+	template <typename MAT>
+	static inline void doit(MAT& mat, size_t new_rows, size_t)
 	{
 		::mrpt::math::detail::TAuxResizer<
-			Eigen::Matrix<S, R, 1, Opt, MaxR, MaxC>,
-			Eigen::Matrix<S, R, 1, Opt, MaxR, MaxC>::SizeAtCompileTime>::
-			internal_resize(mat, new_rows);
+			MAT, MAT::SizeAtCompileTime>::internal_resize(mat, new_rows);
 	}
 };
 // Specialization for row matrices:
 template <int C>
 struct MatOrVecResizer<1, C>
 {
-	template <typename S, int Opt, int MaxR, int MaxC>
-	static inline void doit(
-		Eigen::Matrix<S, 1, C, Opt, MaxR, MaxC>& mat, size_t, size_t new_cols)
+	template <typename MAT>
+	static inline void doit(MAT& mat, size_t, size_t new_cols)
 	{
 		::mrpt::math::detail::TAuxResizer<
-			Eigen::Matrix<S, 1, C, Opt, MaxR, MaxC>,
-			Eigen::Matrix<S, 1, C, Opt, MaxR, MaxC>::SizeAtCompileTime>::
-			internal_resize(mat, new_cols);
+			MAT, MAT::SizeAtCompileTime>::internal_resize(mat, new_cols);
 	}
 };
 template <>
 struct MatOrVecResizer<1, 1>
 {
-	template <typename S, int Opt, int MaxR, int MaxC>
-	static inline void doit(
-		Eigen::Matrix<S, 1, 1, Opt, MaxR, MaxC>& mat, size_t, size_t new_cols)
+	template <typename MAT>
+	static inline void doit(MAT& mat, size_t, size_t new_cols)
 	{
 		::mrpt::math::detail::TAuxResizer<
-			Eigen::Matrix<S, 1, 1, Opt, MaxR, MaxC>,
-			Eigen::Matrix<S, 1, 1, Opt, MaxR, MaxC>::SizeAtCompileTime>::
-			internal_resize(mat, new_cols);
+			MAT, MAT::SizeAtCompileTime>::internal_resize(mat, new_cols);
 	}
 };
 }  // namespace detail
 
-/** Compute the eigenvectors and eigenvalues, both returned as matrices:
- * eigenvectors are the columns, and eigenvalues
- */
-template <class Derived, class MATRIX1, class VECTOR1>
-bool eigenVectorsVec(
-	const Eigen::MatrixBase<Derived>& m, MATRIX1& eVecs, VECTOR1& eVals)
-{
-	using Scalar = typename Derived::Scalar;
-	using Index = typename Derived::Index;
-
-	Eigen::EigenSolver<Derived> es(m, true);
-	// Keep only the real part of complex matrix
-	if (es.info() != Eigen::Success) return false;
-	eVecs = es.eigenvectors().real();
-	eVals = es.eigenvalues().real();
-
-	// Sort by ascending eigenvalues:
-	std::vector<std::pair<Scalar, Index>> D;
-	D.reserve(eVals.size());
-	for (Index i = 0; i < eVals.size(); i++)
-		D.push_back(std::pair<Scalar, Index>(eVals.coeff(i, 0), i));
-	std::sort(D.begin(), D.end());
-	MATRIX1 sortedEigs;
-	sortedEigs.resizeLike(eVecs);
-	for (std::size_t i = 0; i < eVals.size(); i++)
-	{
-		eVals.coeffRef(i, 0) = D[i].first;
-		sortedEigs.col(i) = eVecs.col(D[i].second);
-	}
-	eVecs = std::move(sortedEigs);
-	return true;
-}
-
-/** Compute the eigenvectors and eigenvalues, both returned as matrices:
- * eigenvectors are the columns, and eigenvalues. \return false on error.
- */
-template <class Derived, class MATRIX1, class MATRIX2>
-bool eigenVectors(
-	const Eigen::MatrixBase<Derived>& m, MATRIX1& eVecs, MATRIX2& eVals)
-{
-	Eigen::Matrix<typename Derived::Scalar, Eigen::Dynamic, 1> evals;
-	if (!eigenVectorsVec(m, eVecs, evals)) return false;
-	eVals.resize(evals.size(), evals.size());
-	eVals.setZero();
-	eVals.diagonal() = evals;
-	return true;
-}
-
-/** Compute the eigenvectors and eigenvalues, both returned as matrices:
- * eigenvectors are the columns, and eigenvalues
- */
-template <class Derived, class MATRIX1, class VECTOR1>
-void eigenVectorsSymmetricVec(
-    const Eigen::MatrixBase<Derived>& m, MATRIX1& eVecs, VECTOR1& eVals)
-{
-	// This solver returns the eigenvectors already sorted.
-	Eigen::SelfAdjointEigenSolver<Derived> eigensolver(m);
-	eVecs = eigensolver.eigenvectors();
-	eVals = eigensolver.eigenvalues();
-}
-/** Compute the eigenvectors and eigenvalues, both returned as matrices:
- * eigenvectors are the columns, and eigenvalues
- */
-template <class Derived, class MATRIX1, class MATRIX2>
-void eigenVectorsSymmetric(
-	const Eigen::MatrixBase<Derived>& m, MATRIX1& eVecs, MATRIX2& eVals)
-{
-	Eigen::Matrix<typename Derived::Scalar, Eigen::Dynamic, 1> evals;
-	eigenVectorsSymmetricVec(m, eVecs, evals);
-	eVals.resize(evals.size(), evals.size());
-	eVals.setZero();
-	eVals.diagonal() = evals;
-}
-
-template <class Derived>
+template <class MATRIX>
 bool fromMatlabStringFormat(
-	Eigen::MatrixBase<Derived>& m, const std::string& s,
+	MATRIX& m, const std::string& s,
 	mrpt::optional_ref<std::ostream> dump_errors_here = std::nullopt)
 {
-	using Scalar = typename Derived::Scalar;
+	using Scalar = typename MATRIX::Scalar;
 	// Start with a (0,0) matrix:
-	if (Derived::RowsAtCompileTime == Eigen::Dynamic) m = Derived();
+	if (MATRIX::RowsAtCompileTime == -1 /*Eigen::Dynamic*/) m = MATRIX();
 
 	// Look for starting "[".
 	size_t ini = s.find_first_not_of(" \t\r\n");
@@ -249,7 +162,8 @@ bool fromMatlabStringFormat(
 			{
 				// Else, this may be an empty matrix... if there is no next row,
 				// we'll return with a (0,0) matrix
-				if (Derived::RowsAtCompileTime == Eigen::Dynamic) m = Derived();
+				if (MATRIX::RowsAtCompileTime == -1 /*Eigen::Dynamic*/)
+					m = MATRIX();
 			}
 		}
 		else
@@ -258,8 +172,9 @@ bool fromMatlabStringFormat(
 
 			// Check valid width: All rows must have the same width
 			if ((nRow > 0 && size_t(m.cols()) != N) ||
-				(nRow == 0 && Derived::ColsAtCompileTime != Eigen::Dynamic &&
-				 Derived::ColsAtCompileTime != int(N)))
+				(nRow == 0 &&
+				 MATRIX::ColsAtCompileTime != -1 /*Eigen::Dynamic*/ &&
+				 MATRIX::ColsAtCompileTime != int(N)))
 			{
 				if (dump_errors_here)
 					dump_errors_here->get()
@@ -269,14 +184,14 @@ bool fromMatlabStringFormat(
 			}
 
 			// Append to the matrix:
-			if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
-				Derived::ColsAtCompileTime == Eigen::Dynamic)
+			if (MATRIX::RowsAtCompileTime == -1 /*Eigen::Dynamic*/ ||
+				MATRIX::ColsAtCompileTime == -1 /*Eigen::Dynamic*/)
 				detail::MatOrVecResizer<
-					Derived::RowsAtCompileTime,
-					Derived::ColsAtCompileTime>::doit(m, nRow + 1, N);
+					MATRIX::RowsAtCompileTime,
+					MATRIX::ColsAtCompileTime>::doit(m, nRow + 1, N);
 			else if (
-				Derived::RowsAtCompileTime != Eigen::Dynamic &&
-				int(nRow) >= Derived::RowsAtCompileTime)
+				MATRIX::RowsAtCompileTime != -1 /*Eigen::Dynamic*/ &&
+				int(nRow) >= MATRIX::RowsAtCompileTime)
 			{
 				if (dump_errors_here)
 					dump_errors_here->get()
@@ -285,15 +200,15 @@ bool fromMatlabStringFormat(
 						   "fixed sized matrix.\n";
 				return false;
 			}
-			for (size_t q = 0; q < N; q++) m.coeffRef(nRow, q) = lstElements[q];
+			for (size_t q = 0; q < N; q++) m(nRow, q) = lstElements[q];
 			// Go for the next row:
 			nRow++;
 		}
 		i = end_row + 1;
 	}
 	// For fixed sized matrices, check size:
-	if (Derived::RowsAtCompileTime != Eigen::Dynamic &&
-		int(nRow) != Derived::RowsAtCompileTime)
+	if (MATRIX::RowsAtCompileTime != -1 /*Eigen::Dynamic*/ &&
+		int(nRow) != MATRIX::RowsAtCompileTime)
 	{
 		if (dump_errors_here)
 			dump_errors_here->get()
@@ -307,7 +222,7 @@ bool fromMatlabStringFormat(
 
 template <class Derived>
 std::string inMatlabFormat(
-    const Eigen::MatrixBase<Derived>& m, const size_t decimal_digits = 6)
+	const Eigen::MatrixBase<Derived>& m, const size_t decimal_digits = 6)
 {
 	using Index = typename Derived::Index;
 	std::stringstream s;
@@ -464,7 +379,7 @@ void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 					"loadFromTextFile: The matrix in the text file does not "
 					"match fixed matrix size");
 			if (Derived::ColsAtCompileTime == Eigen::Dynamic && nRows > 0 &&
-			    Index(i) != m.cols())
+				Index(i) != m.cols())
 				throw std::runtime_error(
 					"loadFromTextFile: The matrix in the text file does not "
 					"have the same number of columns in all rows");
@@ -502,7 +417,7 @@ void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 		Derived::ColsAtCompileTime == Eigen::Dynamic)
 		detail::MatOrVecResizer<
 			Derived::RowsAtCompileTime,
-		    Derived::ColsAtCompileTime>::doit(m, nRows, m.cols());
+			Derived::ColsAtCompileTime>::doit(m, nRows, m.cols());
 
 	// Report error as exception
 	if (!nRows)
@@ -511,14 +426,70 @@ void loadFromTextFile(Eigen::MatrixBase<Derived>& m, std::istream& f)
 }
 
 /// \overload
-template <class Derived>
-void loadFromTextFile(Eigen::MatrixBase<Derived>& m, const std::string& file)
+template <class MATRIX>
+void loadFromTextFile(MATRIX& m, const std::string& file)
 {
 	std::ifstream f(file.c_str());
 	if (f.fail())
 		throw std::runtime_error(
 			std::string("loadFromTextFile: can't open file:") + file);
 	loadFromTextFile(m, f);
+}
+
+/** Remove columns of the matrix. The unsafe version assumes that, the indices
+ * are sorted in ascending order. */
+template <class MATRIX>
+void unsafeRemoveColumns(MATRIX& m, const std::vector<std::size_t>& idxs)
+{
+	std::size_t k = 1;
+	const auto nR = m.rows();
+	for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
+	{
+		const auto nC = m.cols() - *it - k;
+		if (nC > 0)
+			m.asEigen().block(0, *it, nR, nC) =
+				m.asEigen().block(0, *it + 1, nR, nC).eval();
+	}
+	m.setSize(nR, m.cols() - idxs.size());
+}
+
+/** Remove columns of the matrix. indices may be unsorted and duplicated. */
+template <class MATRIX>
+void removeColumns(MATRIX& m, const std::vector<std::size_t>& idxsToRemove)
+{
+	std::vector<std::size_t> idxs = idxsToRemove;
+	std::sort(idxs.begin(), idxs.end());
+	auto itEnd = std::unique(idxs.begin(), idxs.end());
+	idxs.resize(itEnd - idxs.begin());
+	unsafeRemoveColumns(m, idxs);
+}
+
+/** Remove rows of the matrix. The unsafe version assumes that, the indices are
+ * sorted in ascending order. */
+template <class MATRIX>
+void unsafeRemoveRows(MATRIX& m, const std::vector<size_t>& idxs)
+{
+	std::size_t k = 1;
+	const auto nC = m.cols();
+	for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
+	{
+		const auto nR = m.rows() - *it - k;
+		if (nR > 0)
+			m.asEigen().block(*it, 0, nR, nC) =
+				m.asEigen().block(*it + 1, 0, nR, nC).eval();
+	}
+	m.setSize(m.rows() - idxs.size(), nC);
+}
+
+/** Remove rows of the matrix. */
+template <class MATRIX>
+void removeRows(MATRIX& m, const std::vector<size_t>& idxsToRemove)
+{
+	std::vector<std::size_t> idxs = idxsToRemove;
+	std::sort(idxs.begin(), idxs.end());
+	auto itEnd = std::unique(idxs.begin(), idxs.end());
+	idxs.resize(itEnd - idxs.begin());
+	unsafeRemoveRows(m, idxs);
 }
 
 }  // namespace mrpt::math

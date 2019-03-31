@@ -11,8 +11,8 @@
 
 #include <mrpt/core/bits_math.h>  // square()
 #include <mrpt/core/exceptions.h>
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorFixed.h>
 
 namespace mrpt::math
 {
@@ -428,9 +428,9 @@ class CQuaternion : public CVectorFixed<T, 4>
 			roll = 0;
 			if (out_dr_dq)
 			{
-				out_dr_dq->zeros();
-				out_dr_dq->get_unsafe(0, 0) = +2 / x();
-				out_dr_dq->get_unsafe(0, 2) = -2 * r() / (x() * x());
+				out_dr_dq->setZero();
+				(*out_dr_dq)(0, 0) = +2 / x();
+				(*out_dr_dq)(0, 2) = -2 * r() / (x() * x());
 			}
 		}
 		else if (discr < -0.49999)
@@ -440,9 +440,9 @@ class CQuaternion : public CVectorFixed<T, 4>
 			roll = 0;
 			if (out_dr_dq)
 			{
-				out_dr_dq->zeros();
-				out_dr_dq->get_unsafe(0, 0) = -2 / x();
-				out_dr_dq->get_unsafe(0, 2) = +2 * r() / (x() * x());
+				out_dr_dq->setZero();
+				(*out_dr_dq)(0, 0) = -2 / x();
+				(*out_dr_dq)(0, 2) = +2 * r() / (x() * x());
 			}
 		}
 		else
@@ -472,24 +472,22 @@ class CQuaternion : public CVectorFixed<T, 4>
 				const double val8 = (val22 / val12 + 1);
 				const double val9 = -2.0 / val8;
 				// row 1:
-				out_dr_dq->get_unsafe(0, 0) = -2 * z() / val4;
-				out_dr_dq->get_unsafe(0, 1) = -2 * y() / val4;
-				out_dr_dq->get_unsafe(0, 2) =
-					-(2 * x() / val3 - y() * val5) * val6;
-				out_dr_dq->get_unsafe(0, 3) =
-					-(2 * r() / val3 - z() * val5) * val6;
+				(*out_dr_dq)(0, 0) = -2 * z() / val4;
+				(*out_dr_dq)(0, 1) = -2 * y() / val4;
+				(*out_dr_dq)(0, 2) = -(2 * x() / val3 - y() * val5) * val6;
+				(*out_dr_dq)(0, 3) = -(2 * r() / val3 - z() * val5) * val6;
 				// row 2:
-				out_dr_dq->get_unsafe(1, 0) = y() * val7;
-				out_dr_dq->get_unsafe(1, 1) = -z() * val7;
-				out_dr_dq->get_unsafe(1, 2) = r() * val7;
-				out_dr_dq->get_unsafe(1, 3) = -x() * val7;
+				(*out_dr_dq)(1, 0) = y() * val7;
+				(*out_dr_dq)(1, 1) = -z() * val7;
+				(*out_dr_dq)(1, 2) = r() * val7;
+				(*out_dr_dq)(1, 3) = -x() * val7;
 				// row 3:
-				out_dr_dq->get_unsafe(2, 0) = val9 * x() / val1;
-				out_dr_dq->get_unsafe(2, 1) =
+				(*out_dr_dq)(2, 0) = val9 * x() / val1;
+				(*out_dr_dq)(2, 1) =
 					val9 * (r() / val1 - (2 * x() * val2) / val12);
-				out_dr_dq->get_unsafe(2, 2) =
+				(*out_dr_dq)(2, 2) =
 					val9 * (z() / val1 - (2 * y() * val2) / val12);
-				out_dr_dq->get_unsafe(2, 3) = val9 * y() / val1;
+				(*out_dr_dq)(2, 3) = val9 * y() / val1;
 			}
 		}
 	}

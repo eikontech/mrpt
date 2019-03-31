@@ -119,7 +119,8 @@ class SE_traits_tests : public ::testing::Test
 				x_mean,
 				std::function<void(
 					const CVectorFixedDouble<2 * SE_TYPE::DOFs>& x,
-					const TParams& params, CVectorFixedDouble<SE_TYPE::DOFs>& Y)>(
+					const TParams& params,
+					CVectorFixedDouble<SE_TYPE::DOFs>& Y)>(
 					&func_numeric_DinvP1InvP2),
 				x_incrs, params, numJacobs);
 

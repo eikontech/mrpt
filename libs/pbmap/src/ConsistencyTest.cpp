@@ -15,8 +15,8 @@
 
 #include "pbmap-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/ransac.h>
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>

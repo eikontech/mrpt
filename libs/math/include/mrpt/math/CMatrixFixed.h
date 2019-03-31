@@ -11,6 +11,7 @@
 #include <mrpt/core/alignment_req.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
+#include <mrpt/math/matrix_size_t.h>
 #include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
@@ -30,8 +31,28 @@ namespace mrpt::math
 template <typename T, std::size_t ROWS, std::size_t COLS>
 class CMatrixFixed
 {
+   private:
+	/** RowMajor matrix data */
+	alignas(MRPT_MAX_ALIGN_BYTES) std::array<T, ROWS * COLS> m_data;
+
    public:
-	/** @name Constructors
+	/** @name Matrix type definitions
+	 * @{ */
+	/** The type of the matrix elements */
+	using value_type = T;
+	using Scalar = T;
+	using Index = int;
+	using reference = T&;
+	using const_reference = const T&;
+	using size_type = int;
+	using difference_type = std::ptrdiff_t;
+	constexpr static int RowsAtCompileTime = ROWS;
+	constexpr static int ColsAtCompileTime = COLS;
+	constexpr static int SizeAtCompileTime = ROWS * COLS;
+	constexpr static int is_mrpt_type = 1;
+	/** @} */
+
+	/** @name Constructors, assignment operators, initializers
 	 *  @{ */
 
 	/** Default constructor, initializes all elements to zero */
@@ -43,7 +64,107 @@ class CMatrixFixed
 	 */
 	inline CMatrixFixed(TConstructorFlags_Matrices) {}
 
+	/** Initializes from a C array with RowMajor values */
+	template <size_t N>
+	CMatrixFixed(const T (&vals)[N])
+	{
+		this->loadFromArray(vals);
+	}
+
+	/** Convert from Eigen matrix */
+	template <class Derived>
+	explicit CMatrixFixed(const Eigen::MatrixBase<Derived>& m)
+	{
+		*this = m;
+	}
+
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixed)
+
+	template <class MAT>
+	void setFromMatrixLike(const MAT& m)
+	{
+		MRPT_START
+		setSize(m.rows(), m.cols());
+		for (Index r = 0; r < rows(); r++)
+			for (Index c = 0; c < cols(); c++) (*this)(r, c) = m(r, c);
+		MRPT_END
+	}
+
+	/** Assignment from an Eigen matrix */
+	template <class Derived>
+	CMatrixFixed& operator=(const Eigen::MatrixBase<Derived>& m)
+	{
+		MRPT_START
+		setFromMatrixLike(m);
+		return *this;
+		MRPT_END
+	}
+
+	/** Assignment from a Dynamic matrix */
+	template <typename U>
+	CMatrixFixed& operator=(const CMatrixDynamic<U>& m)
+	{
+		MRPT_START
+		setFromMatrixLike(m);
+		return *this;
+		MRPT_END
+	}
+
+	template <typename VECTOR>
+	void loadFromArray(const VECTOR& vals)
+	{
+		constexpr auto LEN = std::size(vals);
+		static_assert(LEN == ROWS * COLS, "Array of incorrect size.");
+		for (size_t r = 0, i = 0; r < ROWS; r++)
+			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i];
+	}
+
+	/** Throws if size does not match with the fixed matrix size */
+	void setSize(
+		size_t row, size_t col, [[maybe_unused]] bool zeroNewElements = false)
+	{
+		ASSERT_EQUAL_(row, ROWS);
+		ASSERT_EQUAL_(col, COLS);
+	}
+
+	// These ones are to make template code compatible with Eigen & mrpt:
+	CMatrixFixed& derived() { return *this; }
+	const CMatrixFixed& derived() const { return *this; }
+	void conservativeResize(size_t row, size_t col) { setSize(row, col); }
+
+	void resize(size_t n)
+	{
+		if (ROWS == 1)
+			ASSERT_EQUAL_(COLS, n);
+		else if (COLS == 1)
+			ASSERT_EQUAL_(ROWS, n);
+		else
+			THROW_EXCEPTION("resize() can be invoked on 1xN or Nx1 only");
+	}
+
+	/** Throws if size does not match with the fixed matrix size */
+	inline void resize(
+		const matrix_size_t& siz, [[maybe_unused]] bool zeroNewElements = false)
+	{
+		ASSERT_EQUAL_(siz[0], ROWS);
+		ASSERT_EQUAL_(siz[1], COLS);
+	}
+
+	/** Number of rows in the matrix \sa rows() */
+	constexpr size_type rows() const { return ROWS; }
+
+	/** Number of columns in the matrix \sa rows() */
+	constexpr size_type cols() const { return COLS; }
+
+	/** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
+	constexpr matrix_size_t size() const
+	{
+		matrix_size_t dims;
+		dims[0] = ROWS;
+		dims[1] = COLS;
+		return dims;
+	}
+	bool empty() const { return ROWS == 0 || COLS == 0; }
 
 	/** @} */
 
@@ -52,7 +173,9 @@ class CMatrixFixed
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-		typename EIGEN_MATRIX = Eigen::Matrix<T, ROWS, COLS, 1, -1, -1>,
+		typename EIGEN_MATRIX = Eigen::Matrix<
+			T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
+			COLS>,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
@@ -110,19 +233,51 @@ class CMatrixFixed
 	}
 
 	/** @} */
-	template <typename VECTOR>
-	void loadFromArray(const VECTOR& vals)
-	{
-		constexpr auto LEN = std::size(vals);
-		static_assert(LEN == ROWS * COLS, "Array of incorrect size.");
-		for (size_t r = 0, i = 0; r < ROWS; r++)
-			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i];
-	}
-
-   private:
-	/** RowMajor matrix data */
-	alignas(MRPT_MAX_ALIGN_BYTES) std::array<T, ROWS * COLS> m_data;
 };
+
+/** @name Typedefs for common sizes
+	@{ */
+using CMatrixDouble22 = CMatrixFixed<double, 2, 2>;
+using CMatrixDouble23 = CMatrixFixed<double, 2, 3>;
+using CMatrixDouble32 = CMatrixFixed<double, 3, 2>;
+using CMatrixDouble33 = CMatrixFixed<double, 3, 3>;
+using CMatrixDouble44 = CMatrixFixed<double, 4, 4>;
+using CMatrixDouble66 = CMatrixFixed<double, 6, 6>;
+using CMatrixDouble77 = CMatrixFixed<double, 7, 7>;
+using CMatrixDouble13 = CMatrixFixed<double, 1, 3>;
+using CMatrixDouble31 = CMatrixFixed<double, 3, 1>;
+using CMatrixDouble12 = CMatrixFixed<double, 1, 2>;
+using CMatrixDouble21 = CMatrixFixed<double, 2, 1>;
+using CMatrixDouble61 = CMatrixFixed<double, 6, 1>;
+using CMatrixDouble16 = CMatrixFixed<double, 1, 6>;
+using CMatrixDouble71 = CMatrixFixed<double, 7, 1>;
+using CMatrixDouble17 = CMatrixFixed<double, 1, 7>;
+using CMatrixDouble51 = CMatrixFixed<double, 5, 1>;
+using CMatrixDouble15 = CMatrixFixed<double, 1, 5>;
+using CMatrixDouble41 = CMatrixFixed<double, 4, 1>;
+using CMatrixDouble6_12 = CMatrixFixed<double, 6, 12>;
+using CMatrixDouble12_6 = CMatrixFixed<double, 12, 6>;
+using CMatrixDouble39 = CMatrixFixed<double, 3, 9>;
+using CMatrixDouble93 = CMatrixFixed<double, 9, 3>;
+
+using CMatrixFloat22 = CMatrixFixed<float, 2, 2>;
+using CMatrixFloat23 = CMatrixFixed<float, 2, 3>;
+using CMatrixFloat32 = CMatrixFixed<float, 3, 2>;
+using CMatrixFloat33 = CMatrixFixed<float, 3, 3>;
+using CMatrixFloat44 = CMatrixFixed<float, 4, 4>;
+using CMatrixFloat66 = CMatrixFixed<float, 6, 6>;
+using CMatrixFloat77 = CMatrixFixed<float, 7, 7>;
+using CMatrixFloat13 = CMatrixFixed<float, 1, 3>;
+using CMatrixFloat31 = CMatrixFixed<float, 3, 1>;
+using CMatrixFloat12 = CMatrixFixed<float, 1, 2>;
+using CMatrixFloat21 = CMatrixFixed<float, 2, 1>;
+using CMatrixFloat61 = CMatrixFixed<float, 6, 1>;
+using CMatrixFloat16 = CMatrixFixed<float, 1, 6>;
+using CMatrixFloat71 = CMatrixFixed<float, 7, 1>;
+using CMatrixFloat17 = CMatrixFixed<float, 1, 7>;
+using CMatrixFloat51 = CMatrixFixed<float, 5, 1>;
+using CMatrixFloat15 = CMatrixFixed<float, 1, 5>;
+/**  @} */
 
 }  // namespace mrpt::math
 

@@ -102,7 +102,7 @@ void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
 		if (!sShape.empty())
 		{
 			CMatrixDouble mShape;
-			if (!mShape.fromMatlabStringFormat(sShape))
+			if (!fromMatlabStringFormat(mShape, sShape))
 				THROW_EXCEPTION_FMT(
 					"Error parsing robot_shape matrix: '%s'", sShape.c_str());
 			ASSERT_(mShape.rows() == 2);

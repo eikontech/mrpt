@@ -30,7 +30,8 @@ using namespace std;
 // Example non-linear function for SUT
 //   f: R^5   => R^3
 void myFun1(
-	const CVectorFixedDouble<5>& x, const double& user_param, CVectorFixedDouble<3>& y)
+	const CVectorFixedDouble<5>& x, const double& user_param,
+	CVectorFixedDouble<3>& y)
 {
 	y[0] = cos(x[0]) * exp(x[1]) + x[4];
 	y[1] = x[1] / (1 + square(x[0]));
@@ -195,7 +196,8 @@ void Test_SUT()
 // -----------------------------------------------------------
 
 void aux_posequat2poseypr(
-	const CVectorFixedDouble<7>& x, const double& dummy, CVectorFixedDouble<6>& y)
+	const CVectorFixedDouble<7>& x, const double& dummy,
+	CVectorFixedDouble<6>& y)
 {
 	const CPose3DQuat p(
 		x[0], x[1], x[2],

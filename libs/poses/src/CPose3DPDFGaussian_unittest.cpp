@@ -68,7 +68,8 @@ class Pose3DPDFGaussTests : public ::testing::Test
 	}
 
 	static void func_compose(
-		const CVectorFixedDouble<12>& x, const double& dummy, CVectorFixedDouble<6>& Y)
+		const CVectorFixedDouble<12>& x, const double& dummy,
+		CVectorFixedDouble<6>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p1(x[0], x[1], x[2], x[3], x[4], x[5]);
@@ -79,7 +80,8 @@ class Pose3DPDFGaussTests : public ::testing::Test
 	}
 
 	static void func_inv_compose(
-		const CVectorFixedDouble<2 * 6>& x, const double& dummy, CVectorFixedDouble<6>& Y)
+		const CVectorFixedDouble<2 * 6>& x, const double& dummy,
+		CVectorFixedDouble<6>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p1(x[0], x[1], x[2], x[3], x[4], x[5]);

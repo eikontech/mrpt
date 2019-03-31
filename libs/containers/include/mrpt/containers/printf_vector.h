@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/core/format.h>
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/math/math_frwds.h>
 #include <cstdio>
 #include <string>
 #include <vector>

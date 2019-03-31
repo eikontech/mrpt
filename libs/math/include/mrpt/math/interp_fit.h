@@ -60,7 +60,7 @@ NUMTYPE spline(
  * \note Implementation in `#include <mrpt/math/interp_fit.hpp>`
  */
 template <
-    typename NUMTYPE, class VECTORLIKE, int NUM_POINTS = -1 /*Eigen::Dynamic*/>
+	typename NUMTYPE, class VECTORLIKE, int NUM_POINTS = -1 /*Eigen::Dynamic*/>
 NUMTYPE leastSquareLinearFit(
 	const NUMTYPE t, const VECTORLIKE& x, const VECTORLIKE& y,
 	bool wrap2pi = false);
@@ -75,7 +75,7 @@ NUMTYPE leastSquareLinearFit(
  */
 template <
 	class VECTORLIKE1, class VECTORLIKE2, class VECTORLIKE3,
-    int NUM_POINTS = -1 /*Eigen::Dynamic*/>
+	int NUM_POINTS = -1 /*Eigen::Dynamic*/>
 void leastSquareLinearFit(
 	const VECTORLIKE1& ts, VECTORLIKE2& outs, const VECTORLIKE3& x,
 	const VECTORLIKE3& y, bool wrap2pi = false);

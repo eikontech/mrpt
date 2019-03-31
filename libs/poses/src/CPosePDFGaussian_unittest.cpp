@@ -40,7 +40,8 @@ class PosePDFGaussTests : public ::testing::Test
 	}
 
 	static void func_inverse(
-		const CVectorFixedDouble<3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<3>& x, const double& dummy,
+		CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose2D p1(x[0], x[1], x[2]);

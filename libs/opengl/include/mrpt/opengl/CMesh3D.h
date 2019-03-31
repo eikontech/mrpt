@@ -11,10 +11,6 @@
 
 #include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <Eigen/Dense>
-
-using Eigen::Array;
-using Eigen::Dynamic;
 
 namespace mrpt::opengl
 {

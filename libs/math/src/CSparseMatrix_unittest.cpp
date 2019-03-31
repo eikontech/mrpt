@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -41,7 +42,7 @@ void generateRandomSparseMatrix(
 void do_test_init_to_unit(size_t N)
 {
 	CMatrixDouble dense1;
-	dense1.unit(N, 1.0);
+	dense1.asEigen().setIdentity(N, 1.0);
 
 	CSparseMatrix SM(dense1);
 

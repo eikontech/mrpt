@@ -9,15 +9,17 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
+#include <Eigen/Dense>
+#include <Eigen/LU>
 
 using namespace mrpt;
 using namespace std;
@@ -984,7 +986,7 @@ bool math::conformAPlane(const std::vector<TPoint3D>& points)
 {
 	size_t N = points.size();
 	if (N < 3) return false;
-	CMatrixDynamic<double> mat(N - 1, 3);
+	Eigen::MatrixXd mat(N - 1, 3);
 	const TPoint3D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -993,7 +995,9 @@ bool math::conformAPlane(const std::vector<TPoint3D>& points)
 		mat(i, 1) = p.y - orig.y;
 		mat(i, 2) = p.z - orig.z;
 	}
-	return mat.rank(geometryEpsilon) == 2;
+	Eigen::FullPivLU<Eigen::MatrixXd> lu(mat);
+	lu.setThreshold(geometryEpsilon);
+	return lu.rank() == 2;
 }
 
 bool math::conformAPlane(const std::vector<TPoint3D>& points, TPlane& p)
@@ -1005,7 +1009,7 @@ bool math::areAligned(const std::vector<TPoint2D>& points)
 {
 	size_t N = points.size();
 	if (N < 2) return false;
-	CMatrixDynamic<double> mat(N - 1, 2);
+	Eigen::MatrixXd mat(N - 1, 2);
 	const TPoint2D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -1013,7 +1017,9 @@ bool math::areAligned(const std::vector<TPoint2D>& points)
 		mat(i, 0) = p.x - orig.x;
 		mat(i, 1) = p.y - orig.y;
 	}
-	return mat.rank(geometryEpsilon) == 1;
+	Eigen::FullPivLU<Eigen::MatrixXd> lu(mat);
+	lu.setThreshold(geometryEpsilon);
+	return lu.rank() == 1;
 }
 
 bool math::areAligned(const std::vector<TPoint2D>& points, TLine2D& r)
@@ -1034,7 +1040,7 @@ bool math::areAligned(const std::vector<TPoint3D>& points)
 {
 	size_t N = points.size();
 	if (N < 2) return false;
-	CMatrixDynamic<double> mat(N - 1, 3);
+	Eigen::MatrixXd mat(N - 1, 3);
 	const TPoint3D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -1043,7 +1049,9 @@ bool math::areAligned(const std::vector<TPoint3D>& points)
 		mat(i, 1) = p.y - orig.y;
 		mat(i, 2) = p.z - orig.z;
 	}
-	return mat.rank(geometryEpsilon) == 1;
+	Eigen::FullPivLU<Eigen::MatrixXd> lu(mat);
+	lu.setThreshold(geometryEpsilon);
+	return lu.rank() == 1;
 }
 
 bool math::areAligned(const std::vector<TPoint3D>& points, TLine3D& r)
@@ -2096,15 +2104,18 @@ void math::generateAxisBaseFromDirectionAndAxis(
 double math::getRegressionLine(const vector<TPoint2D>& points, TLine2D& line)
 {
 	CVectorFixedDouble<2> means;
-	CMatrixDynamic<double> covars(2, 2), eigenVal(2, 2), eigenVec(2, 2);
+	Eigen::Matrix2d covars;
 	covariancesAndMean(points, covars, means);
-	covars.eigenVectors(eigenVec, eigenVal);
-	size_t selected = (eigenVal(0, 0) >= eigenVal(1, 1)) ? 0 : 1;
+
+	Eigen::SelfAdjointEigenSolver<Eigen::Matrix2d> eigensolver(covars);
+	const auto eigenVec = eigensolver.eigenvectors();
+	const auto eigenVal = eigensolver.eigenvalues();
+
+	size_t selected = (eigenVal[0] >= eigenVal[1]) ? 0 : 1;
 	line.coefs[0] = -eigenVec(1, selected);
 	line.coefs[1] = eigenVec(0, selected);
 	line.coefs[2] = -line.coefs[0] * means[0] - line.coefs[1] * means[1];
-	return sqrt(
-		eigenVal(1 - selected, 1 - selected) / eigenVal(selected, selected));
+	return std::sqrt(eigenVal[1 - selected] / eigenVal[selected]);
 }
 
 template <class T>
@@ -2122,33 +2133,37 @@ inline size_t getIndexOfMax(const T& e1, const T& e2, const T& e3)
 double math::getRegressionLine(const vector<TPoint3D>& points, TLine3D& line)
 {
 	CVectorFixedDouble<3> means;
-	CMatrixDynamic<double> covars(3, 3), eigenVal(3, 3), eigenVec(3, 3);
+	Eigen::Matrix3d covars;
 	covariancesAndMean(points, covars, means);
-	covars.eigenVectors(eigenVec, eigenVal);
-	size_t selected =
-		getIndexOfMax(eigenVal(0, 0), eigenVal(1, 1), eigenVal(2, 2));
+
+	Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver(covars);
+	const auto eigenVec = eigensolver.eigenvectors();
+	const auto eigenVal = eigensolver.eigenvalues();
+
+	size_t selected = getIndexOfMax(eigenVal[0], eigenVal[1], eigenVal[2]);
 	for (size_t i = 0; i < 3; i++)
 	{
 		line.pBase[i] = means[i];
 		line.director[i] = eigenVec(i, selected);
 	}
 	size_t i1 = (selected + 1) % 3, i2 = (selected + 2) % 3;
-	return sqrt(
-		(eigenVal(i1, i1) + eigenVal(i2, i2)) / eigenVal(selected, selected));
+	return std::sqrt((eigenVal[i1] + eigenVal[i2]) / eigenVal[selected]);
 }
 
 double math::getRegressionPlane(const vector<TPoint3D>& points, TPlane& plane)
 {
 	vector<double> means;
-	CMatrixDouble33 covars, eigenVal, eigenVec;
+	Eigen::Matrix3d covars;
 	covariancesAndMean(points, covars, means);
 
-	covars.eigenVectors(eigenVec, eigenVal);
+	Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver(covars);
+	const auto eigenVec = eigensolver.eigenvectors();
+	auto eigenVal = eigensolver.eigenvalues();
+
 	for (size_t i = 0; i < 3; ++i)
-		if (eigenVal(i, i) < 0 && fabs(eigenVal(i, i)) < geometryEpsilon)
-			eigenVal(i, i) = 0;
-	size_t selected =
-		getIndexOfMin(eigenVal(0, 0), eigenVal(1, 1), eigenVal(2, 2));
+		if (eigenVal[i] < 0 && std::abs(eigenVal[i]) < geometryEpsilon)
+			eigenVal[i] = 0;
+	size_t selected = getIndexOfMin(eigenVal[0], eigenVal[1], eigenVal[2]);
 	plane.coefs[3] = 0;
 	for (size_t i = 0; i < 3; i++)
 	{
@@ -2156,8 +2171,7 @@ double math::getRegressionPlane(const vector<TPoint3D>& points, TPlane& plane)
 		plane.coefs[3] -= plane.coefs[i] * means[i];
 	}
 	size_t i1 = (selected + 1) % 3, i2 = (selected + 2) % 3;
-	return sqrt(
-		eigenVal(selected, selected) / (eigenVal(i1, i1) + eigenVal(i2, i2)));
+	return std::sqrt(eigenVal[selected] / (eigenVal[i1] + eigenVal[i2]));
 }
 
 void math::assemblePolygons(

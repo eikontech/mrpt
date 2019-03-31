@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/point_poses2vectors.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::math

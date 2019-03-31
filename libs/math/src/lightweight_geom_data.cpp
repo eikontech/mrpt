@@ -12,6 +12,8 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>  // distance()
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -43,7 +45,7 @@ bool TPoint2D::operator<(const TPoint2D& p) const
 void TPoint2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 2, "Wrong size of vector in ::fromString");
@@ -61,7 +63,7 @@ void TPose2D::asString(std::string& s) const
 void TPose2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
@@ -103,7 +105,7 @@ void TTwist2D::asString(std::string& s) const
 void TTwist2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
@@ -140,7 +142,7 @@ void TTwist3D::asString(std::string& s) const
 void TTwist3D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
@@ -188,7 +190,7 @@ bool TPoint3D::operator<(const TPoint3D& p) const
 void TPoint3D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
@@ -362,8 +364,8 @@ void TPose3D::SO3_to_yaw_pitch_roll(
 
 void TPose3D::fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44& HG)
 {
-	Eigen::Matrix<> SO3_to_yaw_pitch_roll(
-		HG.asEigen().block<3, 3>(0, 0), yaw, pitch, roll);
+	SO3_to_yaw_pitch_roll(
+		CMatrixDouble33(HG.asEigen().block<3, 3>(0, 0)), yaw, pitch, roll);
 	x = HG(0, 3);
 	y = HG(1, 3);
 	z = HG(2, 3);
@@ -373,13 +375,14 @@ void TPose3D::composePose(const TPose3D other, TPose3D& result) const
 	CMatrixDouble44 me_H, o_H;
 	this->getHomogeneousMatrix(me_H);
 	other.getHomogeneousMatrix(o_H);
-	result.fromHomogeneousMatrix(me_H * o_H);
+	result.fromHomogeneousMatrix(
+		CMatrixDouble44(me_H.asEigen() * o_H.asEigen()));
 }
 void TPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const
 {
 	CMatrixDouble33 R;
 	getRotationMatrix(R);
-	HG.block<3, 3>(0, 0) = R;
+	HG.asEigen().block<3, 3>(0, 0) = R.asEigen();
 	HG(0, 3) = x;
 	HG(1, 3) = y;
 	HG(2, 3) = z;
@@ -395,7 +398,7 @@ void TPose3D::getInverseHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const
 void TPose3D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
@@ -410,7 +413,7 @@ void TPose3D::fromString(const std::string& s)
 void TPose3DQuat::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");
@@ -431,7 +434,7 @@ TPose3D operator-(const TPose3D& b, const TPose3D& a)
 	a.getInverseHomogeneousMatrix(Hainv);
 	b.getHomogeneousMatrix(Hb);
 	TPose3D ret;
-	ret.fromHomogeneousMatrix(Hainv * Hb);
+	ret.fromHomogeneousMatrix(CMatrixDouble44(Hainv.asEigen() * Hb.asEigen()));
 	return ret;
 }
 
@@ -637,8 +640,7 @@ double TSegment3D::distance(const TSegment3D& segment) const
 	tc = (fabs(tN) < 0.00000001 ? 0.0 : tN / tD);
 
 	// get the difference of the two closest points
-	CVectorDouble dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
-
+	const auto dP = (w + (sc * u) - (tc * v)).eval();
 	return dP.norm();  // return the closest distance
 }
 bool TSegment3D::contains(const TPoint3D& point) const

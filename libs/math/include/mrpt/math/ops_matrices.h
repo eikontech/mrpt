@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/eigen_frwds.h>  // forward declarations
 #include <mrpt/math/math_frwds.h>  // forward declarations
 
 #include <mrpt/math/CMatrixDynamic.h>
@@ -52,16 +51,11 @@ inline void multiply_HCHt(
 	const MAT_H& H, const MAT_C& C, MAT_R& R,
 	bool accumResultInOutput)  //	bool allow_submatrix_mult)
 {
+	auto res = (H * C * H.transpose());
 	if (accumResultInOutput)
-		R += ((H * C.template selfadjointView<Eigen::Lower>()).eval() *
-			  H.adjoint())
-				 .eval()
-				 .template selfadjointView<Eigen::Lower>();
+		R += res.eval();
 	else
-		R = ((H * C.template selfadjointView<Eigen::Lower>()).eval() *
-			 H.adjoint())
-				.eval()
-				.template selfadjointView<Eigen::Lower>();
+		R = res.eval();
 }
 
 /** r (a scalar) = H * C * H^t (with a vector H and a symmetric matrix C) */
@@ -77,17 +71,11 @@ void multiply_HtCH(
 	const MAT_H& H, const MAT_C& C, MAT_R& R,
 	bool accumResultInOutput)  // bool allow_submatrix_mult)
 {
+	auto res = (H.transpose() * C * H);
 	if (accumResultInOutput)
-		R +=
-			((H.adjoint() * C.template selfadjointView<Eigen::Lower>()).eval() *
-			 H)
-				.eval()
-				.template selfadjointView<Eigen::Lower>();
+		R += res.eval();
 	else
-		R = ((H.adjoint() * C.template selfadjointView<Eigen::Lower>()).eval() *
-			 H)
-				.eval()
-				.template selfadjointView<Eigen::Lower>();
+		R = res.eval();
 }
 
 /** Computes the mean vector and covariance from a list of samples in an NxM
@@ -143,14 +131,14 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 template <class MATRIX>
 inline Eigen::Matrix<
 	typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
-    MATRIX::ColsAtCompileTime, 0, MATRIX::ColsAtCompileTime, 1>
+	MATRIX::ColsAtCompileTime, 0, MATRIX::ColsAtCompileTime, 1>
 	cov(const MATRIX& v)
 {
 	CVectorDynamic<double> m;
 	Eigen::Matrix<
 		typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
-	    MATRIX::ColsAtCompileTime, 1, MATRIX::ColsAtCompileTime,
-	    MATRIX::ColsAtCompileTime>
+		MATRIX::ColsAtCompileTime, 1, MATRIX::ColsAtCompileTime,
+		MATRIX::ColsAtCompileTime>
 		C;
 	meanAndCovMat(v, m, C);
 	return C;

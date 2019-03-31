@@ -401,7 +401,7 @@ CPose2D& CPose2D::operator+=(const CPose2D& b)
 void CPose2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(s))
+	if (!fromMatlabStringFormat(m, s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 3, "Expected vector length=3");
 	x(m(0, 0));

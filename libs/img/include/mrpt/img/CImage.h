@@ -12,7 +12,7 @@
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TPixelCoord.h>
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/serialization/CSerializable.h>
 
 // Forwards decls:

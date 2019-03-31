@@ -114,7 +114,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	void fromString(const std::string& s)
 	{
 		mrpt::math::CMatrixDouble m;
-		if (!m.fromMatlabStringFormat(s))
+		if (!fromMatlabStringFormat(m, s))
 			THROW_EXCEPTION("Malformed expression in ::fromString");
 		ASSERT_EQUAL_(m.rows(), 1);
 		ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);

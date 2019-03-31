@@ -9,11 +9,10 @@
 #pragma once
 
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/CMatrixF.h>
-#include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/serialization/CArchive.h>
 
 /** \file matrix_serialization.h
  * This file implements matrix/vector text and binary serialization */
@@ -94,9 +93,7 @@ template <typename T, size_t NROWS, size_t NCOLS>
 inline std::ostream& operator<<(
 	std::ostream& s, const CMatrixFixed<T, NROWS, NCOLS>& m)
 {
-	Eigen::IOFormat fmt;
-	fmt.matSuffix = "\n";
-	return s << m.format(fmt);
+	return s << m.asEigen() << "\n";
 }
 
 /** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default
@@ -104,9 +101,7 @@ inline std::ostream& operator<<(
 template <typename T>
 inline std::ostream& operator<<(std::ostream& s, const CMatrixDynamic<T>& m)
 {
-	Eigen::IOFormat fmt;
-	fmt.matSuffix = "\n";
-	return s << m.format(fmt);
+	return s << m.asEigen() << "\n";
 }
 
 /** Binary serialization of symmetric matrices, saving the space of duplicated

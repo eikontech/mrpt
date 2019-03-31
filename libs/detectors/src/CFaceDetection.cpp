@@ -1463,8 +1463,8 @@ void CFaceDetection::experimental_viewFacePointsScanned(
 //------------------------------------------------------------------------
 
 void CFaceDetection::experimental_viewFacePointsAndEigenVects(
-	const vector<CVectorFixedDouble<3>>& pointsVector, const CMatrixDouble& eigenVect,
-	const CVectorDouble& eigenVal)
+	const vector<CVectorFixedDouble<3>>& pointsVector,
+	const CMatrixDouble& eigenVect, const CVectorDouble& eigenVal)
 {
 	vector<float> xs, ys, zs;
 

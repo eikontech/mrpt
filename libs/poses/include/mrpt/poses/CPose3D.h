@@ -610,23 +610,11 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 * \sa asString
 	 * \exception std::exception On invalid format
 	 */
-	void fromString(const std::string& s)
-	{
-		using mrpt::DEG2RAD;
-		mrpt::math::CMatrixDouble m;
-		if (!m.fromMatlabStringFormat(s))
-			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
-		this->setFromValues(
-			m(0, 0), m(0, 1), m(0, 2), DEG2RAD(m(0, 3)), DEG2RAD(m(0, 4)),
-			DEG2RAD(m(0, 5)));
-	}
+	void fromString(const std::string& s);
+
 	/** Same as fromString, but without requiring the square brackets in the
 	 * string */
-	void fromStringRaw(const std::string& s)
-	{
-		this->fromString("[" + s + "]");
-	}
+	void fromStringRaw(const std::string& s);
 
 	/** Return true if the 6D pose represents a Z axis almost exactly vertical
 	 * (upwards or downwards), with a given tolerance (if set to 0 exact

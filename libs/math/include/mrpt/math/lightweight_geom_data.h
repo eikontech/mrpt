@@ -11,7 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
-#include <mrpt/math/eigen_frwds.h>  // forward declarations
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/lightweight_geom_data_frwds.h>  // forward declarations
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>

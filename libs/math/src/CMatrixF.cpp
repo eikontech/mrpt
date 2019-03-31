@@ -74,8 +74,10 @@ void CMatrixF::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 	{
 		case 1:
 		{
+			Eigen::MatrixXf m;
 			mrpt::math::fromMatlabStringFormat(
-			    asEigen().matrix(), static_cast<std::string>(in["data"]));
+				m, static_cast<std::string>(in["data"]));
+			*this = m;
 		}
 		break;
 		default:

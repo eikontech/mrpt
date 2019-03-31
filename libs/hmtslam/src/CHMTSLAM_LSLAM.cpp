@@ -1104,8 +1104,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 											false);
 
 								newDelta = Anew_old + *oldDelta;
-								newDelta.cov
-									.setZero();  // *********** DEBUG !!!!!!!!!!!
+								newDelta.cov.setZero();  // *********** DEBUG
+														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
 								newDelta.cov(3, 3) = square(DEG2RAD(1));
@@ -1154,8 +1154,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 								newDelta = *oldDelta + Aold_new;
 
-								newDelta.cov
-									.setZero();  // *********** DEBUG !!!!!!!!!!!
+								newDelta.cov.setZero();  // *********** DEBUG
+														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
 								newDelta.cov(3, 3) = square(DEG2RAD(1));

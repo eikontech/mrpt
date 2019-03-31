@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/serialization/CArchive.h>
 #include <iomanip>  // for setprecision(), etc.
 #include <iterator>  // std::ostream_iterator

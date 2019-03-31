@@ -271,7 +271,7 @@ inline void
 	using T = typename MATRIXLIKE::Scalar;
 	const size_t DIM = elements[0].size();
 	means.resize(DIM);
-	covariances.setSize(DIM, DIM);
+	covariances.resize(DIM, DIM);
 	const size_t nElms = elements.size();
 	const T NORM = 1.0 / nElms;
 	if (weights_mean)

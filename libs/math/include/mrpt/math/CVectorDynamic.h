@@ -10,8 +10,10 @@
 
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
+#include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>
 #include <array>
 #include <cstring>  // memset()
 #include <type_traits>
@@ -28,17 +30,37 @@ namespace mrpt::math
 template <class T>
 class CVectorDynamic
 {
+   protected:
+	using vec_t = mrpt::aligned_std_vector<T>;
+	vec_t m_data;
+
    public:
-	// type definitions
+	/** @name Matrix type definitions
+	 * @{ */
 	/** The type of the matrix elements */
 	using value_type = T;
+	using Scalar = T;
+	using Index = int;
 	using reference = T&;
 	using const_reference = const T&;
-	using size_type = std::size_t;
+	using size_type = int;
 	using difference_type = std::ptrdiff_t;
+	constexpr static int RowsAtCompileTime = -1;
+	constexpr static int ColsAtCompileTime = 1;
+	constexpr static int is_mrpt_type = 1;
+	/** @} */
 
-   protected:
-	mrpt::aligned_std_vector<T> m_data;
+	/** @name Iterators interface
+	 * @{ */
+	using iterator = typename vec_t::iterator;
+	using const_iterator = typename vec_t::const_iterator;
+	iterator begin() { return m_data.begin(); }
+	iterator end() { return m_data.end(); }
+	const_iterator begin() const { return m_data.begin(); }
+	const_iterator end() const { return m_data.end(); }
+	const_iterator cbegin() const { return m_data.begin(); }
+	const_iterator cend() const { return m_data.end(); }
+	/** @} */
 
 	/** Internal use only: It reallocs the memory for the 2D matrix, maintaining
 	 * the previous contents if posible.
@@ -51,9 +73,9 @@ class CVectorDynamic
 		if (newElementsToZero && new_len > old_len)
 		{
 			if constexpr (std::is_trivial_v<T>)
-			    ::memset(&m_data[old_len], 0, sizeof(T) * (new_len - old_len));
+				::memset(&m_data[old_len], 0, sizeof(T) * (new_len - old_len));
 			else
-			    for (size_t k = old_len; k < new_len; k++) m_data[k] = T();
+				for (size_t k = old_len; k < new_len; k++) m_data[k] = T();
 		}
 	}
 
@@ -84,7 +106,7 @@ class CVectorDynamic
 	 * \endcode
 	 */
 	template <
-	    typename ARRAY, typename = std::enable_if_t<std::is_array_v<ARRAY>>>
+		typename ARRAY, typename = std::enable_if_t<std::is_array_v<ARRAY>>>
 	CVectorDynamic(const ARRAY& data)
 	{
 		const auto N = std::size(data);
@@ -94,13 +116,15 @@ class CVectorDynamic
 	}
 
 	/** Number of rows in the vector */
-	inline std::size_t rows() const { return m_data.size(); }
+	size_type rows() const { return m_data.size(); }
 
 	/** Number of columns in the matrix (always 1) */
-	inline std::size_t cols() const { return 1; }
+	size_type cols() const { return 1; }
 
 	/** Get a 2-vector with [NROWS NCOLS] (as in MATLAB command size(x)) */
-	inline std::size_t size() const { return m_data.size(); }
+	size_type size() const { return m_data.size(); }
+
+	bool empty() const { return m_data.empty(); }
 
 	/** Changes the size of matrix, maintaining the previous contents. */
 	void setSize(size_t row, size_t col, bool zeroNewElements = false)
@@ -108,9 +132,15 @@ class CVectorDynamic
 		ASSERT_(col == 1);
 		realloc(row, zeroNewElements);
 	}
-	inline void resize(std::size_t N, bool zeroNewElements = false)
+	void resize(std::size_t N, bool zeroNewElements = false)
 	{
 		setSize(N, zeroNewElements);
+	}
+
+	void push_back(const T& val)
+	{
+		m_data.resize(m_data.size() + 1);
+		m_data.back() = val;
 	}
 
 	/** Subscript operator to get/set individual elements
@@ -120,11 +150,11 @@ class CVectorDynamic
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (row >= m_data.size() || col > 0)
 			THROW_EXCEPTION(format(
-			    "Indexes (%lu,%lu) out of range. Vector is %lux%lu",
+				"Indexes (%lu,%lu) out of range. Vector is %lux%lu",
 				static_cast<unsigned long>(row),
 				static_cast<unsigned long>(col),
-			    static_cast<unsigned long>(m_data.size()),
-			    static_cast<unsigned long>(1)));
+				static_cast<unsigned long>(m_data.size()),
+				static_cast<unsigned long>(1)));
 #endif
 		return m_data[row];
 	}
@@ -136,11 +166,11 @@ class CVectorDynamic
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (row >= m_data.size() || col > 0)
 			THROW_EXCEPTION(format(
-			    "Indexes (%lu,%lu) out of range. Vector is %lux%lu",
-			    static_cast<unsigned long>(row),
-			    static_cast<unsigned long>(col),
-			    static_cast<unsigned long>(m_data.size()),
-			    static_cast<unsigned long>(1)));
+				"Indexes (%lu,%lu) out of range. Vector is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_data.size()),
+				static_cast<unsigned long>(1)));
 #endif
 		return m_data[row];
 	}
@@ -154,7 +184,7 @@ class CVectorDynamic
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (ith >= m_data.size())
 			THROW_EXCEPTION_FMT(
-			    "Index %u out of range!", static_cast<unsigned>(ith));
+				"Index %u out of range!", static_cast<unsigned>(ith));
 #endif
 		return m_data[ith];
 	}
@@ -165,25 +195,25 @@ class CVectorDynamic
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (ith >= m_data.size())
 			THROW_EXCEPTION_FMT(
-			    "Index %u out of range!", static_cast<unsigned>(ith));
+				"Index %u out of range!", static_cast<unsigned>(ith));
 #endif
 		return m_data[ith];
 	}
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-	    typename EIGEN_VECTOR = Eigen::Matrix<T, -1, 1, 0, -1, 1>,
-	    typename EIGEN_MAP = Eigen::Map<
-	        EIGEN_VECTOR, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+		typename EIGEN_VECTOR = Eigen::Matrix<T, -1, 1, 0, -1, 1>,
+		typename EIGEN_MAP = Eigen::Map<
+			EIGEN_VECTOR, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
 	{
 		return EIGEN_MAP(&m_data[0], m_data.size());
 	}
 	/** \overload (const version) */
 	template <
-	    typename EIGEN_VECTOR = Eigen::Matrix<T, -1, 1, 0, -1, 1>,
-	    typename EIGEN_MAP = Eigen::Map<
-	        const EIGEN_VECTOR, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+		typename EIGEN_VECTOR = Eigen::Matrix<T, -1, 1, 0, -1, 1>,
+		typename EIGEN_MAP = Eigen::Map<
+			const EIGEN_VECTOR, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
 	{
 		return EIGEN_MAP(&m_data[0], m_data.size());
@@ -194,13 +224,13 @@ using CVectorFloat = CVectorDynamic<float>;
 using CVectorDouble = CVectorDynamic<double>;
 
 mrpt::serialization::CArchive& operator<<(
-    mrpt::serialization::CArchive& s, const CVectorFloat& a);
+	mrpt::serialization::CArchive& s, const CVectorFloat& a);
 mrpt::serialization::CArchive& operator<<(
-    mrpt::serialization::CArchive& s, const CVectorDouble& a);
+	mrpt::serialization::CArchive& s, const CVectorDouble& a);
 mrpt::serialization::CArchive& operator>>(
-    mrpt::serialization::CArchive& in, CVectorDouble& a);
+	mrpt::serialization::CArchive& in, CVectorDouble& a);
 mrpt::serialization::CArchive& operator>>(
-    mrpt::serialization::CArchive& in, CVectorFloat& a);
+	mrpt::serialization::CArchive& in, CVectorFloat& a);
 
 }  // namespace mrpt::math
 

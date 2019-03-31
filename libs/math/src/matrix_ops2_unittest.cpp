@@ -11,8 +11,8 @@
 // building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/ops_matrices.h>
 //#include <mrpt/math/utils.h>
 #include <gtest/gtest.h>
@@ -207,73 +207,73 @@ TEST(Matrices, fromMatlabStringFormat)
 
 	CMatrixDouble M1, M2, M3, M4, M5, M6;
 
-	if (!M1.fromMatlabStringFormat(mat1) ||
+	if (!fromMatlabStringFormat(M1, mat1) ||
 		(CMatrixFixed<double, 2, 3>(vals1) - M1).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat1;
 
 	{
 		CMatrixFixed<double, 2, 3> M1b;
-		if (!M1b.fromMatlabStringFormat(mat1) ||
+		if (!fromMatlabStringFormat(M1b, mat1) ||
 			(CMatrixFixed<double, 2, 3>(vals1) - M1b).array().abs().sum() >
 				1e-4)
 			GTEST_FAIL() << mat1;
 	}
 
-	if (!M2.fromMatlabStringFormat(mat2) || M2.cols() != 2 || M2.rows() != 3 ||
+	if (!fromMatlabStringFormat(M2, mat2) || M2.cols() != 2 || M2.rows() != 3 ||
 		(CMatrixFixed<double, 3, 2>(vals2) - M2).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat2;
 
 	{
 		CMatrixFixed<double, 3, 2> M2b;
-		if (!M2b.fromMatlabStringFormat(mat2) ||
+		if (!fromMatlabStringFormat(M2b, mat2) ||
 			(CMatrixFixed<double, 3, 2>(vals2) - M2b).array().abs().sum() >
 				1e-4)
 			GTEST_FAIL() << mat2;
 	}
 
-	if (!M3.fromMatlabStringFormat(mat3)) GTEST_FAIL() << mat3;
+	if (!fromMatlabStringFormat(M3, mat3)) GTEST_FAIL() << mat3;
 
 	{
 		CVectorDouble m;
-		if (!m.fromMatlabStringFormat(mat3) || m.size() != 1)
+		if (!fromMatlabStringFormat(m, mat3) || m.size() != 1)
 			GTEST_FAIL() << "CVectorDouble:" << mat3;
 	}
 	{
 		CVectorFixedDouble<1> m;
-		if (!m.fromMatlabStringFormat(mat3))
+		if (!fromMatlabStringFormat(m, mat3))
 			GTEST_FAIL() << "CVectorFixedDouble<1>:" << mat3;
 	}
 
 	{
 		CVectorDouble m;
-		if (!m.fromMatlabStringFormat(mat31) || m.size() != 3)
+		if (!fromMatlabStringFormat(m, mat31) || m.size() != 3)
 			GTEST_FAIL() << "CVectorDouble:" << mat31;
 	}
 	{
 		CVectorFixedDouble<3> m;
-		if (!m.fromMatlabStringFormat(mat31))
+		if (!fromMatlabStringFormat(m, mat31))
 			GTEST_FAIL() << "CVectorFixedDouble<3>:" << mat31;
 	}
 
 	{
 		Eigen::Matrix<double, 1, 3> m;
-		if (!m.fromMatlabStringFormat(mat13))
+		if (!fromMatlabStringFormat(m, mat13))
 			GTEST_FAIL() << "Matrix<double,1,3>:" << mat13;
 	}
 	{
 		Eigen::Matrix<double, 1, Eigen::Dynamic> m;
-		if (!m.fromMatlabStringFormat(mat13) || m.size() != 3)
+		if (!fromMatlabStringFormat(m, mat13) || m.size() != 3)
 			GTEST_FAIL() << "Matrix<double,1,Dynamic>:" << mat13;
 	}
 
 	// This one MUST BE detected as WRONG:
-	if (M4.fromMatlabStringFormat(mat4, nullptr /*dont dump errors to cerr*/))
+	if (fromMatlabStringFormat(M4, mat4, nullptr /*dont dump errors to cerr*/))
 		GTEST_FAIL() << mat4;
 
-	if (!M5.fromMatlabStringFormat(mat5) || M5.rows() != 0 || M5.cols() != 0)
+	if (!fromMatlabStringFormat(M5, mat5) || M5.rows() != 0 || M5.cols() != 0)
 		GTEST_FAIL() << mat5;
 
-	if (!M6.fromMatlabStringFormat(mat6)) GTEST_FAIL() << mat6;
+	if (!fromMatlabStringFormat(M6, mat6)) GTEST_FAIL() << mat6;
 
 	// Check correct values loaded:
 	CMatrixDouble RES = M1 * M2;

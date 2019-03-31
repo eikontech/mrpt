@@ -30,16 +30,28 @@
  *
  */
 
+#include <mrpt/math/CHistogram.h>  // Used in ::histogram()
+#include <mrpt/math/math_frwds.h>
 #include <algorithm>
 #include <functional>
 #include <numeric>
-
-#include <mrpt/math/CHistogram.h>  // Used in ::histogram()
 
 #include "ops_vectors.h"
 
 namespace mrpt::math
 {
+/** ContainerType<T>::element_t exposes the value of any STL or Eigen container
+ */
+template <typename CONTAINER>
+struct ContainerType;
+
+/** Specialization for Eigen containers */
+template <typename Derived>
+struct ContainerType<Eigen::EigenBase<Derived>>
+{
+	using element_t = typename Derived::Scalar;
+};
+
 /** Computes the normalized or normal histogram of a sequence of numbers given
  * the number of bins and the limits.
  *  In any case this is a "linear" histogram, i.e. for matrices, all the
@@ -122,15 +134,26 @@ inline typename CONTAINER::Scalar norm(const CONTAINER& v)
 {
 	return v.norm();
 }
-template <class CONTAINER>
+template <class CONTAINER, int = CONTAINER::is_mrpt_type>
 inline typename CONTAINER::Scalar maximum(const CONTAINER& v)
+{
+	return v.asEigen().maxCoeff();
+}
+template <class CONTAINER, int = CONTAINER::is_mrpt_type>
+inline typename CONTAINER::Scalar minimum(const CONTAINER& v)
+{
+	return v.asEigen().minCoeff();
+}
+
+template <class Derived>
+inline typename Derived::Scalar maximum(const Eigen::MatrixBase<Derived>& v)
 {
 	return v.maxCoeff();
 }
-template <class CONTAINER>
-inline typename CONTAINER::Scalar minimum(const CONTAINER& v)
+template <class Derived>
+inline typename Derived::Scalar minimum(const Eigen::MatrixBase<Derived>& v)
 {
-	return v.minimum();
+	return v.minCoeff();
 }
 
 template <typename T>

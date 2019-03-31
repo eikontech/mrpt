@@ -133,7 +133,8 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPosePDF& o)
 }
 
 void aux_poseypr2posequat(
-	const CVectorFixedDouble<6>& x, const double& dummy, CVectorFixedDouble<7>& y)
+	const CVectorFixedDouble<6>& x, const double& dummy,
+	CVectorFixedDouble<7>& y)
 {
 	MRPT_UNUSED_PARAM(dummy);
 	y[0] = x[0];

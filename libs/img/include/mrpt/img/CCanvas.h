@@ -10,7 +10,6 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/math/eigen_frwds.h>
 #include <cmath>  // sin() cos()
 
 namespace mrpt::img

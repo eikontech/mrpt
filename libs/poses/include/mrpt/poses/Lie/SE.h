@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/core/optional_ref.h>
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
 

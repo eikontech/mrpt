@@ -250,8 +250,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		const double MAX_LAMBDA = 1e20;
 
 		// Initial state:
-		// Within lm_stat: CVectorFixedDouble<9> left_cam_params, right_cam_params; //
-		// [fx fy cx cy k1 k2 k3 t1 t2]
+		// Within lm_stat: CVectorFixedDouble<9> left_cam_params,
+		// right_cam_params; // [fx fy cx cy k1 k2 k3 t1 t2]
 		lm_stat_t lm_stat(images, valid_image_pair_indices, obj_points);
 
 		lm_stat.left_cam_params[0] = imgSize[0].x * 0.9;
@@ -930,7 +930,8 @@ struct TNumJacobData
 };
 
 void numeric_jacob_eval_function(
-	const CVectorFixedDouble<30>& x, const TNumJacobData& dat, CVectorFixedDouble<4>& out)
+	const CVectorFixedDouble<30>& x, const TNumJacobData& dat,
+	CVectorFixedDouble<4>& out)
 {
 	// Recover the state out from "x":
 	const CVectorFixedDouble<6> incr_l(&x[0]);
@@ -979,7 +980,8 @@ void numeric_jacob_eval_function(
 }
 
 void eval_h_b(
-	const CVectorFixedDouble<2>& X, const TCamera& params, CVectorFixedDouble<2>& out)
+	const CVectorFixedDouble<2>& X, const TCamera& params,
+	CVectorFixedDouble<2>& out)
 {
 	// Radial distortion:
 	const double x = X[0], y = X[1];
@@ -998,7 +1000,8 @@ void eval_h_b(
 									 params.dist[2] * (r2 + 2 * square(y)));
 }
 
-void eval_b_p(const CVectorFixedDouble<3>& P, const int& dummy, CVectorFixedDouble<2>& b)
+void eval_b_p(
+	const CVectorFixedDouble<3>& P, const int& dummy, CVectorFixedDouble<2>& b)
 {
 	// Radial distortion:
 	b[0] = P[0] / P[2];
@@ -1006,7 +1009,8 @@ void eval_b_p(const CVectorFixedDouble<3>& P, const int& dummy, CVectorFixedDoub
 }
 
 void eval_deps_D_p(
-	const CVectorFixedDouble<6>& eps, const TPoint3D& D_p, CVectorFixedDouble<3>& out)
+	const CVectorFixedDouble<6>& eps, const TPoint3D& D_p,
+	CVectorFixedDouble<3>& out)
 {
 	const CVectorFixedDouble<6> incr(&eps[0]);
 	const CPose3D incrPose = Lie::SE<3>::exp(incr);
@@ -1047,8 +1051,8 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 	const size_t N = lm_stat.valid_image_pair_indices.size();
 	res_jac.resize(N);
 
-	// Parse lm_stat data: CVectorFixedDouble<9> left_cam_params, right_cam_params; //
-	// [fx fy cx cy k1 k2 k3 t1 t2]
+	// Parse lm_stat data: CVectorFixedDouble<9> left_cam_params,
+	// right_cam_params; // [fx fy cx cy k1 k2 k3 t1 t2]
 	TCamera camparam_l;
 	camparam_l.fx(lm_stat.left_cam_params[0]);
 	camparam_l.fy(lm_stat.left_cam_params[1]);
@@ -1272,7 +1276,8 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 #if defined(USE_NUMERIC_JACOBIANS) || defined(COMPARE_NUMERIC_JACOBIANS)
 			// ----- Numeric Jacobians ----
 
-			CVectorFixedDouble<30> x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) +
+			CVectorFixedDouble<30>
+				x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) +
 			// r_camparams (9)
 			x0.setZero();
 			x0.segment<9>(6 + 6) = lm_stat.left_cam_params;

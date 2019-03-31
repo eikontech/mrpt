@@ -1010,7 +1010,9 @@ struct graph_ops
 			//  We want to compute the squared Mahalanobis distance:
 			//       err^t * INV_COV * err
 			//
-			mrpt::math::CVectorFixedDouble<constraint_t::type_value::static_size> err;
+			mrpt::math::CVectorFixedDouble<
+				constraint_t::type_value::static_size>
+				err;
 			for (size_t i = 0; i < constraint_t::type_value::static_size; i++)
 				err[i] = from_plus_delta.getPoseMean()[i] - to_mean[i];
 

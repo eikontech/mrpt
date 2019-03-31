@@ -831,10 +831,9 @@ inline void crossProduct3D(
 
 //! overload (returning a vector of size 3 by value).
 template <class VEC1, class VEC2>
-inline Eigen::Matrix<double, 3, 1> crossProduct3D(
-	const VEC1& v0, const VEC2& v1)
+inline VEC1 crossProduct3D(const VEC1& v0, const VEC2& v1)
 {
-	Eigen::Matrix<double, 3, 1> vOut;
+	VEC1 vOut;
 	vOut[0] = v0[1] * v1[2] - v0[2] * v1[1];
 	vOut[1] = v0[2] * v1[0] - v0[0] * v1[2];
 	vOut[2] = v0[0] * v1[1] - v0[1] * v1[0];

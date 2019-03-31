@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/core/optional_ref.h>
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 
 namespace mrpt::poses::Lie
 {

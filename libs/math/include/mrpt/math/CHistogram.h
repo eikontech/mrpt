@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/math/math_frwds.h>
 #include <vector>
 
 namespace mrpt::math

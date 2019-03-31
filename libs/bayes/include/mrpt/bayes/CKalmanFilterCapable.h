@@ -14,9 +14,9 @@
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/system/COutputLogger.h>

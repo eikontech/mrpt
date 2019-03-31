@@ -31,7 +31,7 @@ void CMatrixD::serializeTo(mrpt::serialization::CArchive& out) const
 	// Since mrpt-1.9.9, dynamic matrices are stored as a contiguous vector:
 	if (rows() > 0 && cols() > 0)
 		out.WriteBufferFixEndianness<value_type>(
-		    &(*this)(0, 0), cols() * rows());
+			&(*this)(0, 0), cols() * rows());
 }
 void CMatrixD::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -48,8 +48,8 @@ void CMatrixD::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 			if (nRows > 0 && nCols > 0)
 				in.ReadBufferFixEndianness<value_type>(
-				    &(*this)(0, 0), nRows * nCols);
-	    }
+					&(*this)(0, 0), nRows * nCols);
+		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -73,8 +73,10 @@ void CMatrixD::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 	{
 		case 1:
 		{
-		    mrpt::math::fromMatlabStringFormat(
-			    asEigen().matrix(), static_cast<std::string>(in["data"]));
+			Eigen::MatrixXd m;
+			mrpt::math::fromMatlabStringFormat(
+				m, static_cast<std::string>(in["data"]));
+			*this = m;
 		}
 		break;
 		default:

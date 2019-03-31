@@ -260,7 +260,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_compose_point(
-		const CVectorFixedDouble<6 + 3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<6 + 3>& x, const double& dummy,
+		CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0], x[1], x[2], x[3], x[4], x[5]);
@@ -270,7 +271,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_inv_compose_point(
-		const CVectorFixedDouble<6 + 3>& x, const double& dummy, CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<6 + 3>& x, const double& dummy,
+		CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0], x[1], x[2], x[3], x[4], x[5]);
@@ -430,7 +432,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_compose_point_se3(
-		const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P, CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P,
+		CVectorFixedDouble<3>& Y)
 	{
 		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
@@ -439,7 +442,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_invcompose_point_se3(
-		const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P, CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P,
+		CVectorFixedDouble<3>& Y)
 	{
 		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
@@ -469,8 +473,9 @@ class Pose3DTests : public ::testing::Test
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P,
-					CVectorFixedDouble<3>& Y)>(&func_compose_point_se3),
+					const CVectorFixedDouble<6>& x,
+					const CVectorFixedDouble<3>& P, CVectorFixedDouble<3>& Y)>(
+					&func_compose_point_se3),
 				x_incrs, P, num_df_dse3);
 		}
 
@@ -507,8 +512,9 @@ class Pose3DTests : public ::testing::Test
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CVectorFixedDouble<6>& x, const CVectorFixedDouble<3>& P,
-					CVectorFixedDouble<3>& Y)>(&func_invcompose_point_se3),
+					const CVectorFixedDouble<6>& x,
+					const CVectorFixedDouble<3>& P, CVectorFixedDouble<3>& Y)>(
+					&func_invcompose_point_se3),
 				x_incrs, P, num_df_dse3);
 		}
 
@@ -524,7 +530,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_expe_e(
-		const CVectorFixedDouble<6>& x, const double& dummy, CVectorFixedDouble<12>& Y)
+		const CVectorFixedDouble<6>& x, const double& dummy,
+		CVectorFixedDouble<12>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p = Lie::SE<3>::exp(x);
@@ -572,7 +579,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_LnT_T(
-		const CVectorFixedDouble<12>& x, const double& dummy, CVectorFixedDouble<6>& Y)
+		const CVectorFixedDouble<12>& x, const double& dummy,
+		CVectorFixedDouble<6>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3D p;
@@ -621,7 +629,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_expe_D(
-		const CVectorFixedDouble<6>& eps, const CPose3D& D, CVectorFixedDouble<12>& Y)
+		const CVectorFixedDouble<6>& eps, const CPose3D& D,
+		CVectorFixedDouble<12>& Y)
 	{
 		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D expe_D = incr + D;
@@ -661,7 +670,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_D_expe(
-		const CVectorFixedDouble<6>& eps, const CPose3D& D, CVectorFixedDouble<12>& Y)
+		const CVectorFixedDouble<6>& eps, const CPose3D& D,
+		CVectorFixedDouble<12>& Y)
 	{
 		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D expe_D = D + incr;
@@ -706,8 +716,8 @@ class Pose3DTests : public ::testing::Test
 	};
 
 	static void func_jacob_Aexpe_D(
-		const CVectorFixedDouble<6>& eps, const TParams_func_jacob_Aexpe_D& params,
-		CVectorFixedDouble<12>& Y)
+		const CVectorFixedDouble<6>& eps,
+		const TParams_func_jacob_Aexpe_D& params, CVectorFixedDouble<12>& Y)
 	{
 		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D res = params.A + incr + params.D;

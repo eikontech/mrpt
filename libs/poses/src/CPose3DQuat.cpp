@@ -537,3 +537,23 @@ TPose3DQuat CPose3DQuat::asTPose() const
 	return TPose3DQuat(
 		x(), y(), z(), m_quat.r(), m_quat.x(), m_quat.y(), m_quat.z());
 }
+
+void CPose3DQuat::fromString(const std::string& s)
+{
+	mrpt::math::CMatrixDouble m;
+	if (!m.fromMatlabStringFormat(m, s))
+		THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Expected vector length=7");
+	m_coords[0] = m(0, 0);
+	m_coords[1] = m(0, 1);
+	m_coords[2] = m(0, 2);
+	m_quat[0] = m(0, 3);
+	m_quat[1] = m(0, 4);
+	m_quat[2] = m(0, 5);
+	m_quat[3] = m(0, 6);
+}
+
+void CPose3DQuat::fromStringRaw(const std::string& s)
+{
+	this->fromString("[" + s + "]");
+}

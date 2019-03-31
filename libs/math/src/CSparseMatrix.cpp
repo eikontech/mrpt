@@ -390,7 +390,7 @@ void CSparseMatrix::CholeskyDecomp::get_L(CMatrixDouble& L) const
 
 /** Return the vector from a back-substitution step that solves: Ux=b   */
 void CSparseMatrix::CholeskyDecomp::backsub(
-    const CVectorDouble& b, CVectorDouble& sol) const
+	const CVectorDouble& b, CVectorDouble& sol) const
 {
 	ASSERT_(b.size() > 0);
 	sol.resize(b.size());

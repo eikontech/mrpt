@@ -71,7 +71,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 	}
 
 	static void func_compose(
-		const CVectorFixedDouble<2 * 7>& x, const double& dummy, CVectorFixedDouble<7>& Y)
+		const CVectorFixedDouble<2 * 7>& x, const double& dummy,
+		CVectorFixedDouble<7>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3DQuat p1(
@@ -84,7 +85,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 	}
 
 	static void func_inv_compose(
-		const CVectorFixedDouble<2 * 7>& x, const double& dummy, CVectorFixedDouble<7>& Y)
+		const CVectorFixedDouble<2 * 7>& x, const double& dummy,
+		CVectorFixedDouble<7>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3DQuat p1(
@@ -137,7 +139,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 	}
 
 	static void func_inverse(
-		const CVectorFixedDouble<7>& x, const double& dummy, CVectorFixedDouble<7>& Y)
+		const CVectorFixedDouble<7>& x, const double& dummy,
+		CVectorFixedDouble<7>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		const CPose3DQuat p1(

@@ -9,6 +9,7 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/ransac_applications.h>
 
 using namespace mrpt;
@@ -102,9 +103,8 @@ bool ransac3Dplane_degenerate(
  ---------------------------------------------------------------*/
 template <typename NUMTYPE>
 void mrpt::math::ransac_detect_3D_planes(
-	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& x,
-	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& y,
-	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& z,
+	const CVectorDynamic<NUMTYPE>& x, const CVectorDynamic<NUMTYPE>& y,
+	const CVectorDynamic<NUMTYPE>& z,
 	vector<pair<size_t, TPlane>>& out_detected_planes, const double threshold,
 	const size_t min_inliers_for_valid_plane)
 {
@@ -118,9 +118,9 @@ void mrpt::math::ransac_detect_3D_planes(
 
 	// The running lists of remaining points after each plane, as a matrix:
 	CMatrixDynamic<NUMTYPE> remainingPoints(3, x.size());
-	remainingPoints.insertRow(0, x);
-	remainingPoints.insertRow(1, y);
-	remainingPoints.insertRow(2, z);
+	remainingPoints.setRow(0, x);
+	remainingPoints.setRow(1, y);
+	remainingPoints.setRow(2, z);
 
 	// ---------------------------------------------
 	// For each plane:
@@ -156,7 +156,7 @@ void mrpt::math::ransac_detect_3D_planes(
 
 			// Discard the selected points so they are not used again for
 			// finding subsequent planes:
-			remainingPoints.removeColumns(this_best_inliers);
+			mrpt::math::removeColumns(remainingPoints, this_best_inliers);
 		}
 		else
 		{
@@ -168,12 +168,11 @@ void mrpt::math::ransac_detect_3D_planes(
 }
 
 // Template explicit instantiations:
-#define EXPLICIT_INST_ransac_detect_3D_planes(_TYPE_)          \
-	template void mrpt::math::ransac_detect_3D_planes<_TYPE_>( \
-		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& x,     \
-		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& y,     \
-		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& z,     \
-		vector<pair<size_t, TPlane>>& out_detected_planes,     \
+#define EXPLICIT_INST_ransac_detect_3D_planes(_TYPE_)                     \
+	template void mrpt::math::ransac_detect_3D_planes<_TYPE_>(            \
+		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y, \
+		const CVectorDynamic<_TYPE_>& z,                                  \
+		vector<pair<size_t, TPlane>>& out_detected_planes,                \
 		const double threshold, const size_t min_inliers_for_valid_plane);
 
 EXPLICIT_INST_ransac_detect_3D_planes(float)
@@ -269,8 +268,7 @@ EXPLICIT_INST_ransac_detect_3D_planes(float)
  ---------------------------------------------------------------*/
 template <typename NUMTYPE>
 void mrpt::math::ransac_detect_2D_lines(
-	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& x,
-	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& y,
+	const CVectorDynamic<NUMTYPE>& x, const CVectorDynamic<NUMTYPE>& y,
 	std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,
 	const double threshold, const size_t min_inliers_for_valid_line)
 {
@@ -282,8 +280,8 @@ void mrpt::math::ransac_detect_2D_lines(
 
 	// The running lists of remaining points after each plane, as a matrix:
 	CMatrixDynamic<NUMTYPE> remainingPoints(2, x.size());
-	remainingPoints.insertRow(0, x);
-	remainingPoints.insertRow(1, y);
+	remainingPoints.setRow(0, x);
+	remainingPoints.setRow(1, y);
 
 	// ---------------------------------------------
 	// For each line:
@@ -318,7 +316,7 @@ void mrpt::math::ransac_detect_2D_lines(
 
 			// Discard the selected points so they are not used again for
 			// finding subsequent planes:
-			remainingPoints.removeColumns(this_best_inliers);
+			mrpt::math::removeColumns(remainingPoints, this_best_inliers);
 		}
 		else
 		{
@@ -330,11 +328,10 @@ void mrpt::math::ransac_detect_2D_lines(
 }
 
 // Template explicit instantiations:
-#define EXPLICIT_INSTANT_ransac_detect_2D_lines(_TYPE_)              \
-	template void mrpt::math::ransac_detect_2D_lines<_TYPE_>(        \
-		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& x,           \
-		const Eigen::Matrix<_TYPE_, Eigen::Dynamic, 1>& y,           \
-		std::vector<std::pair<size_t, TLine2D>>& out_detected_lines, \
+#define EXPLICIT_INSTANT_ransac_detect_2D_lines(_TYPE_)                   \
+	template void mrpt::math::ransac_detect_2D_lines<_TYPE_>(             \
+		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y, \
+		std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,      \
 		const double threshold, const size_t min_inliers_for_valid_line);
 
 EXPLICIT_INSTANT_ransac_detect_2D_lines(float)

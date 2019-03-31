@@ -23,8 +23,8 @@
 #pragma once
 
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 
@@ -35,7 +35,8 @@
 
 namespace mrpt::vision
 {
-using mrpt::math::CVectorFixedDouble;  // Allow these "using"s since these headers are
+using mrpt::math::CVectorFixedDouble;  // Allow these "using"s since these
+									   // headers are
 // internal to mrpt
 using mrpt::math::CMatrixFixed;
 using std::vector;
