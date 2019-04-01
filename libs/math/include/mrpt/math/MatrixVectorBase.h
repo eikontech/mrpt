@@ -56,20 +56,22 @@ class MatrixVectorBase
 	void setDiagonal(const std::size_t N, const Scalar value)
 	{
 		derived().resize(N, N);
-		for (std::size_t r = 0; r < m_Rows; r++)
-			for (std::size_t c = 0; c < m_Cols; c++)
+		for (std::size_t r = 0; r < derived().rows(); r++)
+			for (std::size_t c = 0; c < derived().cols(); c++)
 				derived()(r, c) = (r == c) ? value : 0;
 	}
 	void setDiagonal(const Scalar value)
 	{
-		ASSERT_EQUAL_(m_Rows, m_Cols);
-		setDiagonal(m_Rows, value);
+		ASSERT_EQUAL_(derived().cols(), derived().rows());
+		setDiagonal(derived().cols(), value);
 	}
 	void setIdentity()
 	{
-		ASSERT_EQUAL_(m_Rows, m_Cols);
-		setDiagonal(m_Rows, 1);
+		ASSERT_EQUAL_(derived().rows(), derived().cols());
+		setDiagonal(derived().cols(), 1);
 	}
 	void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
+
+	bool isSquare() const { return derived().cols() == derived().rows; }
 };
 }  // namespace mrpt::math

@@ -17,7 +17,7 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <algorithm>  // swap()
 #include <array>
-#include <cstring>	// memset()
+#include <cstring>  // memset()
 #include <type_traits>
 
 namespace mrpt::math
@@ -43,7 +43,7 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 	using vec_t = mrpt::aligned_std_basicstring<T>;
 
 	/** RowMajor matrix data */
-	vec_t  m_data;
+	vec_t m_data;
 	size_t m_Rows{0}, m_Cols{0};
 
    public:
@@ -416,75 +416,6 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 		return m_data[ith];
 	}
 
-	/** Fast but unsafe method to write a value in the matrix
-	 */
-	inline void set_unsafe(size_t row, size_t col, const T& v)
-	{
-#ifdef _DEBUG
-		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(format(
-				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-				static_cast<unsigned long>(row),
-				static_cast<unsigned long>(col),
-				static_cast<unsigned long>(m_Rows),
-				static_cast<unsigned long>(m_Cols)));
-#endif
-		m_data[row][col] = v;
-	}
-
-	/** Fast but unsafe method to read a value from the matrix
-	 */
-	inline const T& get_unsafe(size_t row, size_t col) const
-	{
-#ifdef _DEBUG
-		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(format(
-				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-				static_cast<unsigned long>(row),
-				static_cast<unsigned long>(col),
-				static_cast<unsigned long>(m_Rows),
-				static_cast<unsigned long>(m_Cols)));
-#endif
-		return m_data[row][col];
-	}
-
-	/** Fast but unsafe method to get a reference from the matrix
-	 */
-	inline T& get_unsafe(size_t row, size_t col)
-	{
-#ifdef _DEBUG
-		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(format(
-				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-				static_cast<unsigned long>(row),
-				static_cast<unsigned long>(col),
-				static_cast<unsigned long>(m_Rows),
-				static_cast<unsigned long>(m_Cols)));
-#endif
-		return m_data[row][col];
-	}
-
-	/** Fast but unsafe method to obtain a pointer to a given row of the matrix
-	 * (Use only in time critical applications)
-	 */
-	inline T* get_unsafe_row(size_t row)
-	{
-#ifdef _DEBUG
-		if (row >= m_Rows)
-			THROW_EXCEPTION(format(
-				"Row index %lu out of range. Matrix is %lux%lu",
-				static_cast<unsigned long>(row),
-				static_cast<unsigned long>(m_Rows),
-				static_cast<unsigned long>(m_Cols)));
-#endif
-		return m_data[row];
-	}
-
-	/** Fast but unsafe method to obtain a pointer to a given row of the matrix
-	 * (Use only in critical applications)
-	 */
-	inline const T* get_unsafe_row(size_t row) const { return m_data[row]; }
-
 	/** Appends a new row to the MxN matrix from a 1xN vector.
 	 *  The lenght of the vector must match the width of the matrix, unless
 	 * it's empty: in that case the matrix is resized to 1xN.
@@ -578,7 +509,12 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 
-};	// end of class CMatrixDynamic
+	/** Returns the inverse of a general matrix using LU */
+	CMatrixDynamic<T> inverse() const;
+	/** Returns the inverse of a symmetric matrix using LLt */
+	CMatrixDynamic<T> inverseLLt() const;
+
+};  // end of class CMatrixDynamic
 
 /** Declares a matrix of booleans (non serializable).
  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB */

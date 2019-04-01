@@ -13,11 +13,11 @@
 #include <mrpt/math/MatrixVectorBase.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
 #include <mrpt/math/matrix_size_t.h>
-#include <mrpt/math/point_poses2vectors.h>	// MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
+#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 #include <array>
-#include <cstddef>	// std::size_t
+#include <cstddef>  // std::size_t
 
 namespace mrpt::math
 {
@@ -168,8 +168,8 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 	}
 	void resize(size_t row, size_t col)
 	{
-		ASSERT_EQUAL_(siz[0], ROWS);
-		ASSERT_EQUAL_(siz[1], COLS);
+		ASSERT_EQUAL_(row, ROWS);
+		ASSERT_EQUAL_(col, COLS);
 	}
 
 	/** Number of rows in the matrix \sa rows() */
@@ -266,6 +266,11 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 		setDiagonal(ROWS, 1);
 	}
 	void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
+
+	/** Returns the inverse of a general matrix using LU */
+	CMatrixFixed<T, ROWS, COLS> inverse() const;
+	/** Returns the inverse of a symmetric matrix using LLt */
+	CMatrixFixed<T, ROWS, COLS> inverseLLt() const;
 
 	/** @} */
 };

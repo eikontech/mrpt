@@ -120,13 +120,7 @@ class CProbabilityDensityFunction
 	 */
 	virtual void getInformationMatrix(inf_mat_t& inf) const
 	{
-		cov_mat_t cov(mrpt::math::UNINITIALIZED_MATRIX);
-		TDATA p;
-		this->getCovarianceAndMean(cov, p);
-		// Inverse:
-		auto I = Eigen::Matrix<
-			double, STATE_LEN, STATE_LEN, 0, STATE_LEN, STATE_LEN>::Identity();
-		inf = cov.asEigen().llt().solve(I);
+		inf = getCovariance().inverseLLt();
 	}
 
 	/** Save PDF's particles to a text file. See derived classes for more
