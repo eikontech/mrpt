@@ -359,13 +359,13 @@ void CPointPDFSOG::bayesianFusion(
 				new_eta_i = new_covInv_i.asEigen() * new_eta_i;
 
 				double a_i =
-					-0.5 *
-					(3 * log(M_2PI) - log(new_covInv_i.det()) +
-					 (eta_i.adjoint() * auxSOG_Kernel_i.cov * eta_i)(0, 0));
+				    -0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
+				            (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
+				             eta_i)(0, 0));
 				double new_a_i =
 					-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-							(new_eta_i.adjoint() * newKernel.val.cov *
-							 new_eta_i)(0, 0));
+				            (new_eta_i.transpose() *
+				             newKernel.val.cov.asEigen() * new_eta_i)(0, 0));
 
 				newKernel.log_w = m.log_w + m2.log_w + a + a_i - new_a_i;
 

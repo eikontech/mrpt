@@ -438,3 +438,19 @@ CPose3D& CPoseRandomSampler::getSamplingMean3D(CPose3D& out_mean) const
 	return out_mean;
 	MRPT_END
 }
+
+void CPoseRandomSampler::getOriginalPDFCov2D(
+    mrpt::math::CMatrixDouble& cov3x3) const
+{
+	mrpt::math::CMatrixDouble33 M;
+	this->getOriginalPDFCov2D(M);
+	cov3x3 = mrpt::math::CMatrixDouble(M);
+}
+
+void CPoseRandomSampler::getOriginalPDFCov3D(
+    mrpt::math::CMatrixDouble& cov6x6) const
+{
+	mrpt::math::CMatrixDouble66 M;
+	this->getOriginalPDFCov3D(M);
+	cov6x6 = mrpt::math::CMatrixDouble(M);
+}

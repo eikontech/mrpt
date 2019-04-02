@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/eigen_extensions.h>
+//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>  // distance()
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -45,7 +45,7 @@ bool TPoint2D::operator<(const TPoint2D& p) const
 void TPoint2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 2, "Wrong size of vector in ::fromString");
@@ -63,7 +63,7 @@ void TPose2D::asString(std::string& s) const
 void TPose2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
@@ -105,7 +105,7 @@ void TTwist2D::asString(std::string& s) const
 void TTwist2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
@@ -142,7 +142,7 @@ void TTwist3D::asString(std::string& s) const
 void TTwist3D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
@@ -190,7 +190,7 @@ bool TPoint3D::operator<(const TPoint3D& p) const
 void TPoint3D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
@@ -365,7 +365,7 @@ void TPose3D::SO3_to_yaw_pitch_roll(
 void TPose3D::fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44& HG)
 {
 	SO3_to_yaw_pitch_roll(
-		CMatrixDouble33(HG.asEigen().block<3, 3>(0, 0)), yaw, pitch, roll);
+		CMatrixDouble33(HG.block<3, 3>(0, 0)), yaw, pitch, roll);
 	x = HG(0, 3);
 	y = HG(1, 3);
 	z = HG(2, 3);
@@ -382,7 +382,7 @@ void TPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const
 {
 	CMatrixDouble33 R;
 	getRotationMatrix(R);
-	HG.asEigen().block<3, 3>(0, 0) = R.asEigen();
+	HG.block<3, 3>(0, 0) = R.asEigen();
 	HG(0, 3) = x;
 	HG(1, 3) = y;
 	HG(2, 3) = z;
@@ -398,7 +398,7 @@ void TPose3D::getInverseHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const
 void TPose3D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
@@ -413,7 +413,7 @@ void TPose3D::fromString(const std::string& s)
 void TPose3DQuat::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");

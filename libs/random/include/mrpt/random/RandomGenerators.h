@@ -303,17 +303,18 @@ class CRandomGenerator
 				"drawGaussianMultivariate(): mean and cov sizes ");
 
 		// Compute eigenvalues/eigenvectors of cov:
-		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
-			eigensolver(cov.asEigen());
-
-		auto eigVecs = eigensolver.eigenvectors();
-		auto eigVals = eigensolver.eigenvalues();
+		COVMATRIX eigVecs;
+		std::vector<typename COVMATRIX::Scalar> eigVals;
+		cov.eig_symmetric(eigVecs, eigVals);
 
 		// Scale eigenvectors with eigenvalues:
 		// D.Sqrt(); Z = Z * D; (for each column)
-		eigVals = eigVals.array().sqrt();
-		for (typename COVMATRIX::Index i = 0; i < eigVecs.cols(); i++)
-			eigVecs.col(i) *= eigVals[i];
+		for (typename COVMATRIX::Index c = 0; c < eigVecs.cols(); c++)
+		{
+			const auto s = std::sqrt(eigVals[c]);
+			for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
+				eigVecs(c, r) *= s;
+		}
 
 		// Set size of output vector:
 		out_result.assign(N, 0);
@@ -423,8 +424,8 @@ template <class MAT>
 void matrixRandomUni(
 	MAT& matrix, const double unif_min = 0, const double unif_max = 1)
 {
-	for (size_t r = 0; r < matrix.rows(); r++)
-		for (size_t c = 0; c < matrix.cols(); c++)
+	for (typename MAT::Index r = 0; r < matrix.rows(); r++)
+		for (typename MAT::Index c = 0; c < matrix.cols(); c++)
 			matrix(r, c) = static_cast<typename MAT::Scalar>(
 				getRandomGenerator().drawUniform(unif_min, unif_max));
 }
@@ -450,8 +451,8 @@ template <class MAT>
 void matrixRandomNormal(
 	MAT& matrix, const double mean = 0, const double std = 1)
 {
-	for (size_t r = 0; r < matrix.rows(); r++)
-		for (size_t c = 0; c < matrix.cols(); c++)
+	for (typename MAT::Index r = 0; r < matrix.rows(); r++)
+		for (typename MAT::Index c = 0; c < matrix.cols(); c++)
 			matrix(r, c) = static_cast<typename MAT::Scalar>(
 				mean + std * getRandomGenerator().drawGaussian1D_normalized());
 }

@@ -91,7 +91,7 @@ void homogeneousMatrixInverse(
 	out_xyz[2] = tx * in_R(0, 2) + ty * in_R(1, 2) + tz * in_R(2, 2);
 
 	// 3x3 rotation part: transpose
-	out_R = in_R.adjoint();
+	out_R = in_R.transpose();
 
 	MRPT_END
 }

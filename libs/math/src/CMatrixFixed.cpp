@@ -11,6 +11,7 @@
 
 #include <mrpt/math/CMatrixFixed.h>
 #include <Eigen/Dense>
+#include "MatrixVectorBase_impl.h"
 
 using namespace mrpt::math;
 

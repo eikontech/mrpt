@@ -70,7 +70,7 @@ SE<3>::mat2tang_jacob SE<3>::jacob_dlogv_dv(const SE<3>::type& P)
 	mrpt::math::CMatrixDouble6_12 J;
 	J.setZero();
 	const CMatrixDouble33& R = P.getRotationMatrix();
-	J.asEigen().block<3, 9>(3, 0) = SO<3>::jacob_dlogv_dv(R).asEigen();
+	J.block<3, 9>(3, 0) = SO<3>::jacob_dlogv_dv(R).asEigen();
 	J(0, 9) = J(1, 10) = J(2, 11) = 1.0;
 	return J;
 }
@@ -80,8 +80,8 @@ SE<3>::mat2tang_jacob SE<3>::jacob_dlogv_dv(const SE<3>::type& P)
 SE<3>::tang2mat_jacob SE<3>::jacob_dexpeD_de(const CPose3D& D)
 {
 	mrpt::math::CMatrixDouble12_6 jacob;
-	jacob.asEigen().block<9, 3>(0, 0).setZero();
-	jacob.asEigen().block<3, 3>(9, 0).setIdentity();
+	jacob.block<9, 3>(0, 0).setZero();
+	jacob.block<3, 3>(9, 0).setIdentity();
 	for (int i = 0; i < 3; i++)
 	{
 		auto trg_blc = jacob.block<3, 3>(3 * i, 3);

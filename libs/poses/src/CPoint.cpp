@@ -9,10 +9,10 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <iostream>
 
 using namespace mrpt::poses;
 
@@ -20,7 +20,7 @@ template <class DERIVEDCLASS>
 void CPoint<DERIVEDCLASS>::fromString(const std::string& s)
 {
 	mrpt::math::CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERT_EQUAL_(m.rows(), 1);
 	ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);

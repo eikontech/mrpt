@@ -52,6 +52,9 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 	constexpr static int ColsAtCompileTime = COLS;
 	constexpr static int SizeAtCompileTime = ROWS * COLS;
 	constexpr static int is_mrpt_type = 1;
+	using eigen_t = Eigen::Matrix<
+	    T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
+	    COLS>;
 	/** @} */
 
 	/** @name Iterators interface
@@ -211,9 +214,7 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-		typename EIGEN_MATRIX = Eigen::Matrix<
-			T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
-			COLS>,
+	    typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()

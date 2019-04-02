@@ -16,7 +16,6 @@
 #include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
 #include <mrpt/math/CQuaternion.h>  // for CQuatern...
 #include <mrpt/math/CVectorFixed.h>  // for CArrayDo...
-#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>  // for skew_sym...
 #include <mrpt/math/homog_matrices.h>  // for homogene...
 #include <mrpt/math/lightweight_geom_data.h>  // for TPoint3D
@@ -578,7 +577,7 @@ void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B)
 
 	// Important: Make this multiplication AFTER the translational part, to cope
 	// with the case when A==this
-	m_ROT.multiply_AB(A.m_ROT, B.m_ROT);
+	m_ROT = A.m_ROT * B.m_ROT;
 
 	m_ypr_uptodate = false;
 }
@@ -633,7 +632,7 @@ void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B)
 					  R_b_inv(i, 2) * A.m_coords[2];
 
 	// Rot part:
-	m_ROT.multiply_AB(R_b_inv, A.m_ROT);
+	m_ROT = R_b_inv * A.m_ROT;
 	m_ypr_uptodate = false;
 }
 
@@ -767,7 +766,7 @@ void CPose3D::fromString(const std::string& s)
 {
 	using mrpt::DEG2RAD;
 	mrpt::math::CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
 	this->setFromValues(

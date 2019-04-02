@@ -10,7 +10,6 @@
 #include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>  // HAVE_SINCOS
-#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -18,6 +17,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+#include <Eigen/Dense>
 #include <limits>
 
 using namespace mrpt;
@@ -401,7 +401,7 @@ CPose2D& CPose2D::operator+=(const CPose2D& b)
 void CPose2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
-	if (!fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 3, "Expected vector length=3");
 	x(m(0, 0));

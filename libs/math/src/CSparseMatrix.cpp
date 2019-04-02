@@ -10,7 +10,6 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSparseMatrix.h>
-#include <mrpt/math/eigen_extensions.h>
 #include <iostream>
 #include <string>
 
@@ -282,7 +281,7 @@ bool CSparseMatrix::saveToTextFile_dense(const std::string& filName)
 	this->get_dense(dense);
 	try
 	{
-		saveToTextFile(dense.asEigen(), filName);
+		dense.saveToTextFile(filName);
 		return true;
 	}
 	catch (...)

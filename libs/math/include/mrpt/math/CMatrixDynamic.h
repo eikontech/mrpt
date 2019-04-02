@@ -61,6 +61,7 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 	constexpr static int ColsAtCompileTime = -1;
 	constexpr static int SizeAtCompileTime = -1;
 	constexpr static int is_mrpt_type = 1;
+	using eigen_t = Eigen::Matrix<T, -1, -1, 1, -1, -1>;
 	/** @} */
 
 	/** @name Iterators interface
@@ -133,7 +134,7 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 	 * integer values). */
 	inline void swap(CMatrixDynamic<T>& o)
 	{
-		std::swap(m_data, o.m_data);
+		m_data.swap(o.m_data);
 		std::swap(m_Rows, o.m_Rows);
 		std::swap(m_Cols, o.m_Cols);
 	}
@@ -499,7 +500,7 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-		typename EIGEN_MATRIX = Eigen::Matrix<T, -1, -1, 1, -1, -1>,
+	    typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()

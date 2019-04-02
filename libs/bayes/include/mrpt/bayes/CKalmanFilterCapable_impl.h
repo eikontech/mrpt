@@ -614,7 +614,7 @@ void CKalmanFilterCapable<
 						m_K.setSize(m_pkk.rows(), S_observed.cols());
 
 						// K = m_pkk * (~dh_dx) * m_S.inv() );
-						m_K.multiply_ABt(m_pkk, m_dh_dx_full_obs);
+						m_K = m_pkk * m_dh_dx_full_obs.transpose();
 
 						// Inverse of S_observed -> m_S_1
 						S_observed.inv(m_S_1);
@@ -636,9 +636,8 @@ void CKalmanFilterCapable<
 							m_timLogger.enter(
 								"KF:8.update stage:2.FULLKF:iter.update xkk");
 
-							KFVector HAx_column;
-							m_dh_dx_full_obs.multiply_Ab(
-								m_xkk - xkk_0, HAx_column);
+							KFVector HAx_column =
+							    m_dh_dx_full_obs * (m_xkk - xkk_0);
 
 							m_xkk = xkk_0;
 							m_K.multiply_Ab(

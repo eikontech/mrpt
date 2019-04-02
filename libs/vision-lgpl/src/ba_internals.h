@@ -153,7 +153,7 @@ void frameJac(
 			tx * R(2, 2) - tz * R(0, 2) - R(0, 2) * p_z + R(2, 2) * p_x,
 			ty * R(0, 2) - tx * R(1, 2) + R(0, 2) * p_y - R(1, 2) * p_x};
 		const mrpt::math::CMatrixFixed<double, 3, 6> vals(aux_vals);
-		out_J.multiply_AB(jac_proj, vals);
+		out_J = jac_proj * vals;
 	}
 }
 
@@ -194,7 +194,7 @@ void pointJac(
 		camera_params.fy() * _z,		 -camera_params.fy() * l.y * _z2};
 	const mrpt::math::CMatrixFixed<double, 2, 3> tmp(tmp_vals);
 
-	out_J.multiply_AB(tmp, dp_point);
+	out_J = tmp * dp_point;
 }
 
 // === Compute sparse Jacobians ====

@@ -913,12 +913,10 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 		yn[0], yn[1], yn[2],  // yn in global coords
 		&jacob_dyn_dynrelsensor, &jacob_dyn_dsensorabs);
 
-	// dyn_dhn = jacob_dyn_dynrelsensor * dynlocal_dhn;
-	dyn_dhn.multiply_AB(jacob_dyn_dynrelsensor, dynlocal_dhn);
+	dyn_dhn = jacob_dyn_dynrelsensor * dynlocal_dhn;
 
 	// dyn_dxv =
-	dyn_dxv.multiply_AB(
-		jacob_dyn_dsensorabs, dsensorabs_dvehpose);  // dsensorabs_dsenrelpose);
+	dyn_dxv = jacob_dyn_dsensorabs * dsensorabs_dvehpose;
 
 	MRPT_END
 }

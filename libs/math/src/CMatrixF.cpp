@@ -10,7 +10,6 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
@@ -63,7 +62,7 @@ void CMatrixF::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
 	out["nrows"] = static_cast<uint32_t>(this->rows());
 	out["ncols"] = static_cast<uint32_t>(this->cols());
-	out["data"] = mrpt::math::inMatlabFormat(asEigen());
+	out["data"] = this->inMatlabFormat();
 }
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
 void CMatrixF::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
@@ -74,10 +73,7 @@ void CMatrixF::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 	{
 		case 1:
 		{
-			Eigen::MatrixXf m;
-			mrpt::math::fromMatlabStringFormat(
-				m, static_cast<std::string>(in["data"]));
-			*this = m;
+		    this->fromMatlabStringFormat(static_cast<std::string>(in["data"]));
 		}
 		break;
 		default:

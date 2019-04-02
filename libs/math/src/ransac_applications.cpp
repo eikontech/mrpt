@@ -9,7 +9,7 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/eigen_extensions.h>
+//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/ransac_applications.h>
 
 using namespace mrpt;
@@ -156,7 +156,7 @@ void mrpt::math::ransac_detect_3D_planes(
 
 			// Discard the selected points so they are not used again for
 			// finding subsequent planes:
-			mrpt::math::removeColumns(remainingPoints, this_best_inliers);
+			remainingPoints.removeColumns(this_best_inliers);
 		}
 		else
 		{
@@ -316,7 +316,7 @@ void mrpt::math::ransac_detect_2D_lines(
 
 			// Discard the selected points so they are not used again for
 			// finding subsequent planes:
-			mrpt::math::removeColumns(remainingPoints, this_best_inliers);
+			remainingPoints.removeColumns(this_best_inliers);
 		}
 		else
 		{

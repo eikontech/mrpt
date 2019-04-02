@@ -11,7 +11,7 @@
 #include <mrpt/poses/CPoseInterpolatorBase.h>
 
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/eigen_extensions.h>
+//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
@@ -309,7 +309,7 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile(const std::string& s)
 
 	try
 	{
-		mrpt::math::loadFromTextFile(M, s);
+		M.loadFromTextFile(s);
 	}
 	catch (std::exception&)
 	{

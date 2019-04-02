@@ -130,14 +130,13 @@ void CPoint2DPDFGaussian::changeCoordinatesReference(
 {
 	// Clip the 3x3 rotation matrix
 	CMatrixDouble22 M;
-	M.asEigen() =
-		newReferenceBase.getRotationMatrix().asEigen().block<2, 2>(0, 0);
+	M.asEigen() = newReferenceBase.getRotationMatrix().block<2, 2>(0, 0);
 
 	// The mean:
 	mean = CPoint2D(newReferenceBase + mean);
 
 	// The covariance:
-	cov = M.asEigen() * cov.asEigen() * M.asEigen().transpose();
+	cov = M.asEigen() * cov.asEigen() * M.transpose();
 }
 
 /*---------------------------------------------------------------

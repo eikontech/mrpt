@@ -260,8 +260,8 @@ double mrpt::vision::bundle_adj_full(
 						retInsert.first);  // Keep the iterator
 
 					// Y[ids] = W[ids] * H_p^{-1}
-					Y[id_pair].multiply_AB(
-						tmp, V_inv[feat_id - num_fix_points]);
+					Y[id_pair] =
+					tmp* V_inv[feat_id - num_fix_points];
 				}
 				++jac_iter;
 			}

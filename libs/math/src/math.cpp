@@ -12,7 +12,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
-#include <mrpt/math/eigen_extensions.h>
+//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>

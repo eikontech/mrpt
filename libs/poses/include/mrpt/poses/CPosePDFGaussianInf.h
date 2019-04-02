@@ -85,7 +85,7 @@ class CPosePDFGaussianInf : public CPosePDF
 		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const override
 	{
 		mean_point = mean;
-		this->cov_inv.inv(cov);
+		cov = cov_inv.inverseLLt();
 	}
 
 	/** Returns the information (inverse covariance) matrix (a STATE_LEN x

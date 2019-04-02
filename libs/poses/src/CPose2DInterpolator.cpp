@@ -11,6 +11,7 @@
 
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <Eigen/Dense>
 #include "CPoseInterpolatorBase.hpp"  // templ impl
 
 using namespace mrpt::poses;
