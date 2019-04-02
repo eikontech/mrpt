@@ -180,7 +180,7 @@ void Test_SUT()
 
 		std::vector<double> X;
 		std::vector<double> H = mrpt::math::histogram(
-			MC_y[i], MC_y[i].minimum(), MC_y[i].maximum(), 40, true, &X);
+			MC_y[i], MC_y[i].minCoeff(), MC_y[i].maxCoeff(), 40, true, &X);
 
 		winHistos[i]->plot(X, H, "b");
 		winHistos[i]->axis_fit();

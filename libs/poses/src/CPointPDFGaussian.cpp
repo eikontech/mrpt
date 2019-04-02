@@ -16,6 +16,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::poses;
 
@@ -79,7 +80,7 @@ void CPointPDFGaussian::serializeFrom(
 
 			CMatrixF c;
 			in >> c;
-			cov = c.cast<double>();
+			cov = c.asEigen().cast<double>();
 		}
 		break;
 		case 1:
@@ -155,7 +156,7 @@ void CPointPDFGaussian::changeCoordinatesReference(
 	mean = newReferenceBase + mean;
 
 	// The covariance:
-	M.multiply_HCHt(CMatrixDouble33(cov), cov);  // save in cov
+	cov = M.asEigen() * cov.asEigen() * M.transpose();
 }
 
 /*---------------------------------------------------------------
@@ -166,12 +167,11 @@ void CPointPDFGaussian::bayesianFusion(
 {
 	MRPT_START
 
-	CMatrixDouble x1(3, 1), x2(3, 1), x(3, 1);
-	CMatrixDouble C1(p1.cov);
-	CMatrixDouble C2(p2.cov);
-	CMatrixDouble C1_inv = C1.inv();
-	CMatrixDouble C2_inv = C2.inv();
-	CMatrixDouble C;
+	CMatrixDouble31 x1, x2;
+	const auto C1 = p1.cov;
+	const auto C2 = p2.cov;
+	const CMatrixDouble33 C1_inv = C1.inverseLLt();
+	const CMatrixDouble33 C2_inv = C2.inverseLLt();
 
 	x1(0, 0) = p1.mean.x();
 	x1(1, 0) = p1.mean.y();
@@ -180,18 +180,14 @@ void CPointPDFGaussian::bayesianFusion(
 	x2(1, 0) = p2.mean.y();
 	x2(2, 0) = p2.mean.z();
 
-	C = (C1_inv + C2_inv).inv();
-	cov = C;
+	cov = CMatrixDouble33(C1_inv + C2_inv).inverseLLt();
 
-	x = C * (C1_inv * x1 + C2_inv * x2);
+	auto x = cov.asEigen() * (C1_inv.asEigen() * x1.asEigen() +
+	                          C2_inv.asEigen() * x2.asEigen());
 
 	mean.x(x(0, 0));
 	mean.y(x(1, 0));
 	mean.z(x(2, 0));
-
-	//	std::cout << "IN1: " << x1 << "\n" << C1 << "\n";
-	//	std::cout << "IN2: " << x2 << "\n" << C2 << "\n";
-	//	std::cout << "OUT: " << x << "\n" << C << "\n";
 
 	MRPT_END
 }
@@ -210,17 +206,14 @@ double CPointPDFGaussian::productIntegralWith(const CPointPDFGaussian& p) const
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
 	CMatrixDouble33 C = cov;
-	C += p.cov;  // Sum of covs:
-	CMatrixDouble33 C_inv;
-	C.inv(C_inv);
+	C += p.cov;  // Sum of covs
+	CMatrixDouble33 C_inv = C.inverseLLt();
 
-	CMatrixDouble31 MU(UNINITIALIZED_MATRIX);  // Diff. of means
-	MU(0, 0) = mean.x() - p.mean.x();
-	MU(1, 0) = mean.y() - p.mean.y();
-	MU(2, 0) = mean.z() - p.mean.z();
+	const Eigen::Vector3d MU(
+	    mean.x() - p.mean.x(), mean.y() - p.mean.y(), mean.z() - p.mean.z());
 
 	return std::pow(M_2PI, -0.5 * state_length) * (1.0 / std::sqrt(C.det())) *
-		   exp(-0.5 * MU.multiply_HtCH_scalar(C_inv));
+	       exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
 
 	MRPT_END
 }
@@ -239,19 +232,16 @@ double CPointPDFGaussian::productIntegralWith2D(
 	//   Gaussians variables amounts to simply the evaluation of
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
-	CMatrixDouble22 C = cov.block(0, 0, 2, 2);
-	C += p.cov.block(0, 0, 2, 2);  // Sum of covs:
+	CMatrixDouble22 C = cov.block<2, 2>(0, 0);
+	C.asEigen() += p.cov.block<2, 2>(0, 0);  // Sum of covs:
 
-	CMatrixDouble22 C_inv;
-	C.inv(C_inv);
+	CMatrixDouble22 C_inv = C.inverseLLt();
 
-	CMatrixDouble21 MU(UNINITIALIZED_MATRIX);  // Diff. of means
-	MU(0, 0) = mean.x() - p.mean.x();
-	MU(1, 0) = mean.y() - p.mean.y();
+	const Eigen::Vector2d MU(mean.x() - p.mean.x(), mean.y() - p.mean.y());
 
 	return std::pow(M_2PI, -0.5 * (state_length - 1)) *
 		   (1.0 / std::sqrt(C.det())) *
-		   exp(-0.5 * MU.multiply_HtCH_scalar(C_inv));
+	       exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
 
 	MRPT_END
 }
@@ -329,16 +319,14 @@ double CPointPDFGaussian::mahalanobisDistanceTo(
 
 	if (!only_2D)
 	{
-		CMatrixDouble33 COV_inv;
-		COV.inv(COV_inv);
+		const CMatrixDouble33 COV_inv = COV.inverseLLt();
 		return sqrt(deltaX.multiply_HCHt_scalar(COV_inv));
 	}
 	else
 	{
-		CMatrixDouble22 C = COV.block(0, 0, 2, 2);
-		CMatrixDouble22 COV_inv;
-		C.inv(COV_inv);
-		CMatrixDouble12 deltaX2 = deltaX.block(0, 0, 1, 2);
+		CMatrixDouble22 C = COV.block<2, 2>(0, 0);
+		const CMatrixDouble22 COV_inv = C.inverseLLt();
+		CMatrixDouble12 deltaX2 = deltaX.block<1, 2>(0, 0);
 		return std::sqrt(deltaX2.multiply_HCHt_scalar(COV_inv));
 	}
 }

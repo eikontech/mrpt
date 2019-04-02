@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/serialization/CSerializable.h>
 

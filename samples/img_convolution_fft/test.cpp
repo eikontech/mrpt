@@ -67,7 +67,7 @@ void TestImageConvolutionFFT()
 		i2.setSize(ly, lx);
 
 		if (nTimes == 0)
-			printf("\nMax real:%f Min real:%f\n", i1.maximum(), i1.minimum());
+			printf("\nMax real:%f Min real:%f\n", i1.maxCoeff(), i1.minCoeff());
 
 		// FFT:
 		CMatrixF I1_R, I1_I, I2_R, I2_I;
@@ -94,7 +94,7 @@ void TestImageConvolutionFFT()
 
 		meanTime += tictac.Tac();
 		printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
-		printf("Max real:%f Min real:%f\n", res_R.maximum(), res_R.minimum());
+		printf("Max real:%f Min real:%f\n", res_R.maxCoeff(), res_R.minCoeff());
 	}
 
 	printf("Mean time: %.06fms\n", 1000.0f * meanTime / N);

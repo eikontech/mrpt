@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -217,11 +218,11 @@ double CPointPDFParticles::computeKurtosis()
 	MRPT_START
 
 	// kurtosis = \mu^4 / (\sigma^2) -3
-	CVectorDouble kurts, mu4, m, var;
-	kurts.assign(3, .0);
-	mu4.assign(3, .0);
-	m.assign(3, .0);
-	var.assign(3, .0);
+	Eigen::Vector3d kurts, mu4, m, var;
+	kurts.fill(0);
+	mu4.fill(0);
+	m.fill(0);
+	var.fill(0);
 
 	// Means:
 	for (auto& m_particle : m_particles)

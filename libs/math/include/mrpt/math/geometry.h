@@ -887,7 +887,7 @@ template <class VECTOR, class MATRIX>
 inline void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
 {
 	ASSERT_(v.size() == 3);
-	M.setSize(3, 3);
+	ASSERT_(M.rows() == 3 && M.cols() == 3);
 	M(0, 0) = 0;
 	M(0, 1) = v[2];
 	M(0, 2) = -v[1];

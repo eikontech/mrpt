@@ -88,17 +88,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	 * "[0.02 1.04]" )
 	 * \sa fromString
 	 */
-	void asString(std::string& s) const
-	{
-		s = (!DERIVEDCLASS::is3DPoseOrPoint())
-				? mrpt::format(
-					  "[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-					  static_cast<const DERIVEDCLASS*>(this)->y())
-				: mrpt::format(
-					  "[%f %f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-					  static_cast<const DERIVEDCLASS*>(this)->y(),
-					  static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
-	}
+	void asString(std::string& s) const;
 	inline std::string asString() const
 	{
 		std::string s;
@@ -111,16 +101,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	 * \sa asString
 	 * \exception std::exception On invalid format
 	 */
-	void fromString(const std::string& s)
-	{
-		mrpt::math::CMatrixDouble m;
-		if (!fromMatlabStringFormat(m, s))
-			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERT_EQUAL_(m.rows(), 1);
-		ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);
-		for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-			derived().m_coords[i] = m(0, i);
-	}
+	void fromString(const std::string& s);
 
 	inline const double& operator[](unsigned int i) const
 	{
@@ -133,13 +114,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 
 /** Dumps a point as a string [x,y] or [x,y,z]  */
 template <class DERIVEDCLASS>
-std::ostream& operator<<(std::ostream& o, const CPoint<DERIVEDCLASS>& p)
-{
-	o << "(" << p[0] << "," << p[1];
-	if (p.is3DPoseOrPoint()) o << "," << p[2];
-	o << ")";
-	return o;
-}
+std::ostream& operator<<(std::ostream& o, const CPoint<DERIVEDCLASS>& p);
 
 /** Used by STL algorithms */
 template <class DERIVEDCLASS>

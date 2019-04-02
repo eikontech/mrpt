@@ -10,6 +10,7 @@
 #include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>  // HAVE_SINCOS
+#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -296,8 +297,7 @@ void CPose2D::operator*=(const double s)
 ---------------------------------------------------------------*/
 void CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
 {
-	m.unit(4, 1.0);
-
+	m.setIdentity();
 	m(0, 3) = m_coords[0];
 	m(1, 3) = m_coords[1];
 
@@ -423,12 +423,8 @@ double CPose2D::distance2DFrobeniusTo(const CPose2D& p) const
 
 CPose3D CPose2D::operator-(const CPose3D& b) const
 {
-	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
-	b.getInverseHomogeneousMatrix(B_INV);
-	CMatrixDouble44 HM(UNINITIALIZED_MATRIX);
-	this->getHomogeneousMatrix(HM);
-	CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
-	RES.multiply(B_INV, HM);
+	CMatrixDouble44 RES = b.getInverseHomogeneousMatrixVal<CMatrixDouble44>() *
+	                      getHomogeneousMatrixVal<CMatrixDouble44>();
 	return CPose3D(RES);
 }
 

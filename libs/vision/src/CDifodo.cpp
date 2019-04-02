@@ -752,7 +752,7 @@ void CDifodo::computeWeights()
 			}
 
 	// Normalize weights in the range [0,1]
-	const float inv_max = 1.f / weights.maximum();
+	const float inv_max = 1.f / weights.maxCoeff();
 	weights = inv_max * weights;
 }
 

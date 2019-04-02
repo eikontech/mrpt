@@ -19,6 +19,8 @@ namespace mrpt::math
  */
 struct matrix_size_t : public std::array<size_t, 2>
 {
+	matrix_size_t() : std::array<size_t, 2>{0, 0} {}
+
 	/** Cast to size_t as the overall number of matrix/vector elements */
 	operator std::size_t() const { return at(0) * at(1); }
 };

@@ -35,6 +35,8 @@ template <typename Derived>
 class MatrixBase;
 template <typename Derived>
 struct EigenBase;
+template <typename VectorType, int Size>
+class VectorBlock;
 }  // namespace Eigen
 
 namespace mrpt::math

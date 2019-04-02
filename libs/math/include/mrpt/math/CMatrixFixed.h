@@ -87,7 +87,14 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 
 	/** Convert from Eigen matrix */
 	template <class Derived>
-	explicit CMatrixFixed(const Eigen::MatrixBase<Derived>& m)
+	CMatrixFixed(const Eigen::MatrixBase<Derived>& m)
+	{
+		*this = m;
+	}
+
+	/** Convert from Eigen block */
+	template <typename VectorType, int Size>
+	CMatrixFixed(const Eigen::VectorBlock<VectorType, Size>& m)
 	{
 		*this = m;
 	}
@@ -110,6 +117,15 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 	{
 		MRPT_START
 		setFromMatrixLike(m);
+		return *this;
+		MRPT_END
+	}
+	/** Assignment from an Eigen vector block */
+	template <typename VectorType, int Size>
+	CMatrixFixed& operator=(const Eigen::VectorBlock<VectorType, Size>& m)
+	{
+		MRPT_START
+		setFromMatrixLike(m.eval());
 		return *this;
 		MRPT_END
 	}
@@ -204,6 +220,7 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 	{
 		return EIGEN_MAP(&m_data[0], ROWS, COLS);
 	}
+
 	/** \overload (const version) */
 	template <
 		typename EIGEN_MATRIX = Eigen::Matrix<

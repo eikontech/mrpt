@@ -18,6 +18,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -96,18 +97,16 @@ void CPointPDFSOG::getCovarianceAndMean(
 
 		CListGaussianModes::const_iterator it;
 
-		CMatrixDouble33 partCov;
-
 		for (it = m_modes.begin(); it != m_modes.end(); ++it)
 		{
 			double w;
 			sumW += w = exp(it->log_w);
 
-			// estCov += w * ( it->val.cov +
-			// ((estMean_i-estMean)*(~(estMean_i-estMean))) );
 			auto estMean_i = CMatrixDouble31(it->val.mean);
 			estMean_i -= estMean;
-			partCov.multiply_AAt(estMean_i);
+
+			CMatrixDouble33 partCov =
+			    estMean_i.asEigen() * estMean_i.transpose();
 			partCov += it->val.cov;
 			partCov *= w;
 			estCov += partCov;
@@ -285,16 +284,14 @@ void CPointPDFSOG::bayesianFusion(
 
 		ASSERT_(c(0, 0) != 0 && c(0, 0) != 0);
 
-		CMatrixDouble33 covInv(UNINITIALIZED_MATRIX);
-		c.inv(covInv);
+		const CMatrixDouble33 covInv = c.inverseLLt();
 
-		CMatrixDouble31 eta = covInv * CMatrixDouble31(m.val.mean);
+		Eigen::Vector3d eta = covInv * CMatrixDouble31(m.val.mean);
 
 		// Normal distribution canonical form constant:
 		// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
 		double a = -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
-						   eta.multiply_HtCH_scalar(
-							   c));  // (~eta * (*it1).val.cov * eta)(0,0) );
+		                   (eta.transpose() * c.asEigen() * eta)(0, 0));
 
 		for (const auto& m2 : p2->m_modes)
 		{
@@ -351,13 +348,15 @@ void CPointPDFSOG::bayesianFusion(
 
 				newKernel.val = auxGaussianProduct;  // Copy mean & cov
 
-				CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inv();
-				auto eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
-				eta_i = covInv_i * eta_i;
+				CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inverseLLt();
+				Eigen::Vector3d eta_i =
+				    CMatrixDouble31(auxSOG_Kernel_i.mean).asEigen();
+				eta_i = covInv_i.asEigen() * eta_i;
 
-				CMatrixDouble33 new_covInv_i = newKernel.val.cov.inv();
-				auto new_eta_i = CMatrixDouble31(newKernel.val.mean);
-				new_eta_i = new_covInv_i * new_eta_i;
+				CMatrixDouble33 new_covInv_i = newKernel.val.cov.inverseLLt();
+				Eigen::Vector3d new_eta_i =
+				    CMatrixDouble31(newKernel.val.mean).asEigen();
+				new_eta_i = new_covInv_i.asEigen() * new_eta_i;
 
 				double a_i =
 					-0.5 *
