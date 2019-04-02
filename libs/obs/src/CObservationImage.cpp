@@ -63,7 +63,7 @@ void CObservationImage::serializeFrom(
 					cameraParams.dist.fill(0);
 
 				cameraParams.intrinsicParams =
-					intrinsicParams.block(0, 0, 3, 3).cast<double>();
+					intrinsicParams.block<3, 3>(0, 0).cast<double>();
 			}
 
 			in >> image;

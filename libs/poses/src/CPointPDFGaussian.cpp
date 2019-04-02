@@ -183,7 +183,7 @@ void CPointPDFGaussian::bayesianFusion(
 	cov = CMatrixDouble33(C1_inv + C2_inv).inverseLLt();
 
 	auto x = cov.asEigen() * (C1_inv.asEigen() * x1.asEigen() +
-	                          C2_inv.asEigen() * x2.asEigen());
+							  C2_inv.asEigen() * x2.asEigen());
 
 	mean.x(x(0, 0));
 	mean.y(x(1, 0));
@@ -210,10 +210,10 @@ double CPointPDFGaussian::productIntegralWith(const CPointPDFGaussian& p) const
 	CMatrixDouble33 C_inv = C.inverseLLt();
 
 	const Eigen::Vector3d MU(
-	    mean.x() - p.mean.x(), mean.y() - p.mean.y(), mean.z() - p.mean.z());
+		mean.x() - p.mean.x(), mean.y() - p.mean.y(), mean.z() - p.mean.z());
 
 	return std::pow(M_2PI, -0.5 * state_length) * (1.0 / std::sqrt(C.det())) *
-	       exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
+		   exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
 
 	MRPT_END
 }
@@ -241,7 +241,7 @@ double CPointPDFGaussian::productIntegralWith2D(
 
 	return std::pow(M_2PI, -0.5 * (state_length - 1)) *
 		   (1.0 / std::sqrt(C.det())) *
-	       exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
+		   exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
 
 	MRPT_END
 }

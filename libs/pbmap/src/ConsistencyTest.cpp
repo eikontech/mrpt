@@ -178,7 +178,7 @@ Eigen::Matrix4f ConsistencyTest::initPose(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 	return rigidTransf;
@@ -317,7 +317,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePose(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 	return rigidTransf;
@@ -397,12 +397,12 @@ bool ConsistencyTest::estimatePoseWithCovariance(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	//  Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 
 	//  Eigen::Matrix<float,6,6> covarianceM = Eigen::Matrix<float,6,6>::Zero();
-	covarianceM.block(0, 0, 3, 3) = hessian;  // The first diagonal 3x3 block
+	covarianceM.block<3, 3>(0, 0) = hessian;  // The first diagonal 3x3 block
 	// corresponds to the translation
 	// part
 	covarianceM.block(3, 3, 3, 3) = normalCovariances;  // Rotation block
@@ -466,7 +466,7 @@ Eigen::Matrix4f ConsistencyTest::initPose2D(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 	return rigidTransf;

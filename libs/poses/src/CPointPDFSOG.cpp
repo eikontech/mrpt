@@ -106,7 +106,7 @@ void CPointPDFSOG::getCovarianceAndMean(
 			estMean_i -= estMean;
 
 			CMatrixDouble33 partCov =
-			    estMean_i.asEigen() * estMean_i.transpose();
+				estMean_i.asEigen() * estMean_i.transpose();
 			partCov += it->val.cov;
 			partCov *= w;
 			estCov += partCov;
@@ -291,7 +291,7 @@ void CPointPDFSOG::bayesianFusion(
 		// Normal distribution canonical form constant:
 		// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
 		double a = -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
-		                   (eta.transpose() * c.asEigen() * eta)(0, 0));
+						   (eta.transpose() * c.asEigen() * eta)(0, 0));
 
 		for (const auto& m2 : p2->m_modes)
 		{
@@ -350,12 +350,12 @@ void CPointPDFSOG::bayesianFusion(
 
 				CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inverseLLt();
 				Eigen::Vector3d eta_i =
-				    CMatrixDouble31(auxSOG_Kernel_i.mean).asEigen();
+					CMatrixDouble31(auxSOG_Kernel_i.mean).asEigen();
 				eta_i = covInv_i.asEigen() * eta_i;
 
 				CMatrixDouble33 new_covInv_i = newKernel.val.cov.inverseLLt();
 				Eigen::Vector3d new_eta_i =
-				    CMatrixDouble31(newKernel.val.mean).asEigen();
+					CMatrixDouble31(newKernel.val.mean).asEigen();
 				new_eta_i = new_covInv_i.asEigen() * new_eta_i;
 
 				double a_i =

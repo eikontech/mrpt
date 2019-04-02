@@ -47,9 +47,10 @@ class CMatrixD : public mrpt::serialization::CSerializable,
 		return *this;
 	}
 	/*! Constructor from any other Eigen class */
-	template <typename Other>
-	explicit CMatrixD(const Other& other) : Base(other)
+	template <class Other>
+	explicit CMatrixD(const Other& other)
 	{
+		Base::operator=(other);
 	}
 
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixD)

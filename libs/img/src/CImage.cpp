@@ -1417,8 +1417,8 @@ void CImage::cross_correlation_FFT(
 	in_img.getAsMatrix(i1, false);
 
 	// Remove the bias now:
-	i2.array() -= biasThisImg;
-	i1.array() -= biasInImg;
+	i2 -= biasThisImg;
+	i1 -= biasInImg;
 
 	// FFT:
 	CMatrixF I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
@@ -1452,7 +1452,7 @@ void CImage::cross_correlation_FFT(
 	MRPT_END
 }
 
-void CImage::getAsMatrixTiled(CMatrixF& outMatrix) const
+void CImage::getAsMatrixTiled(CMatrixFloat& outMatrix) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START

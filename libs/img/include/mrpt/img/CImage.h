@@ -738,7 +738,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * the required number of times to fill the entire size of the matrix on
 	 * input.
 	 */
-	void getAsMatrixTiled(math::CMatrixF& outMatrix) const;
+	void getAsMatrixTiled(mrpt::math::CMatrixFloat& outMatrix) const;
 
 	/** @} */
 

@@ -157,6 +157,13 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 		*this = m;
 	}
 
+	/** Convert from a fixed-size matrix */
+	template <int N, int M>
+	explicit CMatrixDynamic(const CMatrixFixed<T, N, M>& m)
+	{
+		*this = m;
+	}
+
 	/** Copy constructor & crop from another matrix
 	 */
 	CMatrixDynamic(
@@ -252,8 +259,8 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 		MRPT_END
 	}
 	/** Assignment from a fixed matrix */
-	template <typename U, std::size_t ROWS, std::size_t COLS>
-	CMatrixDynamic& operator=(const CMatrixFixed<U, ROWS, COLS>& m)
+	template <std::size_t ROWS, std::size_t COLS>
+	CMatrixDynamic& operator=(const CMatrixFixed<T, ROWS, COLS>& m)
 	{
 		MRPT_START
 		setFromMatrixLike(m);

@@ -424,7 +424,7 @@ double CPose2D::distance2DFrobeniusTo(const CPose2D& p) const
 CPose3D CPose2D::operator-(const CPose3D& b) const
 {
 	CMatrixDouble44 RES = b.getInverseHomogeneousMatrixVal<CMatrixDouble44>() *
-	                      getHomogeneousMatrixVal<CMatrixDouble44>();
+						  getHomogeneousMatrixVal<CMatrixDouble44>();
 	return CPose3D(RES);
 }
 

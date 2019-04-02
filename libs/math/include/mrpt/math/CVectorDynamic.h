@@ -16,7 +16,7 @@
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <array>
-#include <cstring>	// memset()
+#include <cstring>  // memset()
 #include <type_traits>
 
 namespace mrpt::math

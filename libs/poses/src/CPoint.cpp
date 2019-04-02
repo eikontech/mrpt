@@ -32,13 +32,13 @@ template <class DERIVEDCLASS>
 void CPoint<DERIVEDCLASS>::asString(std::string& s) const
 {
 	s = (!DERIVEDCLASS::is3DPoseOrPoint())
-	        ? mrpt::format(
-	              "[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-	              static_cast<const DERIVEDCLASS*>(this)->y())
-	        : mrpt::format(
-	              "[%f %f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-	              static_cast<const DERIVEDCLASS*>(this)->y(),
-	              static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
+			? mrpt::format(
+				  "[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
+				  static_cast<const DERIVEDCLASS*>(this)->y())
+			: mrpt::format(
+				  "[%f %f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
+				  static_cast<const DERIVEDCLASS*>(this)->y(),
+				  static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
 }
 
 // Explicit instantiations:

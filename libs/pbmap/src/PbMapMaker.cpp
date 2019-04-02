@@ -377,7 +377,7 @@ void PbMapMaker::detectPlanesCloud(
 		Vector3f centroid = regions[i].getCentroid();
 		plane.v3center = compose(poseKF, centroid);
 		plane.v3normal =
-			poseKF.block(0, 0, 3, 3) * Vector3f(
+			poseKF.block<3, 3>(0, 0) * Vector3f(
 										   model_coefficients[i].values[0],
 										   model_coefficients[i].values[1],
 										   model_coefficients[i].values[2]);

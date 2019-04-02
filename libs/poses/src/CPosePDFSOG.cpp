@@ -203,7 +203,7 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 	newReferenceBase.getHomogeneousMatrix(HM);
 
 	// Clip the 4x4 matrix
-	CMatrixDouble33 M = HM.block(0, 0, 3, 3).eval();
+	CMatrixDouble33 M = HM.block<3, 3>(0, 0).eval();
 
 	// The variance in phi is unmodified:
 	M(0, 2) = 0;

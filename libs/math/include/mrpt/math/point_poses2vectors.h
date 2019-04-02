@@ -30,17 +30,17 @@ CONTAINER& containerFromPoseOrPoint(CONTAINER& C, const POINT_OR_POSE& p)
 
 #define MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(_CLASS_)                          \
 	template <                                                                \
-	    class TPOSE, typename = std::enable_if_t<                             \
-	                     std::is_base_of_v<mrpt::math::TPoseOrPoint, TPOSE>>> \
+		class TPOSE, typename = std::enable_if_t<                             \
+						 std::is_base_of_v<mrpt::math::TPoseOrPoint, TPOSE>>> \
 	explicit inline _CLASS_(const TPOSE& p)                                   \
-    {                                                                         \
-	    mrpt::math::containerFromPoseOrPoint(*this, p);                       \
-    }                                                                         \
+	{                                                                         \
+		mrpt::math::containerFromPoseOrPoint(*this, p);                       \
+	}                                                                         \
 	template <class CPOSE, int = CPOSE::is_3D_val>                            \
 	explicit inline _CLASS_(const CPOSE& p)                                   \
-    {                                                                         \
-	    mrpt::math::containerFromPoseOrPoint(*this, p);                       \
-    }
+	{                                                                         \
+		mrpt::math::containerFromPoseOrPoint(*this, p);                       \
+	}
 
 /** @} */
 

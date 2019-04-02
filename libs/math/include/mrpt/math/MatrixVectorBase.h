@@ -38,9 +38,9 @@ class MatrixVectorBase
 	static Derived Zero()
 	{
 		static_assert(
-		    Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
-		    "Zero() without arguments can be used only for fixed-size "
-		    "matrices/vectors");
+			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
+			"Zero() without arguments can be used only for fixed-size "
+			"matrices/vectors");
 		Derived m;
 		m.setZero();
 		return m;
@@ -48,9 +48,9 @@ class MatrixVectorBase
 	static Derived Identity()
 	{
 		static_assert(
-		    Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
-		    "Zero() without arguments can be used only for fixed-size "
-		    "matrices/vectors");
+			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
+			"Zero() without arguments can be used only for fixed-size "
+			"matrices/vectors");
 		Derived m;
 		m.setIdentity();
 		return m;
@@ -87,6 +87,10 @@ class MatrixVectorBase
 	void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
 
 	bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows; }
+	bool empty() const
+	{
+		return mvbDerived().cols() == 0 && mvbDerived().rows == 0;
+	}
 
 	Scalar det() const { return mvbDerived().det(); }
 
@@ -98,7 +102,7 @@ class MatrixVectorBase
 	Scalar multiply_HCHt_scalar(const MAT_C& C) const
 	{
 		return (mvbDerived().asEigen() * C * mvbDerived().asEigen().transpose())
-		    .eval()(0, 0);
+			.eval()(0, 0);
 	}
 
 	/** return:  H<sup>T</sup> * C * H */
@@ -106,20 +110,23 @@ class MatrixVectorBase
 	Scalar multiply_HtCH_scalar(const MAT_C& C) const
 	{
 		return (mvbDerived().asEigen().transpose() * C * mvbDerived().asEigen())
-		    .eval()(0, 0);
+			.eval()(0, 0);
 	}
+
+	Scalar& coeffRef(int r, int c) { return mvbDerived()(r, c); }
+	const Scalar& coeff(int r, int c) const { return mvbDerived()(r, c); }
 
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	auto block(int start_row = 0, int start_col = 0)
 	{
 		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(
-		    start_row, start_col);
+			start_row, start_col);
 	}
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	auto block(int start_row = 0, int start_col = 0) const
 	{
 		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(
-		    start_row, start_col);
+			start_row, start_col);
 	}
 
 	template <int NUM_ELEMENTS>
@@ -153,9 +160,9 @@ class MatrixVectorBase
 
 	auto operator-() const { return -mvbDerived().asEigen(); }
 
-	void operator+=(Scalar s) { mvbDerived().asEigen() += s; }
-	void operator-=(Scalar s) { mvbDerived().asEigen() -= s; }
-	void operator*=(Scalar s) { mvbDerived().asEigen() *= s; }
+	void operator+=(Scalar s) { mvbDerived().asEigen().array() += s; }
+	void operator-=(Scalar s) { mvbDerived().asEigen().array() -= s; }
+	void operator*=(Scalar s) { mvbDerived().asEigen().array() *= s; }
 
 	template <typename S2, class D2>
 	auto operator+(const MatrixVectorBase<S2, D2>& m2) const
@@ -185,6 +192,17 @@ class MatrixVectorBase
 		return mvbDerived().asEigen() * m2.mvbDerived().asEigen();
 	}
 	auto operator*(const Scalar s) const { return mvbDerived().asEigen() * s; }
+
+	template <typename OTHERMATVEC>
+	bool operator==(const OTHERMATVEC& o) const
+	{
+		const auto& d = mvbDerived();
+		if (d.cols() != o.cols() || d.rows() != o.rows()) return false;
+		for (typename OTHERMATVEC::Index r = 0; r < d.rows(); r++)
+			for (typename OTHERMATVEC::Index c = 0; c < d.cols(); c++)
+				if (d(r, c) != o(r, c)) return false;
+		return true;
+	}
 };
 
 }  // namespace mrpt::math

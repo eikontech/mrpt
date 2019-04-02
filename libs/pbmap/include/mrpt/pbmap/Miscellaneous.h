@@ -55,7 +55,7 @@ Eigen::Matrix<dataType, 3, 1> compose(
 	Eigen::Matrix<dataType, 4, 4>& pose, Eigen::Matrix<dataType, 3, 1>& point)
 {
 	Eigen::Matrix<dataType, 3, 1> transformedPoint =
-		pose.block(0, 0, 3, 3) * point + pose.block(0, 3, 3, 1);
+		pose.block<3, 3>(0, 0) * point + pose.block(0, 3, 3, 1);
 	return transformedPoint;
 }
 
@@ -65,11 +65,11 @@ Eigen::Matrix<dataType, 4, 4> compose(
 	Eigen::Matrix<dataType, 4, 4>& pose1, Eigen::Matrix<dataType, 4, 4>& pose2)
 {
 	Eigen::Matrix<dataType, 4, 4> transformedPose;
-	transformedPose.block(0, 0, 3, 3) =
-		pose1.block(0, 0, 3, 3) * pose2.block(0, 0, 3, 3);
+	transformedPose.block<3, 3>(0, 0) =
+		pose1.block<3, 3>(0, 0) * pose2.block<3, 3>(0, 0);
 	transformedPose.block(0, 3, 3, 1) =
 		pose1.block(0, 3, 3, 1) +
-		pose1.block(0, 0, 3, 3) * pose2.block(0, 3, 3, 1);
+		pose1.block<3, 3>(0, 0) * pose2.block(0, 3, 3, 1);
 	transformedPose.row(3) << 0, 0, 0, 1;
 	return transformedPose;
 }
@@ -79,9 +79,9 @@ template <class dataType>
 Eigen::Matrix<dataType, 4, 4> inverse(Eigen::Matrix<dataType, 4, 4>& pose)
 {
 	Eigen::Matrix<dataType, 4, 4> inverse;
-	inverse.block(0, 0, 3, 3) = pose.block(0, 0, 3, 3).transpose();
+	inverse.block<3, 3>(0, 0) = pose.block<3, 3>(0, 0).transpose();
 	inverse.block(0, 3, 3, 1) =
-		-(inverse.block(0, 0, 3, 3) * pose.block(0, 3, 3, 1));
+		-(inverse.block<3, 3>(0, 0) * pose.block(0, 3, 3, 1));
 	inverse.row(3) << 0, 0, 0, 1;
 	return inverse;
 }

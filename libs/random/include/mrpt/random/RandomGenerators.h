@@ -304,7 +304,7 @@ class CRandomGenerator
 
 		// Compute eigenvalues/eigenvectors of cov:
 		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
-			eigensolver(cov);
+			eigensolver(cov.asEigen());
 
 		auto eigVecs = eigensolver.eigenvectors();
 		auto eigVals = eigensolver.eigenvalues();
