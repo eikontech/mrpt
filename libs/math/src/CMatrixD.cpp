@@ -71,7 +71,7 @@ void CMatrixD::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 	{
 		case 1:
 		{
-		    this->fromMatlabStringFormat(static_cast<std::string>(in["data"]));
+			this->fromMatlabStringFormat(static_cast<std::string>(in["data"]));
 		}
 		break;
 		default:

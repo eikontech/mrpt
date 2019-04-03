@@ -55,7 +55,7 @@ class CPose3DPDFSOG : public CPose3DPDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
 	/** Access directly to this array for modify the modes as desired.
 	 *  Note that no weight can be zero!!

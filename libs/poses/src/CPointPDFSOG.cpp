@@ -284,7 +284,7 @@ void CPointPDFSOG::bayesianFusion(
 
 		ASSERT_(c(0, 0) != 0 && c(0, 0) != 0);
 
-		const CMatrixDouble33 covInv = c.inverseLLt();
+		const CMatrixDouble33 covInv = c.inverse_LLt();
 
 		Eigen::Vector3d eta = covInv * CMatrixDouble31(m.val.mean);
 
@@ -348,24 +348,24 @@ void CPointPDFSOG::bayesianFusion(
 
 				newKernel.val = auxGaussianProduct;  // Copy mean & cov
 
-				CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inverseLLt();
+				CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inverse_LLt();
 				Eigen::Vector3d eta_i =
 					CMatrixDouble31(auxSOG_Kernel_i.mean).asEigen();
 				eta_i = covInv_i.asEigen() * eta_i;
 
-				CMatrixDouble33 new_covInv_i = newKernel.val.cov.inverseLLt();
+				CMatrixDouble33 new_covInv_i = newKernel.val.cov.inverse_LLt();
 				Eigen::Vector3d new_eta_i =
 					CMatrixDouble31(newKernel.val.mean).asEigen();
 				new_eta_i = new_covInv_i.asEigen() * new_eta_i;
 
 				double a_i =
-				    -0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-				            (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
-				             eta_i)(0, 0));
+					-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
+							(eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
+							 eta_i)(0, 0));
 				double new_a_i =
 					-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-				            (new_eta_i.transpose() *
-				             newKernel.val.cov.asEigen() * new_eta_i)(0, 0));
+							(new_eta_i.transpose() *
+							 newKernel.val.cov.asEigen() * new_eta_i)(0, 0));
 
 				newKernel.log_w = m.log_w + m2.log_w + a + a_i - new_a_i;
 
@@ -385,9 +385,9 @@ void CPointPDFSOG::bayesianFusion(
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPointPDFSOG::assureSymmetry()
+void CPointPDFSOG::enforceCovSymmetry()
 {
 	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant

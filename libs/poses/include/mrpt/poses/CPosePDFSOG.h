@@ -71,7 +71,7 @@ class CPosePDFSOG : public CPosePDF
    protected:
 	/** Ensures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!) */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
 	/** The list of SOG modes */
 	CListGaussianModes m_modes;
@@ -207,7 +207,7 @@ class CPosePDFSOG : public CPosePDF
 	void evaluatePDFInArea(
 		const double& x_min, const double& x_max, const double& y_min,
 		const double& y_max, const double& resolutionXY, const double& phi,
-		mrpt::math::CMatrixD& outMatrix, bool sumOverAllPhis = false);
+	    mrpt::math::CMatrixDouble& outMatrix, bool sumOverAllPhis = false);
 
 	/** Bayesian fusion of two pose distributions, then save the result in this
 	 * object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object

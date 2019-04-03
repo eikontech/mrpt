@@ -8,6 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/exceptions.h>
+#include <mrpt/core/is_defined.h>
 #include <mrpt/core/optional_ref.h>
 #include <algorithm>  // fill()
 #include <cstddef>  // size_t
@@ -99,14 +101,20 @@ class MatrixVectorBase
 	void setDiagonal(const std::size_t N, const Scalar value)
 	{
 		mvbDerived().resize(N, N);
-		for (std::size_t r = 0; r < mvbDerived().rows(); r++)
-			for (std::size_t c = 0; c < mvbDerived().cols(); c++)
+		for (typename Derived::Index r = 0; r < mvbDerived().rows(); r++)
+			for (typename Derived::Index c = 0; c < mvbDerived().cols(); c++)
 				mvbDerived()(r, c) = (r == c) ? value : 0;
 	}
 	void setDiagonal(const Scalar value)
 	{
 		ASSERT_EQUAL_(mvbDerived().cols(), mvbDerived().rows());
 		setDiagonal(mvbDerived().cols(), value);
+	}
+	void setDiagonal(const std::vector<Scalar>& diags)
+	{
+		const std::size_t N = diags.size();
+		mvbDerived().setZero(N, N);
+		for (std::size_t i = 0; i < N; i++) mvbDerived()(i, i) = diags[i];
 	}
 	void setIdentity()
 	{
@@ -115,6 +123,10 @@ class MatrixVectorBase
 	}
 	void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
 
+	/** this = A*B, with A & B of the same type of this.
+	 * For products of different matrix types, use the regular * operator (which
+	 * requires the `<Eigen/Dense>` header) */
+	void matProductOf(const Derived& A, const Derived& B);
 	/** @} */
 
 	/** @name Operations that DO require `#include <Eigen/Dense>` in user code
@@ -124,8 +136,9 @@ class MatrixVectorBase
 	template <class MAT_C>
 	Scalar multiply_HCHt_scalar(const MAT_C& C) const
 	{
+		internalAssertEigenDefined<Derived>();
 		return (mvbDerived().asEigen() * C.asEigen() *
-		        mvbDerived().asEigen().transpose())
+				mvbDerived().asEigen().transpose())
 			.eval()(0, 0);
 	}
 
@@ -133,20 +146,50 @@ class MatrixVectorBase
 	template <typename MAT_C>
 	Scalar multiply_HtCH_scalar(const MAT_C& C) const
 	{
+		internalAssertEigenDefined<Derived>();
 		return (mvbDerived().asEigen().transpose() * C.asEigen() *
-		        mvbDerived().asEigen())
+				mvbDerived().asEigen())
 			.eval()(0, 0);
+	}
+
+	/** Evaluates: R = this * C * this<sup>T</sup>, or the same
+	 * with `R+=` if `accumInOutput=true`. */
+	template <typename MAT_C, typename MAT_R>
+	void multiply_HCHt(const MAT_C& C, MAT_R& R, bool accumInOutput = false)
+	{
+		internalAssertEigenDefined<Derived>();
+		auto res =
+			(mvbDerived().asEigen() * C.asEigen() *
+			 mvbDerived().asEigen().transpose());
+		if (accumInOutput)
+			R.asEigen() += res.eval();
+		else
+		{
+			R.resize(C.rows(), C.cols());
+			R.asEigen() = res.eval();
+		}
+	}
+
+	/** this = A * A<sup>T</sup> */
+	template <typename MAT_A>
+	void multiply_AAt(const MAT_A& A)
+	{
+		internalAssertEigenDefined<Derived>();
+		mvbDerived().resize(A.rows(), A.rows());
+		mvbDerived().asEigen() = (A.asEigen() * A.asEigen().transpose()).eval();
 	}
 
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	auto block(int start_row = 0, int start_col = 0)
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(
 			start_row, start_col);
 	}
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	auto block(int start_row = 0, int start_col = 0) const
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(
 			start_row, start_col);
 	}
@@ -154,62 +197,103 @@ class MatrixVectorBase
 	template <int NUM_ELEMENTS>
 	auto tail()
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template tail<NUM_ELEMENTS>();
 	}
 	template <int NUM_ELEMENTS>
 	auto tail() const
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template tail<NUM_ELEMENTS>();
 	}
 	template <int NUM_ELEMENTS>
 	auto head()
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template head<NUM_ELEMENTS>();
 	}
 	template <int NUM_ELEMENTS>
 	auto head() const
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template head<NUM_ELEMENTS>();
 	}
-	auto col(int colIdx) { return mvbDerived().asEigen().col(colIdx); }
-	auto col(int colIdx) const { return mvbDerived().asEigen().col(colIdx); }
+	auto col(int colIdx)
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().col(colIdx);
+	}
+	auto col(int colIdx) const
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().col(colIdx);
+	}
 
-	auto row(int rowIdx) { return mvbDerived().asEigen().row(rowIdx); }
-	auto row(int rowIdx) const { return mvbDerived().asEigen().row(rowIdx); }
+	auto row(int rowIdx)
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().row(rowIdx);
+	}
+	auto row(int rowIdx) const
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().row(rowIdx);
+	}
 
-	auto transpose() { return mvbDerived().asEigen().transpose(); }
-	auto transpose() const { return mvbDerived().asEigen().transpose(); }
+	auto transpose()
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().transpose();
+	}
+	auto transpose() const
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().transpose();
+	}
 
-	auto operator-() const { return -mvbDerived().asEigen(); }
+	auto operator-() const
+	{
+		internalAssertEigenDefined<Derived>();
+		return -mvbDerived().asEigen();
+	}
 
 	template <typename S2, class D2>
 	auto operator+(const MatrixVectorBase<S2, D2>& m2) const
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen() + m2.mvbDerived().asEigen();
 	}
 	template <typename S2, class D2>
 	void operator+=(const MatrixVectorBase<S2, D2>& m2)
 	{
+		internalAssertEigenDefined<Derived>();
 		mvbDerived().asEigen() += m2.mvbDerived().asEigen();
 	}
 
 	template <typename S2, class D2>
 	auto operator-(const MatrixVectorBase<S2, D2>& m2) const
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen() - m2.mvbDerived().asEigen();
 	}
 	template <typename S2, class D2>
 	void operator-=(const MatrixVectorBase<S2, D2>& m2)
 	{
+		internalAssertEigenDefined<Derived>();
 		mvbDerived().asEigen() -= m2.mvbDerived().asEigen();
 	}
 
 	template <typename S2, class D2>
 	auto operator*(const MatrixVectorBase<S2, D2>& m2) const
 	{
+		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen() * m2.mvbDerived().asEigen();
 	}
-	auto operator*(const Scalar s) const { return mvbDerived().asEigen() * s; }
+	auto operator*(const Scalar s) const
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen() * s;
+	}
 
 	/** @} */
 
@@ -241,9 +325,21 @@ class MatrixVectorBase
 	/** Determinant of matrix. */
 	Scalar det() const;
 
+	/** Returns the inverse of a general matrix using LU */
+	Derived inverse() const;
+
+	/** Returns the inverse of a symmetric matrix using LLt */
+	Derived inverse_LLt() const;
+
 	/** Finds the rank of the matrix via LU decomposition.
 	 * Uses Eigen's default threshold unless `threshold>0`. */
 	int rank(Scalar threshold = 0) const;
+
+	/** Cholesky M=U<sup>T</sup> * U decomposition for symmetric matrix
+	 * (upper-half of the matrix is actually ignored.
+	 * \return false if Cholesky fails
+	 */
+	bool chol(Derived& U) const;
 
 	/** Returns a string representation of the vector/matrix, using Eigen's
 	 * default settings. */
@@ -261,11 +357,11 @@ class MatrixVectorBase
 	 * \return false if eigenvalues could not be determined.
 	 */
 	bool eig(
-	    Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
+		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
 	/** Read: eig() */
 	bool eig_symmetric(
-	    Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
+		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
 	/** Reads a matrix from a string in Matlab-like format, for example:
 	 *  "[1 0 2; 0 4 -1]"
@@ -280,8 +376,8 @@ class MatrixVectorBase
 	 * \sa inMatlabFormat, CConfigFile::read_matrix
 	 */
 	bool fromMatlabStringFormat(
-	    const std::string& s,
-	    mrpt::optional_ref<std::ostream> dump_errors_here = std::nullopt);
+		const std::string& s,
+		mrpt::optional_ref<std::ostream> dump_errors_here = std::nullopt);
 
 	/** Exports the matrix as a string compatible with Matlab/Octave.
 	 * \sa fromMatlabStringFormat()
@@ -301,11 +397,11 @@ class MatrixVectorBase
 	 * SAVE_MATRIX
 	 */
 	void saveToTextFile(
-	    const std::string& file,
-	    mrpt::math::TMatrixTextFileFormat fileFormat =
-	        mrpt::math::MATRIX_FORMAT_ENG,
-	    bool appendMRPTHeader = false,
-	    const std::string& userHeader = std::string()) const;
+		const std::string& file,
+		mrpt::math::TMatrixTextFileFormat fileFormat =
+			mrpt::math::MATRIX_FORMAT_ENG,
+		bool appendMRPTHeader = false,
+		const std::string& userHeader = std::string()) const;
 
 	/** Loads a vector/matrix from a text file, compatible with MATLAB text
 	 * format. Lines starting with '%' or '#' are interpreted as comments and
@@ -332,6 +428,19 @@ class MatrixVectorBase
 	/** Removes rows of the matrix. Indices may be unsorted and duplicated */
 	void removeRows(const std::vector<std::size_t>& idxsToRemove);
 
+	/** Copies the given input submatrix/vector into this matrix/vector,
+	 * starting at the given top-left coordinates. */
+	template <typename OTHERMATVEC>
+	void insertMatrix(
+		const int row_start, const int col_start, const OTHERMATVEC& submat)
+	{
+		ASSERT_BELOW_(row_start + submat.rows(), mvbDerived().rows());
+		ASSERT_BELOW_(col_start + submat.cols(), mvbDerived().cols());
+		for (int r = 0; r < submat.rows(); r++)
+			for (int c = 0; c < submat.cols(); c++)
+				mvbDerived()(r + row_start, c + col_start) = submat(r, c);
+	}
+
 	template <typename OTHERMATVEC>
 	bool operator==(const OTHERMATVEC& o) const
 	{
@@ -349,11 +458,26 @@ class MatrixVectorBase
 	}
 
 	/** @} */
+
+   protected:
+	/** Issues a static_assert() error if trying to compile a method that
+	 * requires Eigen headers, without including them. */
+	template <typename DER>
+	void internalAssertEigenDefined() const
+	{
+		if constexpr (!mrpt::is_defined_v<typename DER::eigen_t>)
+		{
+			static_assert(
+			    mrpt::is_defined_v<typename DER::eigen_t>,
+			    "Using this method requires including `<Eigen/Dense>` in the "
+			    "calling C++ file");
+		}
+	}
 };
 
 template <typename Scalar, class Derived>
 std::ostream& operator<<(
-    std::ostream& o, const MatrixVectorBase<Scalar, Derived>& m)
+	std::ostream& o, const MatrixVectorBase<Scalar, Derived>& m)
 {
 	return o << m.asStr();
 }

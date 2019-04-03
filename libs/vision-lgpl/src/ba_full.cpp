@@ -221,7 +221,7 @@ double mrpt::vision::bundle_adj_full(
 			for (size_t i = 0; i < U_star.size(); ++i) U_star[i] += H_f[i];
 
 			for (size_t i = 0; i < H_p.size(); ++i)
-				(H_p[i] + I_muPoint).inv_fast(V_inv[i]);
+				(H_p[i] + I_muPoint).inverse_LLt(V_inv[i]);
 
 			using WMap = mrpt::aligned_std_map<
 				pair<TCameraPoseID, TLandmarkID>, Matrix_FxP>;
@@ -260,8 +260,7 @@ double mrpt::vision::bundle_adj_full(
 						retInsert.first);  // Keep the iterator
 
 					// Y[ids] = W[ids] * H_p^{-1}
-					Y[id_pair] =
-					tmp* V_inv[feat_id - num_fix_points];
+					Y[id_pair] = tmp * V_inv[feat_id - num_fix_points];
 				}
 				++jac_iter;
 			}

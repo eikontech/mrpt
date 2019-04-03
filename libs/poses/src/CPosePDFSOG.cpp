@@ -19,6 +19,7 @@
 #include <mrpt/poses/SO_SE_average.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 #include <iostream>
 
 using namespace mrpt;
@@ -223,7 +224,7 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 		M.multiply_HCHt(CMatrixDouble33(m.cov), m.cov);  // * (it)->cov * (~M);
 	}
 
-	assureSymmetry();
+	enforceCovSymmetry();
 }
 
 /*---------------------------------------------------------------
@@ -291,16 +292,16 @@ void CPosePDFSOG::bayesianFusion(
 	// to the Gaussian "p2":
 	CPosePDFGaussian auxGaussianProduct, auxSOG_Kernel_i;
 
-	CMatrixDouble33 covInv;
-	p2->cov.inv(covInv);
+	const CMatrixDouble33 covInv = p2->cov.inverse_LLt();
 
 	auto eta = CMatrixDouble31(p2->mean);
 	eta = covInv * eta;
 
 	// Normal distribution canonical form constant:
 	// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
-	double a = -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
-					   (eta.adjoint() * p2->cov * eta)(0, 0));
+	double a =
+	    -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
+	            (eta.transpose() * p2->cov.asEigen() * eta.asEigen())(0, 0));
 
 	this->m_modes.clear();
 	for (const auto& m : p1->m_modes)
@@ -322,24 +323,24 @@ void CPosePDFSOG::bayesianFusion(
 		newKernel.mean = auxGaussianProduct.mean;
 		newKernel.cov = auxGaussianProduct.cov;
 
-		CMatrixDouble33 covInv_i;
-		auxSOG_Kernel_i.cov.inv(covInv_i);
+		const CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inverse_LLt();
 
 		auto eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
 		eta_i = covInv_i * eta_i;
 
-		CMatrixDouble33 new_covInv_i;
-		newKernel.cov.inv(new_covInv_i);
+		const CMatrixDouble33 new_covInv_i = newKernel.cov.inverse_LLt();
 
 		auto new_eta_i = CMatrixDouble31(newKernel.mean);
 		new_eta_i = new_covInv_i * new_eta_i;
 
 		double a_i =
 			-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-					(eta_i.adjoint() * auxSOG_Kernel_i.cov * eta_i)(0, 0));
+		            (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
+		             eta_i.asEigen())(0, 0));
 		double new_a_i =
 			-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-					(new_eta_i.adjoint() * newKernel.cov * new_eta_i)(0, 0));
+		            (new_eta_i.transpose() * newKernel.cov.asEigen() *
+		             new_eta_i.asEigen())(0, 0));
 
 		// newKernel.w	   = (it)->w * exp( a + a_i - new_a_i );
 		newKernel.log_w = m.log_w + a + a_i - new_a_i;
@@ -452,9 +453,9 @@ double CPosePDFSOG::evaluateNormalizedPDF(const CPose2D& x) const
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPosePDFSOG::assureSymmetry()
+void CPosePDFSOG::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
@@ -487,9 +488,9 @@ void CPosePDFSOG::normalizeWeights()
 						normalizeWeights
  ---------------------------------------------------------------*/
 void CPosePDFSOG::evaluatePDFInArea(
-	const double& x_min, const double& x_max, const double& y_min,
-	const double& y_max, const double& resolutionXY, const double& phi,
-	CMatrixD& outMatrix, bool sumOverAllPhis)
+    const double& x_min, const double& x_max, const double& y_min,
+    const double& y_max, const double& resolutionXY, const double& phi,
+    CMatrixDouble& outMatrix, bool sumOverAllPhis)
 {
 	MRPT_START
 
@@ -559,7 +560,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 				const double Wij_ = 1.0 / (Wi + Wj);
 
 				CMatrixDouble33 Pij = m_modes[i].cov * (Wi * Wij_);
-				Pij.add_Ac(m_modes[j].cov, Wj * Wij_);
+				Pij.asEigen() += m_modes[j].cov.asEigen() * Wj * Wij_;
 
 				auto MUij = CMatrixDouble31(m_modes[j].mean);
 				MUij -= MUi;
@@ -673,28 +674,3 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(
 		mean_point = CPose2D(0, 0, 0);
 	}
 }
-
-/*---------------------------------------------------------------
-						getAs3DObject
- ---------------------------------------------------------------*/
-// void  CPosePDFSOG::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj
-// )
-// const
-//{
-//	outObj->clear();
-//
-//	for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
-//	{
-//		opengl::CEllipsoid::Ptr ellip =
-// mrpt::make_aligned_shared<opengl::CEllipsoid>();
-//
-//		ellip->setPose( CPose3D((it)->mean.x(), (it)->mean.y(),
-//(it)->mean.phi())
-//);
-//		ellip->setCovMatrix((it)->cov);
-//		ellip->setColor(0,0,1,0.6);
-//
-//		outObj->insert(ellip);
-//	}
-//
-//}

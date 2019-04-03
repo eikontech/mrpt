@@ -178,7 +178,7 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			for (size_t i = 0; i < 6; i++)
 				fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
-			CMatrixF H(fullCov.inv());
+			CMatrixF H(fullCov.inverse_LLt());
 			H.saveToTextFile(OUT_DIR + string("/information_matrix_final.txt"));
 
 			// Replace by absolute values:

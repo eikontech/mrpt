@@ -114,7 +114,7 @@ double joint_pdf_metric(
 
 	// Compute mahalanobis distance squared:
 	CMatrixDynamic<T> COV_inv;
-	COV.inv_fast(COV_inv);
+	COV.inverse_LLt(COV_inv);
 
 	const double d2 = mrpt::math::multiply_HCHt_scalar(innovations, COV_inv);
 

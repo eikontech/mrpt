@@ -41,7 +41,7 @@ class CPosePDFGaussianInf : public CPosePDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
    public:
 	/** @name Data fields
@@ -85,7 +85,7 @@ class CPosePDFGaussianInf : public CPosePDF
 		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const override
 	{
 		mean_point = mean;
-		cov = cov_inv.inverseLLt();
+		cov = cov_inv.inverse_LLt();
 	}
 
 	/** Returns the information (inverse covariance) matrix (a STATE_LEN x

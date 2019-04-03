@@ -24,27 +24,6 @@ namespace mrpt
 {
 namespace math
 {
-/** \addtogroup container_ops_grp
- *  @{ */
-
-/** Transpose operator for matrices */
-template <class Derived>
-inline const typename Eigen::MatrixBase<Derived>::AdjointReturnType operator~(
-	const Eigen::MatrixBase<Derived>& m)
-{
-	return m.adjoint();
-}
-
-/** Unary inversion operator. */
-template <class Derived>
-inline typename Eigen::MatrixBase<Derived>::PlainObject operator!(
-	const Eigen::MatrixBase<Derived>& m)
-{
-	return m.inv();
-}
-
-/** @} */  // end MRPT matrices operators
-
 /** R = H * C * H^t (with C symmetric) */
 template <typename MAT_H, typename MAT_C, typename MAT_R>
 inline void multiply_HCHt(
@@ -58,24 +37,12 @@ inline void multiply_HCHt(
 		R = res.eval();
 }
 
-/** r (a scalar) = H * C * H^t (with a vector H and a symmetric matrix C) */
+/** r (a scalar) = H * C * H^t (with a column vector H and a symmetric matrix C)
+ */
 template <typename VECTOR_H, typename MAT_C>
 typename MAT_C::Scalar multiply_HCHt_scalar(const VECTOR_H& H, const MAT_C& C)
 {
-	return (H.matrix().adjoint() * C * H.matrix()).eval()(0, 0);
-}
-
-/** R = H^t * C * H  (with C symmetric) */
-template <typename MAT_H, typename MAT_C, typename MAT_R>
-void multiply_HtCH(
-	const MAT_H& H, const MAT_C& C, MAT_R& R,
-	bool accumResultInOutput)  // bool allow_submatrix_mult)
-{
-	auto res = (H.transpose() * C * H);
-	if (accumResultInOutput)
-		R += res.eval();
-	else
-		R = res.eval();
+	return (H.matrix().transpose() * C.asEigen() * H.matrix()).eval()(0, 0);
 }
 
 /** Computes the mean vector and covariance from a list of samples in an NxM

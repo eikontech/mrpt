@@ -23,7 +23,7 @@ namespace mrpt::math
 {
 template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
-    const std::string& s, mrpt::optional_ref<std::ostream> dump_errors_here)
+	const std::string& s, mrpt::optional_ref<std::ostream> dump_errors_here)
 {
 	// Start with a (0,0) matrix:
 	if (Derived::RowsAtCompileTime == Eigen::Dynamic) mvbDerived() = Derived();
@@ -90,29 +90,29 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 
 			// Check valid width: All rows must have the same width
 			if ((nRow > 0 && size_t(mvbDerived().cols()) != N) ||
-			    (nRow == 0 && Derived::ColsAtCompileTime != Eigen::Dynamic &&
-			     Derived::ColsAtCompileTime != int(N)))
+				(nRow == 0 && Derived::ColsAtCompileTime != Eigen::Dynamic &&
+				 Derived::ColsAtCompileTime != int(N)))
 			{
 				if (dump_errors_here)
 					dump_errors_here->get()
-					    << "[fromMatlabStringFormat] Row " << nRow + 1
-					    << " has invalid number of columns.\n";
+						<< "[fromMatlabStringFormat] Row " << nRow + 1
+						<< " has invalid number of columns.\n";
 				return false;
 			}
 
 			// Append to the matrix:
 			if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
-			    Derived::ColsAtCompileTime == Eigen::Dynamic)
+				Derived::ColsAtCompileTime == Eigen::Dynamic)
 				mvbDerived().resize(nRow + 1, N);
 			else if (
-			    Derived::RowsAtCompileTime != Eigen::Dynamic &&
-			    int(nRow) >= Derived::RowsAtCompileTime)
+				Derived::RowsAtCompileTime != Eigen::Dynamic &&
+				int(nRow) >= Derived::RowsAtCompileTime)
 			{
 				if (dump_errors_here)
 					dump_errors_here->get()
-					    << "[fromMatlabStringFormat] Read more "
-					       "rows than the capacity of the "
-					       "fixed sized matrix.\n";
+						<< "[fromMatlabStringFormat] Read more "
+						   "rows than the capacity of the "
+						   "fixed sized matrix.\n";
 				return false;
 			}
 			for (size_t q = 0; q < N; q++)
@@ -124,13 +124,13 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 	}
 	// For fixed sized matrices, check size:
 	if (Derived::RowsAtCompileTime != Eigen::Dynamic &&
-	    int(nRow) != Derived::RowsAtCompileTime)
+		int(nRow) != Derived::RowsAtCompileTime)
 	{
 		if (dump_errors_here)
 			dump_errors_here->get()
-			    << "[fromMatlabStringFormat] Read less rows "
-			       "than the capacity of the fixed sized "
-			       "matrix.\n";
+				<< "[fromMatlabStringFormat] Read less rows "
+				   "than the capacity of the fixed sized "
+				   "matrix.\n";
 		return false;
 	}
 	return true;  // Ok
@@ -138,7 +138,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 
 template <typename Scalar, class Derived>
 std::string MatrixVectorBase<Scalar, Derived>::inMatlabFormat(
-    const std::size_t decimal_digits) const
+	const std::size_t decimal_digits) const
 {
 	using Index = typename Derived::Index;
 	std::stringstream s;
@@ -156,8 +156,8 @@ std::string MatrixVectorBase<Scalar, Derived>::inMatlabFormat(
 
 template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
-    const std::string& file, mrpt::math::TMatrixTextFileFormat fileFormat,
-    bool appendMRPTHeader, const std::string& userHeader) const
+	const std::string& file, mrpt::math::TMatrixTextFileFormat fileFormat,
+	bool appendMRPTHeader, const std::string& userHeader) const
 {
 	using Index = typename Derived::Index;
 	// Use a secure version in Visual Studio 2005+
@@ -169,8 +169,8 @@ void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
 #endif
 	if (!f)
 		throw std::runtime_error(
-	        std::string("saveToTextFile: Error opening file ") + file +
-	        std::string("' for writing a matrix as text."));
+			std::string("saveToTextFile: Error opening file ") + file +
+			std::string("' for writing a matrix as text."));
 
 	if (!userHeader.empty()) fprintf(f, "%s", userHeader.c_str());
 
@@ -199,10 +199,10 @@ void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
 		char* strTime = asctime(timeinfo);
 #endif
 		fprintf(
-		    f,
-		    "%% File generated with mrpt-math at %s\n"
-		    "%%------------------------------------\n",
-		    strTime);
+			f,
+			"%% File generated with mrpt-math at %s\n"
+			"%%------------------------------------\n",
+			strTime);
 	}
 
 	for (Index i = 0; i < mvbDerived().rows(); i++)
@@ -211,18 +211,18 @@ void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
 		{
 			switch (fileFormat)
 			{
-			    case mrpt::math::MATRIX_FORMAT_ENG:
-				    ::fprintf(f, "%.16e", static_cast<double>(m(i, j)));
-				    break;
-			    case mrpt::math::MATRIX_FORMAT_FIXED:
-				    ::fprintf(f, "%.16f", static_cast<double>(m(i, j)));
-				    break;
-			    case mrpt::math::MATRIX_FORMAT_INT:
-				    ::fprintf(f, "%i", static_cast<int>(m(i, j)));
-				    break;
-			    default:
-				    throw std::runtime_error(
-				        "Unsupported value for the parameter 'fileFormat'!");
+				case mrpt::math::MATRIX_FORMAT_ENG:
+					::fprintf(f, "%.16e", static_cast<double>(m(i, j)));
+					break;
+				case mrpt::math::MATRIX_FORMAT_FIXED:
+					::fprintf(f, "%.16f", static_cast<double>(m(i, j)));
+					break;
+				case mrpt::math::MATRIX_FORMAT_INT:
+					::fprintf(f, "%i", static_cast<int>(m(i, j)));
+					break;
+				default:
+					throw std::runtime_error(
+						"Unsupported value for the parameter 'fileFormat'!");
 			};
 			// Separating blank space
 			if (j < (mvbDerived().cols() - 1)) ::fprintf(f, " ");
@@ -253,8 +253,8 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
 			{
 				// Find next number: (non white-space character):
 				while (ptr[0] &&
-				       (ptr[0] == ' ' || ptr[0] == ',' || ptr[0] == '\t' ||
-				        ptr[0] == '\r' || ptr[0] == '\n'))
+					   (ptr[0] == ' ' || ptr[0] == ',' || ptr[0] == '\t' ||
+						ptr[0] == '\r' || ptr[0] == '\n'))
 					ptr++;
 				if (fil.size() <= i) fil.resize(fil.size() + (fil.size() >> 1));
 				// Convert to "double":
@@ -270,34 +270,34 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
 
 			// "i": # of columns:
 			if ((Derived::ColsAtCompileTime != Eigen::Dynamic &&
-			     Index(i) != Derived::ColsAtCompileTime))
+				 Index(i) != Derived::ColsAtCompileTime))
 				throw std::runtime_error(
-			        "loadFromTextFile: The matrix in the text file does not "
-			        "match fixed matrix size");
+					"loadFromTextFile: The matrix in the text file does not "
+					"match fixed matrix size");
 			if (Derived::ColsAtCompileTime == Eigen::Dynamic && nRows > 0 &&
-			    Index(i) != mvbDerived().cols())
+				Index(i) != mvbDerived().cols())
 				throw std::runtime_error(
-			        "loadFromTextFile: The matrix in the text file does not "
-			        "have the same number of columns in all rows");
+					"loadFromTextFile: The matrix in the text file does not "
+					"have the same number of columns in all rows");
 
 			// Append to the matrix:
 			if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
-			    Derived::ColsAtCompileTime == Eigen::Dynamic)
+				Derived::ColsAtCompileTime == Eigen::Dynamic)
 			{
 				if (mvbDerived().rows() < static_cast<int>(nRows + 1) ||
-				    mvbDerived().cols() < static_cast<int>(i))
+					mvbDerived().cols() < static_cast<int>(i))
 				{
 					const size_t extra_rows =
-					    std::max(static_cast<size_t>(1), nRows >> 1);
+						std::max(static_cast<size_t>(1), nRows >> 1);
 					mvbDerived().resize(nRows + extra_rows, i);
 				}
 			}
 			else if (
-			    Derived::RowsAtCompileTime != Eigen::Dynamic &&
-			    int(nRows) >= Derived::RowsAtCompileTime)
+				Derived::RowsAtCompileTime != Eigen::Dynamic &&
+				int(nRows) >= Derived::RowsAtCompileTime)
 				throw std::runtime_error(
-			        "loadFromTextFile: Read more rows than the capacity of the "
-			        "fixed sized matrix.");
+					"loadFromTextFile: Read more rows than the capacity of the "
+					"fixed sized matrix.");
 
 			for (size_t q = 0; q < i; q++)
 				mvbDerived()(nRows, q) = Scalar(fil[q]);
@@ -308,29 +308,29 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
 
 	// Final resize to the real size (in case we allocated space in advance):
 	if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
-	    Derived::ColsAtCompileTime == Eigen::Dynamic)
+		Derived::ColsAtCompileTime == Eigen::Dynamic)
 		mvbDerived().resize(nRows, mvbDerived().cols());
 
 	// Report error as exception
 	if (!nRows)
 		throw std::runtime_error(
-	        "loadFromTextFile: Error loading from text file");
+			"loadFromTextFile: Error loading from text file");
 }
 
 template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(
-    const std::string& file)
+	const std::string& file)
 {
 	std::ifstream f(file.c_str());
 	if (f.fail())
 		throw std::runtime_error(
-	        std::string("loadFromTextFile: can't open file:") + file);
+			std::string("loadFromTextFile: can't open file:") + file);
 	loadFromTextFile(f);
 }
 
 template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::unsafeRemoveColumns(
-    const std::vector<std::size_t>& idxs)
+	const std::vector<std::size_t>& idxs)
 {
 	std::size_t k = 1;
 	const auto nR = mvbDerived().rows();
@@ -339,14 +339,14 @@ void MatrixVectorBase<Scalar, Derived>::unsafeRemoveColumns(
 		const auto nC = mvbDerived().cols() - *it - k;
 		if (nC > 0)
 			mvbDerived().asEigen().block(0, *it, nR, nC) =
-			    mvbDerived().asEigen().block(0, *it + 1, nR, nC).eval();
+				mvbDerived().asEigen().block(0, *it + 1, nR, nC).eval();
 	}
 	mvbDerived().setSize(nR, mvbDerived().cols() - idxs.size());
 }
 
 template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::removeColumns(
-    const std::vector<std::size_t>& idxsToRemove)
+	const std::vector<std::size_t>& idxsToRemove)
 {
 	std::vector<std::size_t> idxs = idxsToRemove;
 	std::sort(idxs.begin(), idxs.end());
@@ -357,7 +357,7 @@ void MatrixVectorBase<Scalar, Derived>::removeColumns(
 
 template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::unsafeRemoveRows(
-    const std::vector<size_t>& idxs)
+	const std::vector<size_t>& idxs)
 {
 	std::size_t k = 1;
 	const auto nC = mvbDerived().cols();
@@ -366,14 +366,14 @@ void MatrixVectorBase<Scalar, Derived>::unsafeRemoveRows(
 		const auto nR = mvbDerived().rows() - *it - k;
 		if (nR > 0)
 			mvbDerived().asEigen().block(*it, 0, nR, nC) =
-			    mvbDerived().asEigen().block(*it + 1, 0, nR, nC).eval();
+				mvbDerived().asEigen().block(*it + 1, 0, nR, nC).eval();
 	}
 	mvbDerived().setSize(mvbDerived().rows() - idxs.size(), nC);
 }
 
 template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::removeRows(
-    const std::vector<size_t>& idxsToRemove)
+	const std::vector<size_t>& idxsToRemove)
 {
 	std::vector<std::size_t> idxs = idxsToRemove;
 	std::sort(idxs.begin(), idxs.end());
@@ -431,8 +431,8 @@ namespace detail
 // Aux func to sort by ascending eigenvalues:
 template <typename Scalar, typename VEC1, typename MATRIX1, typename MATRIX2>
 void sortEigResults(
-    const VEC1& eVals, const MATRIX1& eVecs, std::vector<Scalar>& sorted_eVals,
-    MATRIX2& sorted_eVecs)
+	const VEC1& eVals, const MATRIX1& eVecs, std::vector<Scalar>& sorted_eVals,
+	MATRIX2& sorted_eVecs)
 {
 	const int64_t N = static_cast<int64_t>(eVals.size());
 	std::vector<std::pair<Scalar, int64_t>> D;
@@ -453,7 +453,7 @@ void sortEigResults(
 
 template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::eig(
-    Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
+	Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
 	Eigen::EigenSolver<typename Derived::eigen_t> es(mvbDerived());
 	if (es.info() != Eigen::Success) return false;
@@ -476,7 +476,7 @@ bool MatrixVectorBase<Scalar, Derived>::eig(
 
 template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::eig_symmetric(
-    Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
+	Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
 	Eigen::SelfAdjointEigenSolver<typename Derived::eigen_t> es(mvbDerived());
 	if (es.info() != Eigen::Success) return false;
@@ -503,6 +503,45 @@ int MatrixVectorBase<Scalar, Derived>::rank(Scalar threshold) const
 	Eigen::FullPivLU<typename Derived::eigen_t> lu(mvbDerived());
 	if (threshold > 0) lu.setThreshold(threshold);
 	return lu.rank();
+}
+
+template <typename Scalar, class Derived>
+bool MatrixVectorBase<Scalar, Derived>::chol(Derived& U) const
+{
+	Eigen::LLT<typename Derived::PlainObject> Chol =
+	    mvbDerived().template selfadjointView<Eigen::Lower>().llt();
+	if (Chol.info() == Eigen::NoConvergence) return false;
+	U = Derived(Chol.matrixU());
+	return true;
+}
+
+template <typename Scalar, class Derived>
+void MatrixVectorBase<Scalar, Derived>::matProductOf(
+	const Derived& A, const Derived& B)
+{
+	*this = (A.asEigen() * B.asEigen()).eval();
+}
+
+template <typename Scalar, class Derived>
+Derived MatrixVectorBase<Scalar, Derived>::inverse() const
+{
+	ASSERT_EQUAL_(mvbDerived().cols(), mvbDerived().rows());
+	const auto N = mvbDerived().cols();
+	const auto I = Derived::eigen_t::Identity(N, N);
+	Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
+	inv.asEigen() = mvbDerived().asEigen().llt().solve(I).eval();
+	return inv;
+}
+
+template <typename Scalar, class Derived>
+Derived MatrixVectorBase<Scalar, Derived>::inverse_LLt() const
+{
+	ASSERT_EQUAL_(mvbDerived().cols(), mvbDerived().rows());
+	const auto N = mvbDerived().cols();
+	const auto I = Derived::eigen_t::Identity(N, N);
+	Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
+	inv.asEigen() = mvbDerived().asEigen().llt().solve(I).eval();
+	return inv;
 }
 
 }  // namespace mrpt::math

@@ -82,7 +82,7 @@ void transform_gaussian_unscented(
 	size_t row = 1;
 	for (size_t i = 0; i < Nx; i++)
 	{
-		L.extractRowAsCol(i, delta);
+		delta = L.row(i);
 		X = x_mean;
 		X -= delta;
 		functor(X, fixed_param, Y[row++]);
@@ -159,7 +159,7 @@ void transform_gaussian_linear(
 	// Mean: simple propagation:
 	functor(x_mean, fixed_param, y_mean);
 	// Cov: COV = H C Ht
-	Eigen::Matrix<
+	CMatrixFixed<
 		double, VECTORLIKE3::RowsAtCompileTime, VECTORLIKE1::RowsAtCompileTime>
 		H;
 	mrpt::math::estimateJacobian(

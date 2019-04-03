@@ -68,7 +68,7 @@ void CEllipsoid::render_dl() const
 
 			// Compute the new vectors for the ellipsoid:
 			CMatrixDouble M;
-			M.noalias() = double(m_quantiles) * m_eigVal * m_eigVec.adjoint();
+			M.noalias() = double(m_quantiles) * m_eigVal * m_eigVec.transpose();
 
 			glBegin(GL_LINE_LOOP);
 

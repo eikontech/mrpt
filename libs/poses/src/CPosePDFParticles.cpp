@@ -17,6 +17,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <fstream>
 
 using namespace mrpt;
 using namespace mrpt::bayes;

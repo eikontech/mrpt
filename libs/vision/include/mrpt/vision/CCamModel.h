@@ -232,7 +232,7 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		J43(1, 0) = fy * pxpy;
 		J43(1, 1) = fy * (tmp.K + 6 * p1y + 2 * p2x);
 		J43(1, 2) = fy * tmp.y_;
-		mOut.multiply(J43, J21);
+		mOut.matProductOf(J43, J21);
 		// cout<<"J21:\n"<<J21<<"\nJ43:\n"<<J43<<"\nmOut:\n"<<mOut;
 	}
 
@@ -351,7 +351,7 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		// not possible due to matrix sizes
 		// (jOut may, and most probably will, be
 		// fixed).
-		jOut.multiply(jOut, J1);
+		jOut.matProductOf(jOut, J1);
 	}
 
 };  // end class

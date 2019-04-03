@@ -19,6 +19,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -118,7 +119,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 		// Convert to gaussian pdf:
 		CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
 		o.getCovarianceAndMean(cov, mean);
-		cov.inv_fast(this->cov_inv);
+		this->cov_inv = cov.inverse_LLt();
 	}
 }
 
@@ -194,8 +195,7 @@ void CPose3DPDFGaussianInf::drawSingleSample(CPose3D& outPart) const
 	MRPT_UNUSED_PARAM(outPart);
 	MRPT_START
 
-	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(cov);
+	const CMatrixDouble66 cov = cov_inv.inverse_LLt();
 
 	CVectorDouble v;
 	getRandomGenerator().drawGaussianMultivariate(v, cov);
@@ -216,8 +216,7 @@ void CPose3DPDFGaussianInf::drawManySamples(
 {
 	MRPT_START
 
-	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(cov);
+	CMatrixDouble66 cov = this->cov_inv.inverse_LLt();
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
@@ -296,7 +295,7 @@ void CPose3DPDFGaussianInf::operator+=(const CPose3DPDFGaussianInf& Ap)
 	a += b;
 
 	this->mean = a.mean;
-	a.cov.inv(this->cov_inv);
+	cov_inv = a.cov.inverse_LLt();
 }
 
 /*---------------------------------------------------------------
@@ -312,7 +311,7 @@ void CPose3DPDFGaussianInf::operator-=(const CPose3DPDFGaussianInf& Ap)
 	a -= b;
 
 	this->mean = a.mean;
-	a.cov.inv(this->cov_inv);
+	cov_inv = a.cov.inverse_LLt();
 }
 
 /*---------------------------------------------------------------
@@ -334,9 +333,9 @@ double CPose3DPDFGaussianInf::evaluateNormalizedPDF(const CPose3D& x) const
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::assureSymmetry()
+void CPose3DPDFGaussianInf::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
@@ -353,8 +352,8 @@ double CPose3DPDFGaussianInf::mahalanobisDistanceTo(
 {
 	MRPT_START
 
-	const CMatrixDouble66 cov = this->cov_inv.inv();
-	const CMatrixDouble66 cov2 = theOther.cov_inv.inv();
+	const CMatrixDouble66 cov = this->cov_inv.inverse_LLt();
+	const CMatrixDouble66 cov2 = theOther.cov_inv.inverse_LLt();
 
 	CMatrixDouble66 COV_ = cov + cov2;
 	CMatrixDouble61 MU = CMatrixDouble61(theOther.mean) - CMatrixDouble61(mean);
@@ -372,7 +371,7 @@ double CPose3DPDFGaussianInf::mahalanobisDistanceTo(
 		}
 	}
 
-	return std::sqrt(MU.multiply_HtCH_scalar(COV_.inv()));
+	return std::sqrt(MU.multiply_HtCH_scalar(COV_.inverse_LLt()));
 
 	MRPT_END
 }

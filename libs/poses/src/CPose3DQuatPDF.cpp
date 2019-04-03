@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -92,7 +93,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 									 2 * (qx * ax + qy * ay)};
 
 	// df_dx(0:3,3:7) = vals2 * NORM_JACOB
-	df_dx.block(0, 3, 3, 4).noalias() =
+	df_dx.block<3, 4>(0, 3).noalias() =
 		(CMatrixFixed<double, 3, 4>(vals2) * norm_jacob_x).eval();
 
 	// second part:
@@ -101,7 +102,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 			q2r, -q2x, -q2y, -q2z, q2x, q2r, q2z,  -q2y,
 			q2y, -q2z, q2r,  q2x,  q2z, q2y, -q2x, q2r};
 
-		df_dx.block(3, 3, 4, 4).noalias() =
+		df_dx.block<4, 4>(3, 3).noalias() =
 			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).eval();
 	}
 
@@ -127,7 +128,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 			qr, -qx, -qy, -qz, qx, qr,  -qz, qy,
 			qy, qz,  qr,  -qx, qz, -qy, qx,  qr};
 
-		df_du.block(3, 3, 4, 4).noalias() =
+		df_du.block<4, 4>(3, 3).noalias() =
 			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).eval();
 	}
 

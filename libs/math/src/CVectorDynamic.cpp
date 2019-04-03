@@ -13,6 +13,17 @@
 #include <Eigen/Dense>
 #include "MatrixVectorBase_impl.h"
 
+using namespace mrpt::math;
+
+template <typename T>
+template <typename T2>
+CVectorDynamic<T2> CVectorDynamic<T>::cast() const
+{
+	CVectorDynamic<T2> r(size());
+	r.asEigen() = asEigen().template cast<T2>();
+	return r;
+}
+
 // Explicit instantiation of "MatrixVectorBase_impl.h" methods:
 
 template class mrpt::math::CVectorDynamic<float>;

@@ -168,7 +168,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 			matrix_t H = out_info.H;
 			for (size_t k = 0; k < H_len; k++) H(k, k) += lambda;
 
-			H.inv_fast(AUX);
+			H.inverse_LLt(AUX);
 			AUX.multiply_Ab(g, h_lm);
 			h_lm *= NUMTYPE(-1.0);
 

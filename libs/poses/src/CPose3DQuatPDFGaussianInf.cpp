@@ -12,7 +12,6 @@
 #include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
 #include <mrpt/math/CQuaternion.h>  // for CQuatern...
 #include <mrpt/math/distributions.h>
-//#include <mrpt/math/types_math.h>  // for CMatrixF...
 #include <mrpt/poses/CPose3D.h>  // for CPose3D
 #include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
 #include <mrpt/poses/CPose3DQuatPDF.h>  // for CPose3DQ...
@@ -21,6 +20,7 @@
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/os.h>  // for fopen
+#include <Eigen/Dense>
 #include <algorithm>  // for move, max
 #include <cstdio>  // for size_t
 #include <exception>  // for exception
@@ -104,7 +104,7 @@ void CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DQuatPDF& o)
 	// Convert to gaussian pdf:
 	CMatrixDouble77 C(UNINITIALIZED_MATRIX);
 	o.getCovarianceAndMean(C, this->mean);
-	C.inv_fast(this->cov_inv);
+	this->cov_inv = C.inverse_LLt();
 }
 
 /*---------------------------------------------------------------
@@ -149,8 +149,7 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(
 	MRPT_START
 
 	// COV:
-	CMatrixDouble77 OLD_COV(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(OLD_COV);
+	const CMatrixDouble77 OLD_COV = this->cov_inv.inverse_LLt();
 
 	CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
@@ -166,7 +165,7 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(
 	// OLD_COV, cov );
 	CMatrixDouble77 NEW_COV(UNINITIALIZED_MATRIX);
 	df_du.multiply_HCHt(OLD_COV, NEW_COV);
-	NEW_COV.inv_fast(this->cov_inv);
+	this->cov_inv = NEW_COV.inverse_LLt();
 
 	MRPT_END
 }
@@ -177,8 +176,7 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(
 void CPose3DQuatPDFGaussianInf::drawSingleSample(CPose3DQuat& outPart) const
 {
 	MRPT_START
-	CMatrixDouble77 COV(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(COV);
+	const CMatrixDouble77 COV = this->cov_inv.inverse_LLt();
 
 	getRandomGenerator().drawGaussianMultivariate(outPart, COV, &mean);
 	MRPT_END
@@ -191,8 +189,7 @@ void CPose3DQuatPDFGaussianInf::drawManySamples(
 	size_t N, vector<CVectorDouble>& outSamples) const
 {
 	MRPT_START
-	CMatrixDouble77 COV(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(COV);
+	const CMatrixDouble77 COV = this->cov_inv.inverse_LLt();
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, COV);
 
@@ -223,11 +220,11 @@ void CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF& o) const
 	jacob(6, 6) = -1;
 
 	// C(0:2,0:2): H C H^t
-	CMatrixDouble77 COV(UNINITIALIZED_MATRIX), NEW_COV(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(COV);
+	const CMatrixDouble77 COV = this->cov_inv.inverse_LLt();
 
+	CMatrixDouble77 NEW_COV(UNINITIALIZED_MATRIX);
 	jacob.multiply_HCHt(COV, NEW_COV);
-	NEW_COV.inv_fast(out.cov_inv);
+	out.cov_inv = NEW_COV.inverse_LLt();
 
 	// Mean:
 	out.mean.x(lx);
@@ -242,8 +239,7 @@ void CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF& o) const
 void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
 {
 	// COV:
-	CMatrixDouble77 OLD_COV(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(OLD_COV);
+	const CMatrixDouble77 OLD_COV = this->cov_inv.inverse_LLt();
 
 	CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
@@ -257,7 +253,7 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
 	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
 	CMatrixDouble77 NEW_COV(UNINITIALIZED_MATRIX);
 	df_dx.multiply_HCHt(OLD_COV, NEW_COV);
-	NEW_COV.inv_fast(this->cov_inv);
+	this->cov_inv = NEW_COV.inverse_LLt();
 	// df_du: Nothing to do, since COV(Ap) = zeros
 }
 
@@ -267,8 +263,7 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
 void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuatPDFGaussianInf& Ap)
 {
 	// COV:
-	CMatrixDouble77 OLD_COV(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(OLD_COV);
+	const CMatrixDouble77 OLD_COV = this->cov_inv.inverse_LLt();
 
 	CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
@@ -281,13 +276,12 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuatPDFGaussianInf& Ap)
 
 	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
 	CMatrixDouble77 NEW_COV(UNINITIALIZED_MATRIX);
-	CMatrixDouble77 Ap_cov(UNINITIALIZED_MATRIX);
-	Ap.cov_inv.inv(Ap_cov);
+	const CMatrixDouble77 Ap_cov = Ap.cov_inv.inverse_LLt();
 
 	df_dx.multiply_HCHt(OLD_COV, NEW_COV);
 	df_du.multiply_HCHt(Ap_cov, NEW_COV, true);  // Accumulate result
 
-	NEW_COV.inv_fast(this->cov_inv);
+	this->cov_inv = NEW_COV.inverse_LLt();
 }
 
 /*---------------------------------------------------------------

@@ -404,7 +404,7 @@ string math::MATLAB_plotCovariance2D(
 	auto eigVal = eigensolver.eigenvalues();
 
 	eigVal = eigVal.array().sqrt().matrix();
-	Eigen::MatrixXd M = eigVal * eigVec.adjoint();
+	Eigen::MatrixXd M = eigVal * eigVec.transpose();
 
 	// Compute the points of the ellipsoid:
 	// ----------------------------------------------

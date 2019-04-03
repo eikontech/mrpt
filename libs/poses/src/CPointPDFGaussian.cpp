@@ -170,8 +170,8 @@ void CPointPDFGaussian::bayesianFusion(
 	CMatrixDouble31 x1, x2;
 	const auto C1 = p1.cov;
 	const auto C2 = p2.cov;
-	const CMatrixDouble33 C1_inv = C1.inverseLLt();
-	const CMatrixDouble33 C2_inv = C2.inverseLLt();
+	const CMatrixDouble33 C1_inv = C1.inverse_LLt();
+	const CMatrixDouble33 C2_inv = C2.inverse_LLt();
 
 	x1(0, 0) = p1.mean.x();
 	x1(1, 0) = p1.mean.y();
@@ -180,7 +180,7 @@ void CPointPDFGaussian::bayesianFusion(
 	x2(1, 0) = p2.mean.y();
 	x2(2, 0) = p2.mean.z();
 
-	cov = CMatrixDouble33(C1_inv + C2_inv).inverseLLt();
+	cov = CMatrixDouble33(C1_inv + C2_inv).inverse_LLt();
 
 	auto x = cov.asEigen() * (C1_inv.asEigen() * x1.asEigen() +
 							  C2_inv.asEigen() * x2.asEigen());
@@ -207,7 +207,7 @@ double CPointPDFGaussian::productIntegralWith(const CPointPDFGaussian& p) const
 	// ---------------------------------------------------------------
 	CMatrixDouble33 C = cov;
 	C += p.cov;  // Sum of covs
-	CMatrixDouble33 C_inv = C.inverseLLt();
+	CMatrixDouble33 C_inv = C.inverse_LLt();
 
 	const Eigen::Vector3d MU(
 		mean.x() - p.mean.x(), mean.y() - p.mean.y(), mean.z() - p.mean.z());
@@ -235,7 +235,7 @@ double CPointPDFGaussian::productIntegralWith2D(
 	CMatrixDouble22 C = cov.block<2, 2>(0, 0);
 	C.asEigen() += p.cov.block<2, 2>(0, 0);  // Sum of covs:
 
-	CMatrixDouble22 C_inv = C.inverseLLt();
+	CMatrixDouble22 C_inv = C.inverse_LLt();
 
 	const Eigen::Vector2d MU(mean.x() - p.mean.x(), mean.y() - p.mean.y());
 
@@ -319,13 +319,13 @@ double CPointPDFGaussian::mahalanobisDistanceTo(
 
 	if (!only_2D)
 	{
-		const CMatrixDouble33 COV_inv = COV.inverseLLt();
+		const CMatrixDouble33 COV_inv = COV.inverse_LLt();
 		return sqrt(deltaX.multiply_HCHt_scalar(COV_inv));
 	}
 	else
 	{
 		CMatrixDouble22 C = COV.block<2, 2>(0, 0);
-		const CMatrixDouble22 COV_inv = C.inverseLLt();
+		const CMatrixDouble22 COV_inv = C.inverse_LLt();
 		CMatrixDouble12 deltaX2 = deltaX.block<1, 2>(0, 0);
 		return std::sqrt(deltaX2.multiply_HCHt_scalar(COV_inv));
 	}

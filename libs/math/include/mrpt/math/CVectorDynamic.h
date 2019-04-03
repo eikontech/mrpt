@@ -202,7 +202,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-	    typename EIGEN_VECTOR = eigen_t,
+		typename EIGEN_VECTOR = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_VECTOR, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
@@ -218,6 +218,9 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	{
 		return EIGEN_MAP(&m_data[0], m_data.size());
 	}
+
+	template <typename T2>
+	CVectorDynamic<T2> cast() const;
 };
 
 using CVectorFloat = CVectorDynamic<float>;

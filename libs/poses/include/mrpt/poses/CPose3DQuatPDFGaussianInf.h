@@ -80,7 +80,7 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 		mrpt::math::CMatrixDouble77& cov,
 		CPose3DQuat& mean_point) const override
 	{
-		cov_inv.inv(cov);
+		cov = cov_inv.inverse_LLt();
 		mean_point = mean;
 	}
 

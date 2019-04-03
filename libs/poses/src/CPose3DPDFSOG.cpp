@@ -14,6 +14,7 @@
 #include <mrpt/poses/SO_SE_average.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -67,14 +68,14 @@ void CPose3DPDFSOG::getCovarianceAndMean(
 {
 	size_t N = m_modes.size();
 
+	// Get mean:
 	getMean(mean);
-	mrpt::math::CMatrixDouble66 estCov;
 
+	// Get cov:
+	mrpt::math::CMatrixDouble66 estCov;
 	if (N)
 	{
-		// 1) Get the mean:
 		double sumW = 0;
-		mrpt::math::CMatrixDouble estMean(mean);
 
 		mrpt::math::CMatrixDouble66 MMt;
 		mrpt::math::CMatrixDouble61 estMean_i;
@@ -210,7 +211,7 @@ void CPose3DPDFSOG::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 
 
 
-	CMatrixD				covInv( p2->cov.inv() );
+	CMatrixD				covInv( p2->cov.inverse_LLt() );
 	CMatrixD				eta(3,1);
 	eta(0,0) = p2->mean.x;
 	eta(1,0) = p2->mean.y;
@@ -239,14 +240,14 @@ void CPose3DPDFSOG::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 		newKernel.mean = auxGaussianProduct.mean;
 		newKernel.cov  = auxGaussianProduct.cov;
 
-		CMatrixD		covInv_i( auxSOG_Kernel_i.cov.inv() );
+		CMatrixD		covInv_i( auxSOG_Kernel_i.cov.inverse_LLt() );
 		CMatrixD		eta_i(3,1);
 		eta_i(0,0) = auxSOG_Kernel_i.mean.x;
 		eta_i(1,0) = auxSOG_Kernel_i.mean.y;
 		eta_i(2,0) = auxSOG_Kernel_i.mean.phi;
 		eta_i = covInv_i * eta_i;
 
-		CMatrixD		new_covInv_i( newKernel.cov.inv() );
+		CMatrixD		new_covInv_i( newKernel.cov.inverse_LLt() );
 		CMatrixD		new_eta_i(3,1);
 		new_eta_i(0,0) = newKernel.mean.x;
 		new_eta_i(1,0) = newKernel.mean.y;
@@ -268,9 +269,9 @@ void CPose3DPDFSOG::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::assureSymmetry()
+void CPose3DPDFSOG::enforceCovSymmetry()
 {
 	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant

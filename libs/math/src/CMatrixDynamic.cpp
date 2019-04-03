@@ -16,26 +16,12 @@
 using namespace mrpt::math;
 
 template <typename T>
-CMatrixDynamic<T> CMatrixDynamic<T>::inverse() const
+template <typename T2>
+CMatrixDynamic<T2> CMatrixDynamic<T>::cast() const
 {
-	ASSERT_(cols() == rows());
-	const auto N = cols();
-	CMatrixDynamic<T> inv(N, N);
-	inv.asEigen() = this->asEigen().inverse().eval();
-	return inv;
-}
-
-template <typename T>
-CMatrixDynamic<T> CMatrixDynamic<T>::inverseLLt() const
-{
-	ASSERT_(cols() == rows());
-	const auto N = cols();
-
-	using MatX = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
-	const auto I = MatX::Identity(N, N);
-	CMatrixDynamic<T> inv(N, N);
-	inv.asEigen() = this->asEigen().llt().solve(I).eval();
-	return inv;
+	CMatrixDynamic<T2> r(rows(), cols());
+	r.asEigen() = asEigen().template cast<T2>();
+	return r;
 }
 
 // Template instantiation:

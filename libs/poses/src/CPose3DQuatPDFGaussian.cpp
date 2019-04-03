@@ -19,6 +19,7 @@
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -396,9 +397,9 @@ double CPose3DQuatPDFGaussian::evaluateNormalizedPDF(const CPose3DQuat& x) const
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::assureSymmetry()
+void CPose3DQuatPDFGaussian::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!

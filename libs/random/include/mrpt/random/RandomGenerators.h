@@ -266,14 +266,14 @@ class CRandomGenerator
 		out_result.clear();
 		out_result.resize(dim, 0);
 		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-		 *    so that: M = Z � D � Z<sup>T</sup>, where columns in Z are the
+		 *    so that: M = Z * D * Z<sup>T</sup>, where columns in Z are the
 		 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
 		 *    as diagonal elements, sorted in <i>ascending</i> order.
 		 */
 		cov.eigenVectors(Z, D);
 		// Scale eigenvectors with eigenvalues:
 		D = D.array().sqrt().matrix();
-		Z.multiply(Z, D);
+		Z.matProductOf(Z, D);
 		for (size_t i = 0; i < dim; i++)
 		{
 			T rnd = this->drawGaussian1D_normalized();
@@ -305,7 +305,7 @@ class CRandomGenerator
 		// Compute eigenvalues/eigenvectors of cov:
 		COVMATRIX eigVecs;
 		std::vector<typename COVMATRIX::Scalar> eigVals;
-		cov.eig_symmetric(eigVecs, eigVals);
+		cov.eig_symmetric(eigVecs, eigVals, false /*sorted*/);
 
 		// Scale eigenvectors with eigenvalues:
 		// D.Sqrt(); Z = Z * D; (for each column)
@@ -350,21 +350,18 @@ class CRandomGenerator
 				"drawGaussianMultivariateMany(): mean and cov sizes ");
 
 		// Compute eigenvalues/eigenvectors of cov:
-		Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>
-			eigensolver(cov);
-
-		typename Eigen::SelfAdjointEigenSolver<
-			typename COVMATRIX::PlainObject>::MatrixType eigVecs =
-			eigensolver.eigenvectors();
-		typename Eigen::SelfAdjointEigenSolver<
-			typename COVMATRIX::PlainObject>::RealVectorType eigVals =
-			eigensolver.eigenvalues();
+		COVMATRIX eigVecs;
+		std::vector<typename COVMATRIX::Scalar> eigVals;
+		cov.eig_symmetric(eigVecs, eigVals, false /*sorted*/);
 
 		// Scale eigenvectors with eigenvalues:
 		// D.Sqrt(); Z = Z * D; (for each column)
-		eigVals = eigVals.array().sqrt();
-		for (typename COVMATRIX::Index i = 0; i < eigVecs.cols(); i++)
-			eigVecs.col(i) *= eigVals[i];
+		for (typename COVMATRIX::Index c = 0; c < eigVecs.cols(); c++)
+		{
+			const auto s = std::sqrt(eigVals[c]);
+			for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
+				eigVecs(c, r) *= s;
+		}
 
 		// Set size of output vector:
 		ret.resize(desiredSamples);

@@ -53,8 +53,8 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 	constexpr static int SizeAtCompileTime = ROWS * COLS;
 	constexpr static int is_mrpt_type = 1;
 	using eigen_t = Eigen::Matrix<
-	    T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
-	    COLS>;
+		T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
+		COLS>;
 	/** @} */
 
 	/** @name Iterators interface
@@ -73,7 +73,7 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 	 *  @{ */
 
 	/** Default constructor, initializes all elements to zero */
-	inline CMatrixFixed() { fill(0); }
+	inline CMatrixFixed() { m_data.fill(0); }
 
 	/** Constructor which leaves the matrix uninitialized.
 	 *  Example of usage: CMatrixFixed<double,3,2>
@@ -205,7 +205,6 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 		dims[1] = COLS;
 		return dims;
 	}
-	bool empty() const { return ROWS == 0 || COLS == 0; }
 
 	/** @} */
 
@@ -214,7 +213,7 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-	    typename EIGEN_MATRIX = eigen_t,
+		typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
@@ -263,32 +262,8 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 		return m_data[i];
 	}
 
-	void fill(const T& value) { m_data.fill(value); }
-	void setZero() { m_data.fill(0); }
-	void setDiagonal(const std::size_t N, const T value)
-	{
-		ASSERT_EQUAL_(N, ROWS);
-		ASSERT_EQUAL_(N, COLS);
-		for (std::size_t r = 0; r < ROWS; r++)
-			for (std::size_t c = 0; c < COLS; c++)
-				(*this)(r, c) = (r == c) ? value : 0;
-	}
-	void setDiagonal(const T value)
-	{
-		ASSERT_EQUAL_(ROWS, COLS);
-		setDiagonal(ROWS, value);
-	}
-	void setIdentity()
-	{
-		ASSERT_EQUAL_(ROWS, COLS);
-		setDiagonal(ROWS, 1);
-	}
-	void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
-
-	/** Returns the inverse of a general matrix using LU */
-	CMatrixFixed<T, ROWS, COLS> inverse() const;
-	/** Returns the inverse of a symmetric matrix using LLt */
-	CMatrixFixed<T, ROWS, COLS> inverseLLt() const;
+	template <typename T2>
+	CMatrixFixed<T2, ROWS, COLS> cast() const;
 
 	/** @} */
 };

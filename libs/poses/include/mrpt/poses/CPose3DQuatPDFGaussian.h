@@ -48,7 +48,7 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
    public:
 	/** Default constructor - set all values to zero. */

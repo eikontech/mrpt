@@ -79,7 +79,7 @@ double matrix_test_mult_dyn(int a1, int a2)
 	CTicTac tictac;
 	for (long i = 0; i < N; i++)
 	{
-		C.multiply(A, B);
+		C.matProductOf(A, B);
 	}
 	return tictac.Tac() / N;
 }
@@ -98,7 +98,7 @@ double matrix_test_mult_fix(int a1, int a2)
 	CTicTac tictac;
 	for (long i = 0; i < N; i++)
 	{
-		C.multiply(A, B);
+		C.matProductOf(A, B);
 	}
 	return tictac.Tac() / N;
 }
@@ -114,7 +114,7 @@ double matrix_test_inv_dyn(int a1, int a2)
 	CTicTac tictac;
 	for (long i = 0; i < N; i++)
 	{
-		A.inv(A2);
+		A.inverse_LLt(A2);
 	}
 	return tictac.Tac() / N;
 }
@@ -129,7 +129,7 @@ double matrix_test_inv_fix(int a1, int a2)
 	CTicTac tictac;
 	for (long i = 0; i < N; i++)
 	{
-		A.inv(A2);
+		A.inverse_LLt(A2);
 	}
 	return tictac.Tac() / N;
 }

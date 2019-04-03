@@ -14,6 +14,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <Eigen/Dense>
 #include <iomanip>
 #include <limits>
 
@@ -169,8 +170,8 @@ void CPose3DQuat::composePoint(
 			CMatrixDouble44 norm_jacob(UNINITIALIZED_MATRIX);
 			this->quat().normalizationJacobian(norm_jacob);
 
-			out_jacobian_df_dpose->insertMatrix(
-				0, 3, (CMatrixFixed<double, 3, 4>(vals) * norm_jacob).eval());
+			out_jacobian_df_dpose->asEigen().block<3, 4>(0, 3) =
+				(CMatrixFixed<double, 3, 4>(vals) * norm_jacob).eval();
 		}
 	}
 
@@ -454,10 +455,11 @@ void CPose3DQuat::sphericalCoordinates(
 
 		const CMatrixDouble33 dryp_dlocalpoint(vals);
 		if (out_jacob_dryp_dpoint)
-			out_jacob_dryp_dpoint->multiply(
-				dryp_dlocalpoint, jacob_dinv_dpoint);
+			out_jacob_dryp_dpoint->asEigen() =
+			    dryp_dlocalpoint * jacob_dinv_dpoint;
 		if (out_jacob_dryp_dpose)
-			out_jacob_dryp_dpose->multiply(dryp_dlocalpoint, jacob_dinv_dpose);
+			out_jacob_dryp_dpose->asEigen() =
+			    dryp_dlocalpoint * jacob_dinv_dpose;
 	}
 }
 
@@ -541,7 +543,7 @@ TPose3DQuat CPose3DQuat::asTPose() const
 void CPose3DQuat::fromString(const std::string& s)
 {
 	mrpt::math::CMatrixDouble m;
-	if (!m.fromMatlabStringFormat(m, s))
+	if (!m.fromMatlabStringFormat(s))
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Expected vector length=7");
 	m_coords[0] = m(0, 0);

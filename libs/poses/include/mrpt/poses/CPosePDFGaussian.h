@@ -34,7 +34,7 @@ class CPosePDFGaussian : public CPosePDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
    public:
 	/** @name Data fields

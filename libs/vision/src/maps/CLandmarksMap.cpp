@@ -355,7 +355,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 
 		// Equivalent covariance from "i" to "j":
 		Cij = CMatrixDouble(o->pose.cov);
-		Cij_1 = Cij.inv();
+		Cij_1 = Cij.inverse_LLt();
 
 		double distMahaFlik2 = dij.multiply_HCHt_scalar(Cij_1);
 		double ret =
@@ -1195,7 +1195,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 							// Equivalent covariance from "i" to "j":
 							Cij =
 								CMatrixDouble(pointPDF_k.cov + pointPDF_j.cov);
-							Cij_1 = Cij.inv();
+							Cij_1 = Cij.inverse_LLt();
 
 							distMahaFlik2 = dij.multiply_HCHt_scalar(
 								Cij_1);  //( dij * Cij_1 * (~dij) )(0,0);
@@ -2058,7 +2058,7 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 							// dij(0,2)*dij(0,2) ) << std::endl;
 							// Equivalent covariance from "i" to "j":
 							Cij = CMatrixDouble(lm1_pose.cov + lm2_pose.cov);
-							Cij_1 = Cij.inv();
+							Cij_1 = Cij.inverse_LLt();
 
 							distMahaFlik2 = dij.multiply_HCHt_scalar(
 								Cij_1);  //( dij * Cij_1 * (~dij) )(0,0);
@@ -2162,7 +2162,7 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 
 				// Equivalent covariance from "i" to "j":
 				Cij = CMatrixDouble(lm1_pose.cov + lm2_pose.cov);
-				Cij_1 = Cij.inv();
+				Cij_1 = Cij.inverse_LLt();
 
 				distMahaFlik2 = dij.multiply_HCHt_scalar(
 					Cij_1);  // ( dij * Cij_1 * (~dij) )(0,0);
@@ -2698,7 +2698,7 @@ float CLandmarksMap::compute3DMatchingRatio(
 			d(0, 2) = D.z;
 
 			float distMaha = sqrt(d.multiply_HCHt_scalar(
-				COV.inv()));  //(d*COV.inv()*(~d))(0,0) );
+				COV.inverse_LLt()));  //(d*COV.inverse_LLt()*(~d))(0,0) );
 
 			if (distMaha < params.maxMahaDistForCorr)
 			{

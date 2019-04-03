@@ -21,12 +21,25 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPose3DPDF, CSerializable, mrpt::poses)
+
+// copy covariances: x, y
+// Move covariances: phi -> yaw
+template <class MAT33, class MAT66>
+void cov2to3(const MAT33& c2d, MAT66& c3d)
+{
+	c3d.setZero();
+	c3d.template block<2, 2>(0, 0) = c2d.template block<2, 2>(0, 0);
+	c3d(3, 3) = c2d(2, 2);
+	c3d(0, 3) = c3d(3, 0) = c2d(0, 2);
+	c3d(1, 3) = c3d(3, 1) = c2d(1, 2);
+}
 
 /*---------------------------------------------------------------
 					copyFrom2D
@@ -40,21 +53,8 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF& o)
 		auto* newObj = new CPose3DPDFGaussian();
 		const auto* obj = dynamic_cast<const CPosePDFGaussian*>(&o);
 		ASSERT_(obj != nullptr);
-
 		newObj->mean = CPose3D(obj->mean);
-		CMatrixDouble COV = CMatrixDouble(obj->cov);
-		COV.setSize(6, 6);
-
-		// Move covariances: phi<->z
-		COV(3, 3) = COV(2, 2);
-		COV(2, 2) = 0;
-		COV(0, 3) = COV(3, 0) = COV(0, 2);
-		COV(0, 2) = COV(2, 0) = 0;
-		COV(1, 3) = COV(3, 1) = COV(1, 2);
-		COV(1, 2) = COV(2, 1) = 0;
-
-		newObj->cov = CMatrixDouble66(COV);
-
+		cov2to3(obj->cov, newObj->cov);
 		return newObj;
 	}
 	else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf))
@@ -64,19 +64,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF& o)
 		ASSERT_(obj != nullptr);
 
 		newObj->mean = CPose3D(obj->mean);
-		CMatrixDouble COVINV = CMatrixDouble(obj->cov_inv);
-
-		COVINV.setSize(6, 6);
-		// Move covariances: phi<->z
-		COVINV(3, 3) = COVINV(2, 2);
-		COVINV(2, 2) = 0;
-		COVINV(0, 3) = COVINV(3, 0) = COVINV(0, 2);
-		COVINV(0, 2) = COVINV(2, 0) = 0;
-		COVINV(1, 3) = COVINV(3, 1) = COVINV(1, 2);
-		COVINV(1, 2) = COVINV(2, 1) = 0;
-
-		newObj->cov_inv = CMatrixDouble66(COVINV);
-
+		cov2to3(obj->cov_inv, newObj->cov_inv);
 		return newObj;
 	}
 	else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticles))
@@ -218,7 +206,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 		q_xu.normalizationJacobian(dnorm_dq);
 
 		CMatrixFixed<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
-		dr_dq_sub.multiply(dr_dq_sub_aux, dnorm_dq);
+		dr_dq_sub.asEigen() = dr_dq_sub_aux * dnorm_dq;
 
 		J_Q2E.insertMatrix(3, 3, dr_dq_sub);
 	}
@@ -226,6 +214,8 @@ void CPose3DPDF::jacobiansPoseComposition(
 	// And finally:
 	//  JACOB_dx = J_Q2E (6x7) * quat_df_dx (7x7) * J_E2Q_dx (7x6)
 	//  JACOB_du = J_Q2E (6x7) * quat_df_du (7x7) * J_E2Q_du (7x6)
-	df_dx.multiply_ABC(J_Q2E, quat_df_dx, J_E2Q_dx);
-	df_du.multiply_ABC(J_Q2E, quat_df_du, J_E2Q_du);
+	df_dx.asEigen() =
+		J_Q2E.asEigen() * quat_df_dx.asEigen() * J_E2Q_dx.asEigen();
+	df_du.asEigen() =
+		J_Q2E.asEigen() * quat_df_du.asEigen() * J_E2Q_du.asEigen();
 }

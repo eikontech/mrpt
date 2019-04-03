@@ -613,11 +613,11 @@ void CKalmanFilterCapable<
 
 						m_K.setSize(m_pkk.rows(), S_observed.cols());
 
-						// K = m_pkk * (~dh_dx) * m_S.inv() );
+						// K = m_pkk * (~dh_dx) * m_S.inverse_LLt() );
 						m_K = m_pkk * m_dh_dx_full_obs.transpose();
 
 						// Inverse of S_observed -> m_S_1
-						S_observed.inv(m_S_1);
+						S_observed.inverse_LLt(m_S_1);
 						m_K *= m_S_1;
 
 						m_timLogger.leave("KF:8.update stage:1.FULLKF:build K");
@@ -637,7 +637,7 @@ void CKalmanFilterCapable<
 								"KF:8.update stage:2.FULLKF:iter.update xkk");
 
 							KFVector HAx_column =
-							    m_dh_dx_full_obs * (m_xkk - xkk_0);
+								m_dh_dx_full_obs * (m_xkk - xkk_0);
 
 							m_xkk = xkk_0;
 							m_K.multiply_Ab(
@@ -662,7 +662,7 @@ void CKalmanFilterCapable<
 							// TODO: "Optimize this: sparsity!"
 
 							// K * m_dh_dx_full_obs
-							m_aux_K_dh_dx.multiply(m_K, m_dh_dx_full_obs);
+							m_aux_K_dh_dx.matProductOf(m_K, m_dh_dx_full_obs);
 
 							// m_aux_K_dh_dx  <-- I-m_aux_K_dh_dx
 							const size_t stat_len = m_aux_K_dh_dx.cols();
@@ -830,7 +830,7 @@ void CKalmanFilterCapable<
 
 							// Compute the Kalman gain "Kij" for this
 							// observation element:
-							// -->  K = m_pkk * (~dh_dx) * m_S.inv() );
+							// -->  K = m_pkk * (~dh_dx) * m_S.inverse_LLt() );
 							size_t N = m_pkk.cols();
 							vector<KFTYPE> Kij(N);
 
@@ -1024,7 +1024,7 @@ void CKalmanFilterCapable<
 										KFMatrix Si_1(OBS_SIZE,OBS_SIZE);
 
 										// Compute the Kalman gain "Ki" for this i'th observation:
-										// -->  Ki = m_pkk * (~dh_dx) * m_S.inv();
+										// -->  Ki = m_pkk * (~dh_dx) * m_S.inverse_LLt();
 										size_t N = m_pkk.cols();
 
 										KFMatrix Ki( N, OBS_SIZE );
@@ -1049,7 +1049,7 @@ void CKalmanFilterCapable<
 											} // end for c
 										} // end for k
 
-										Ki.multiply(Ki, Si.inv() );  // K = (...) * m_S^-1
+										Ki.matProductOf(Ki, Si.inverse_LLt() );  // K = (...) * m_S^-1
 
 
 										// Update the state vector m_xkk:
@@ -1314,7 +1314,7 @@ void addNewLandmarks(
 			typename KF::KFMatrix_VxV Pxx;
 			obj.internal_getPkk().extractMatrix(0, 0, Pxx);
 			typename KF::KFMatrix_FxV Pxyn;  // Pxyn = dyn_dxv * Pxx
-			Pxyn.multiply(dyn_dxv, Pxx);
+			Pxyn.matProductOf(dyn_dxv, Pxx);
 
 			obj.internal_getPkk().insertMatrix(idx, 0, Pxyn);
 			obj.internal_getPkk().insertMatrixTranspose(0, idx, Pxyn);
@@ -1332,7 +1332,7 @@ void addNewLandmarks(
 
 				typename KF::KFMatrix_FxF P_cross(
 					mrpt::math::UNINITIALIZED_MATRIX);
-				P_cross.multiply(dyn_dxv, P_x_yq);
+				P_cross.matProductOf(dyn_dxv, P_x_yq);
 
 				obj.internal_getPkk().insertMatrix(
 					idx, VEH_SIZE + q * FEAT_SIZE, P_cross);

@@ -137,7 +137,8 @@ NUMTYPE leastSquareLinearFit(
 		Xt(1, i) = x[i] - x_min;
 	}
 
-	const auto B = ((Xt * Xt.transpose()).inv().eval() * Xt * y).eval();
+	const auto B =
+	    ((Xt * Xt.transpose()).inverse().eval() * Xt * y.asEigen()).eval();
 	ASSERT_(B.size() == 2);
 
 	NUMTYPE ret = B[0] + B[1] * (t - x_min);
@@ -176,7 +177,7 @@ void leastSquareLinearFit(
 		Xt(1, i) = x[i] - x_min;
 	}
 
-	const auto B = ((Xt * Xt.transpose()).inv().eval() * Xt * y).eval();
+	const auto B = ((Xt * Xt.transpose()).inverse_LLt().eval() * Xt * y).eval();
 	ASSERT_(B.size() == 2);
 
 	const size_t tsN = size_t(ts.size());

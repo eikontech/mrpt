@@ -16,28 +16,12 @@
 using namespace mrpt::math;
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
-CMatrixFixed<T, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::inverse() const
+template <typename T2>
+CMatrixFixed<T2, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast() const
 {
-	ASSERT_(cols() == rows());
-	const auto N = cols();
-	using MatX = Eigen::Matrix<T, ROWS, COLS>;
-	const auto I = MatX::Identity(N, N);
-	CMatrixFixed<T, ROWS, COLS> inv(mrpt::math::UNINITIALIZED_MATRIX);
-	inv.asEigen() = this->asEigen().llt().solve(I).eval();
-	return inv;
-}
-
-template <typename T, std::size_t ROWS, std::size_t COLS>
-CMatrixFixed<T, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::inverseLLt() const
-{
-	ASSERT_(cols() == rows());
-	const auto N = cols();
-
-	using MatX = Eigen::Matrix<T, ROWS, COLS>;
-	const auto I = MatX::Identity(N, N);
-	CMatrixFixed<T, ROWS, COLS> inv(mrpt::math::UNINITIALIZED_MATRIX);
-	inv.asEigen() = this->asEigen().llt().solve(I).eval();
-	return inv;
+	CMatrixFixed<T, ROWS, COLS> r(rows(), cols());
+	r.asEigen() = asEigen().template cast<T2>();
+	return r;
 }
 
 // Template instantiations:

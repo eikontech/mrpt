@@ -17,19 +17,17 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
-
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
-
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CPosePDFGaussian, CPosePDF, mrpt::poses)
@@ -206,7 +204,7 @@ void CPosePDFGaussian::rotateCov(const double ang)
 		const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
 
 	const CMatrixFixed<double, 3, 3> rot(rot_vals);
-	cov = (rot * cov * rot.adjoint()).eval();
+	cov = (rot * cov * rot.transpose()).eval();
 }
 
 /*---------------------------------------------------------------
@@ -272,23 +270,21 @@ void CPosePDFGaussian::bayesianFusion(
 	const auto* p1 = dynamic_cast<const CPosePDFGaussian*>(&p1_);
 	const auto* p2 = dynamic_cast<const CPosePDFGaussian*>(&p2_);
 
-	CMatrixDouble33 C1 = p1->cov;
-	CMatrixDouble33 C2 = p2->cov;
+	const CMatrixDouble33 C1 = p1->cov;
+	const CMatrixDouble33 C2 = p2->cov;
 
-	CMatrixDouble33 C1_inv;
-	C1.inv(C1_inv);
-
-	CMatrixDouble33 C2_inv;
-	C2.inv(C2_inv);
+	const CMatrixDouble33 C1_inv = C1.inverse_LLt();
+	const CMatrixDouble33 C2_inv = C2.inverse_LLt();
 
 	auto x1 = CMatrixDouble31(p1->mean);
 	auto x2 = CMatrixDouble31(p2->mean);
 
 	CMatrixDouble33 auxC = C1_inv + C2_inv;
-	auxC.inv(this->cov);
-	this->assureSymmetry();
+	this->cov = auxC.inverse_LLt();
+	this->enforceCovSymmetry();
 
-	CMatrixDouble31 x = this->cov * (C1_inv * x1 + C2_inv * x2);
+	CMatrixDouble31 x =
+	    (this->cov.asEigen() * (C1_inv * x1 + C2_inv * x2)).eval();
 
 	this->mean.x(x(0, 0));
 	this->mean.y(x(1, 0));
@@ -320,8 +316,8 @@ void CPosePDFGaussian::inverse(CPosePDF& o) const
 		0,	 0,	 -1};
 	const CMatrixFixed<double, 3, 3> H(H_values);
 
-	out->cov.noalias() =
-		(H * cov * H.adjoint()).eval();  // o.cov = H * cov * Ht
+	out->cov.asEigen().noalias() =
+	    (H.asEigen() * cov.asEigen() * H.transpose()).eval();
 }
 
 /*---------------------------------------------------------------
@@ -357,9 +353,9 @@ double CPosePDFGaussian::evaluateNormalizedPDF(const CPose2D& x) const
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPosePDFGaussian::assureSymmetry()
+void CPosePDFGaussian::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
@@ -387,11 +383,10 @@ double CPosePDFGaussian::mahalanobisDistanceTo(const CPosePDFGaussian& theOther)
 	CMatrixDouble33 COV_ = cov;
 	COV_ += theOther.cov;
 
-	CMatrixDouble33 COV_inv(UNINITIALIZED_MATRIX);
-	COV_.inv_fast(COV_inv);
+	const CMatrixDouble33 COV_inv = COV_.inverse_LLt();
 
 	// (~MU) * (!COV_) * MU
-	return std::sqrt(mrpt::math::multiply_HCHt_scalar(MU, COV_inv));
+	return std::sqrt(mrpt::math::multiply_HCHt_scalar(MU.asEigen(), COV_inv));
 
 	MRPT_END
 }
@@ -516,10 +511,10 @@ void CPosePDFGaussian::inverseComposition(
 	dh_x0.multiply_HCHt(x0.cov, this->cov);
 	dh_x1.multiply_HCHt(x1.cov, this->cov, true);  // Accum. result
 
-	CMatrixDouble33 M;
-	M.multiply_ABCt(dh_x0, COV_01, dh_x1);
+	CMatrixDouble33 M =
+	    (dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen()).eval();
 
-	this->cov.add_AAt(M);
+	this->cov.asEigen() += (M.asEigen() * M.transpose()).eval();
 
 	// mean
 	mean = x1.mean - x0.mean;

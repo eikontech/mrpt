@@ -313,7 +313,7 @@ void upnp::compute_alphas()
 	CC_.push_back(row14);
 	PC_.push_back(row1n);
 
-	ALPHAS = Mat(CC_.inv() * PC_).t();
+	ALPHAS = Mat(CC_.inverse_LLt() * PC_).t();
 }
 
 void upnp::fill_M(
@@ -632,7 +632,7 @@ void upnp::generate_all_possible_solutions_for_f_unk(
 		independent_term[1] = log(abs(betas[combination[i][1] - 1]));
 		independent_term[2] = log(abs(betas[combination[i][2] - 1]));
 
-		exp(Mat(M.inv() * I), S);
+		exp(Mat(M.inverse_LLt() * I), S);
 
 		solutions[i][0] = S.at<double>(0);
 		solutions[i][1] = S.at<double>(1) * sign(betas[1]);

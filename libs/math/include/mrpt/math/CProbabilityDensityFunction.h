@@ -120,7 +120,7 @@ class CProbabilityDensityFunction
 	 */
 	virtual void getInformationMatrix(inf_mat_t& inf) const
 	{
-		inf = getCovariance().inverseLLt();
+		inf = getCovariance().inverse_LLt();
 	}
 
 	/** Save PDF's particles to a text file. See derived classes for more

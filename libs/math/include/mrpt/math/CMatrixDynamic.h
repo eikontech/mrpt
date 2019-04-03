@@ -178,6 +178,13 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 			for (size_t j = 0; j < m_Cols; j++) (*this)(i, j) = m(i, j);
 	}
 
+	/** Constructor from fixed-size matrix: */
+	template <std::size_t ROWS, std::size_t COLS>
+	explicit CMatrixDynamic(const CMatrixFixed<T, ROWS, COLS>& o)
+	{
+		*this = o;
+	}
+
 	/** Constructor from a given size and a C array. The array length must match
 	 *cols x row.
 	 * \code
@@ -500,7 +507,7 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
 	template <
-	    typename EIGEN_MATRIX = eigen_t,
+		typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
@@ -517,10 +524,8 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 
-	/** Returns the inverse of a general matrix using LU */
-	CMatrixDynamic<T> inverse() const;
-	/** Returns the inverse of a symmetric matrix using LLt */
-	CMatrixDynamic<T> inverseLLt() const;
+	template <typename T2>
+	CMatrixDynamic<T2> cast() const;
 
 };  // end of class CMatrixDynamic
 

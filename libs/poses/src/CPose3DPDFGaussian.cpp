@@ -18,6 +18,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 #include <sstream>
 
@@ -176,7 +177,7 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		o.mean.quat().normalizationJacobian(dnorm_dq);
 
 		CMatrixFixed<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
-		dr_dq_sub.multiply(dr_dq_sub_aux, dnorm_dq);
+		dr_dq_sub.asEigen() = dr_dq_sub_aux * dnorm_dq;
 
 		// Set the mean:
 		this->mean.setFromValues(
@@ -186,9 +187,9 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		CMatrixDouble44 cov_Q(UNINITIALIZED_MATRIX);
 		CMatrixDouble33 cov_T(UNINITIALIZED_MATRIX);
 		CMatrixFixed<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
-		o.cov.extractMatrix(3, 3, cov_Q);
-		o.cov.extractMatrix(0, 0, cov_T);
-		o.cov.extractMatrix(0, 3, cov_TQ);
+		cov_Q.asEigen() = o.cov.block<4, 4>(3, 3);
+		cov_T.asEigen() = o.cov.block<3, 3>(0, 0);
+		cov_TQ.asEigen() = o.cov.block<3, 4>(0, 3);
 
 		// [        S_T       |   S_TQ * H^t    ]
 		// [ -----------------+---------------- ]
@@ -198,10 +199,9 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		this->cov.insertMatrix(0, 0, cov_T);
 
 		// diagonals:
-		CMatrixFixed<double, 3, 3> cov_TR(UNINITIALIZED_MATRIX);
-		cov_TR.multiply_ABt(cov_TQ, dr_dq_sub);
-		this->cov.insertMatrix(0, 3, cov_TR);
-		this->cov.insertMatrixTranspose(3, 0, cov_TR);
+		const Eigen::Matrix3d cov_TR = cov_TQ.asEigen() * dr_dq_sub.transpose();
+		this->cov.block<3, 3>(0, 3) = cov_TR;
+		this->cov.block<3, 3>(3, 0) = cov_TR.transpose();
 
 		// bottom-right:
 		CMatrixDouble33 cov_r(UNINITIALIZED_MATRIX);
@@ -388,8 +388,8 @@ void CPose3DPDFGaussian::bayesianFusion(
 		CMatrixD	x1(3,1),x2(3,1),x(3,1);
 		CMatrixD	C1( p1->cov );
 		CMatrixD	C2( p2->cov );
-		CMatrixD	C1_inv = C1.inv();
-		CMatrixD	C2_inv = C2.inv();
+		CMatrixD	C1_inv = C1.inverse_LLt();
+		CMatrixD	C2_inv = C2.inverse_LLt();
 		CMatrixD	C;
 
 		x1(0,0) = p1->mean.x; x1(1,0) = p1->mean.y; x1(2,0) = p1->mean.phi;
@@ -398,7 +398,7 @@ void CPose3DPDFGaussian::bayesianFusion(
 		C = !(C1_inv + C2_inv);
 
 		this->cov = C;
-		this->assureSymmetry();
+		this->enforceCovSymmetry();
 
 		x = C * ( C1_inv*x1 + C2_inv*x2 );
 
@@ -550,15 +550,12 @@ double CPose3DPDFGaussian::evaluateNormalizedPDF(const CPose3D& x) const
 	*/
 }
 
-/*---------------------------------------------------------------
-						assureSymmetry
- ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::assureSymmetry()
+void CPose3DPDFGaussian::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (unsigned int i = 0; i < cov.rows() - 1; i++)
-		for (unsigned int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
+	for (int i = 0; i < cov.rows() - 1; i++)
+		for (int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------
@@ -585,7 +582,7 @@ double CPose3DPDFGaussian::mahalanobisDistanceTo(
 		}
 	}
 
-	return std::sqrt(MU.multiply_HtCH_scalar(COV_.inv()));
+	return std::sqrt(MU.multiply_HtCH_scalar(COV_.inverse_LLt()));
 
 	MRPT_END
 }

@@ -704,7 +704,7 @@ bool CBeaconMap::internal_insertObservation(
 								varZ = H.multiply_HCHt_scalar(mode.val.cov);
 								varZ += varR;
 								CMatrixDouble31 K;
-								K.multiply(mode.val.cov, H.transpose());
+								K.matProductOf(mode.val.cov, H.transpose());
 								K *= 1.0 / varZ;
 
 								// Update stage of the EKF:

@@ -117,7 +117,7 @@ double KLD_Gaussians(
 		cov1.isSquare());
 	const size_t N = mu0.size();
 	MATRIXLIKE2 cov1_inv;
-	cov1.inv(cov1_inv);
+	cov1.inverse_LLt(cov1_inv);
 	const VECTORLIKE1 mu_difs = mu0 - mu1;
 	return 0.5 * (log(cov1.det() / cov0.det()) + (cov1_inv * cov0).trace() +
 				  multiply_HCHt_scalar(mu_difs, cov1_inv) - N);

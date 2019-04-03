@@ -895,7 +895,7 @@ struct graph_ops
 	{
 		math::wrapToPiInPlace(err[2]);
 		mrpt::math::CMatrixDouble33 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
-		p.cov.inv(COV_INV);
+		p.cov.inverse_LLt(COV_INV);
 		return mrpt::math::multiply_HCHt_scalar(
 			err, COV_INV);  // err^t*cov_inv*err
 	}
@@ -906,7 +906,7 @@ struct graph_ops
 		math::wrapToPiInPlace(err[4]);
 		math::wrapToPiInPlace(err[5]);
 		mrpt::math::CMatrixDouble66 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
-		p.cov.inv(COV_INV);
+		p.cov.inverse_LLt(COV_INV);
 		return mrpt::math::multiply_HCHt_scalar(
 			err, COV_INV);  // err^t*cov_inv*err
 	}

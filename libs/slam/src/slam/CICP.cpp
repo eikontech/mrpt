@@ -434,7 +434,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 					// not singular, while not changing
 					// its covariance significantly.
 
-					DDt.inv(gaussPdf->cov);
+					DDt.inverse_LLt(gaussPdf->cov);
 				}
 				break;
 				default:
@@ -802,7 +802,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 						C(i, i) *=
 							(1 + lambda);  // Levenberg-Maquardt heuristic
 
-					C_inv = C.inv();
+					C_inv = C.inverse_LLt();
 
 					// LM_delta = C_inv * dJ_dq * sq_errors
 					Eigen::VectorXf dJsq, LM_delta;

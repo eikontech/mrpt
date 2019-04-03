@@ -82,7 +82,7 @@ typename MAT1::Scalar mahalanobisDistance2(
 	COV += COV2;
 	COV.substract_An(CROSS_COV12, 2);
 	MAT1 COV_inv;
-	COV.inv_fast(COV_inv);
+	COV.inverse_LLt(COV_inv);
 	return multiply_HCHt_scalar(mean_diffs, COV_inv);
 	MRPT_END
 }
@@ -144,7 +144,7 @@ T productIntegralTwoGaussians(
 	C += COV2;  // Sum of covs:
 	const T cov_det = C.det();
 	CMatrixDynamic<T> C_inv;
-	C.inv_fast(C_inv);
+	C.inverse_LLt(C_inv);
 
 	return std::pow(M_2PI, -0.5 * vector_dim) * (1.0 / std::sqrt(cov_det)) *
 		   exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
@@ -166,7 +166,7 @@ T productIntegralTwoGaussians(
 	C += COV2;  // Sum of covs:
 	const T cov_det = C.det();
 	CMatrixFixed<T, DIM, DIM> C_inv(mrpt::math::UNINITIALIZED_MATRIX);
-	C.inv_fast(C_inv);
+	C.inverse_LLt(C_inv);
 
 	return std::pow(M_2PI, -0.5 * DIM) * (1.0 / std::sqrt(cov_det)) *
 		   exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
@@ -193,7 +193,7 @@ void productIntegralAndMahalanobisTwoGaussians(
 	}
 	const T cov_det = C.det();
 	MATLIKE1 C_inv;
-	C.inv_fast(C_inv);
+	C.inverse_LLt(C_inv);
 
 	maha2_out = mean_diffs.multiply_HCHt_scalar(C_inv);
 	intprod_out = std::pow(M_2PI, -0.5 * vector_dim) *
@@ -214,7 +214,7 @@ void mahalanobisDistance2AndLogPDF(
 	ASSERTDEB_(cov.isSquare());
 	ASSERTDEB_(size_t(cov.cols()) == size_t(diff_mean.size()));
 	MATRIXLIKE C_inv;
-	cov.inv(C_inv);
+	cov.inverse_LLt(C_inv);
 	maha2_out = multiply_HCHt_scalar(diff_mean, C_inv);
 	log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
 				  (maha2_out +

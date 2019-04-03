@@ -536,7 +536,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 		&Hy, &Hx_sensor);
 
 	// Chain rule: Hx = d sensorpose / d vehiclepose   * Hx_sensor
-	Hx.multiply(Hx_sensor, H_senpose_vehpose);
+	Hx.matProductOf(Hx_sensor, H_senpose_vehpose);
 
 	MRPT_END
 }
@@ -1183,7 +1183,7 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 	for (i = 0; i < get_vehicle_size(); i++)
 		fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
-	CMatrixDynamic<kftype> H(fullCov.inv());
+	CMatrixDynamic<kftype> H(fullCov.inverse_LLt());
 	H.array().abs();  // Replace by absolute values:
 
 	double sumOffBlocks = 0;
