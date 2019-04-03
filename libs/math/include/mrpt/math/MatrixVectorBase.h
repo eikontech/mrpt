@@ -315,9 +315,9 @@ void internalAssertEigenDefined()
 	if constexpr (!mrpt::is_defined_v<typename DER::eigen_t>)
 	{
 		static_assert(
-		    mrpt::is_defined_v<typename DER::eigen_t>,
-		    "Using this method requires including `<Eigen/Dense>` in the "
-		    "calling C++ file");
+			mrpt::is_defined_v<typename DER::eigen_t>,
+			"Using this method requires including `<Eigen/Dense>` in the "
+			"calling C++ file");
 	}
 }
 

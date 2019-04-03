@@ -13,21 +13,19 @@
 
 namespace mrpt::math
 {
-
-/** Returns an Eigen-compatible type, despite its argument already is an Eigen matrix, or an mrpt-math matrix/vector.
- *  \ingroup mrpt_math_grp
+/** Returns an Eigen-compatible type, despite its argument already is an Eigen
+ * matrix, or an mrpt-math matrix/vector. \ingroup mrpt_math_grp
  */
 template <class Derived>
 const Derived& mat2eig(const Eigen::EigenBase<Derived>& m)
 {
-    return m.derived();
+	return m.derived();
 }
 
 template <class MAT>
-auto mat2eig(const MAT &m, typename MAT::eigen_t * = nullptr)
+auto mat2eig(const MAT& m, typename MAT::eigen_t* = nullptr)
 {
-    return m.asEigen();
+	return m.asEigen();
 }
-
 
 }  // namespace mrpt::math

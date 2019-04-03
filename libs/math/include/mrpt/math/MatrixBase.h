@@ -57,9 +57,9 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	static Derived Identity()
 	{
 		ASSERTMSG_(
-		    Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
-		    "Identity() without arguments can be used only for fixed-size "
-		    "matrices/vectors");
+			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
+			"Identity() without arguments can be used only for fixed-size "
+			"matrices/vectors");
 		Derived m;
 		m.setIdentity();
 		return m;
@@ -78,7 +78,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	{
 		internalAssertEigenDefined<Derived>();
 		return (mbDerived().asEigen() * C.asEigen() *
-		        mbDerived().asEigen().transpose())
+				mbDerived().asEigen().transpose())
 			.eval()(0, 0);
 	}
 
@@ -88,7 +88,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	{
 		internalAssertEigenDefined<Derived>();
 		return (mbDerived().asEigen().transpose() * C.asEigen() *
-		        mbDerived().asEigen())
+				mbDerived().asEigen())
 			.eval()(0, 0);
 	}
 
@@ -99,8 +99,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	{
 		internalAssertEigenDefined<Derived>();
 		auto res =
-		    (mbDerived().asEigen() * C.asEigen() *
-		     mbDerived().asEigen().transpose());
+			(mbDerived().asEigen() * C.asEigen() *
+			 mbDerived().asEigen().transpose());
 		if (accumInOutput)
 			R.asEigen() += res.eval();
 		else

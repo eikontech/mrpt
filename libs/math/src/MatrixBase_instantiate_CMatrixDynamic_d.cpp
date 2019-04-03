@@ -15,6 +15,6 @@
 
 // Template instantiation:
 #define DO_MATDYN_INSTANTIATION(T_) \
-    template class mrpt::math::MatrixBase<T_, mrpt::math::CMatrixDynamic<T_>>;
+	template class mrpt::math::MatrixBase<T_, mrpt::math::CMatrixDynamic<T_>>;
 
 DO_MATDYN_INSTANTIATION(double)

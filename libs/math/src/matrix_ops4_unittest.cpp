@@ -196,8 +196,8 @@ TEST(Matrices, loadFromTextFile)
 	{
 		const std::string s1 =
 			"1 2 3\n"
-		    "0 1 0\n"
-		    "4 5 6\n";
+			"0 1 0\n"
+			"4 5 6\n";
 		std::stringstream s(s1);
 		CMatrixDouble33 M;
 		bool retval = false;
@@ -211,7 +211,7 @@ TEST(Matrices, loadFromTextFile)
 			std::cerr << e.what() << std::endl;
 		}
 		EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
-		EXPECT_EQ(M.rows(), 2);
+		EXPECT_EQ(M.rows(), 3);
 		EXPECT_EQ(M.cols(), 3);
 	}
 	{

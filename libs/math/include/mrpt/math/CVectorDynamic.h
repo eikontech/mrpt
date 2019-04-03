@@ -134,7 +134,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	}
 	void resize(std::size_t N, bool zeroNewElements = false)
 	{
-		setSize(N, zeroNewElements);
+		setSize(N, 1, zeroNewElements);
 	}
 
 	void push_back(const T& val)

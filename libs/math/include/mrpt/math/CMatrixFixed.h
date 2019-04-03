@@ -162,7 +162,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		const auto LEN = std::size(vals);
 		ASSERT_EQUAL_(LEN, ROWS * COLS);
 		for (size_t r = 0, i = 0; r < ROWS; r++)
-			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i];
+			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i++];
 		MRPT_END
 	}
 

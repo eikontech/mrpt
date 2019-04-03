@@ -14,10 +14,10 @@
 #include "MatrixBase_impl.h"
 
 // Template instantiations:
-#define DO_MATFIXED_INSTANTIATION_NM(T_, N_, M_)         \
-	template class mrpt::math::MatrixBase<T_, mrpt::math::CMatrixFixed<T_, N_, M_>>;
+#define DO_MATFIXED_INSTANTIATION_NM(T_, N_, M_) \
+	template class mrpt::math::MatrixBase<       \
+		T_, mrpt::math::CMatrixFixed<T_, N_, M_>>;
 
-#define DO_MATFIXED_INSTANTIATION(T_)      \
-	DO_MATFIXED_INSTANTIATION_NM(T_, 4, 4)
+#define DO_MATFIXED_INSTANTIATION(T_) DO_MATFIXED_INSTANTIATION_NM(T_, 4, 4)
 
 DO_MATFIXED_INSTANTIATION(float);
