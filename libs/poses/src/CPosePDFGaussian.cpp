@@ -284,7 +284,7 @@ void CPosePDFGaussian::bayesianFusion(
 	this->enforceCovSymmetry();
 
 	CMatrixDouble31 x =
-	    (this->cov.asEigen() * (C1_inv * x1 + C2_inv * x2)).eval();
+		(this->cov.asEigen() * (C1_inv * x1 + C2_inv * x2)).eval();
 
 	this->mean.x(x(0, 0));
 	this->mean.y(x(1, 0));
@@ -317,7 +317,7 @@ void CPosePDFGaussian::inverse(CPosePDF& o) const
 	const CMatrixFixed<double, 3, 3> H(H_values);
 
 	out->cov.asEigen().noalias() =
-	    (H.asEigen() * cov.asEigen() * H.transpose()).eval();
+		(H.asEigen() * cov.asEigen() * H.transpose()).eval();
 }
 
 /*---------------------------------------------------------------
@@ -512,7 +512,7 @@ void CPosePDFGaussian::inverseComposition(
 	dh_x1.multiply_HCHt(x1.cov, this->cov, true);  // Accum. result
 
 	CMatrixDouble33 M =
-	    (dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen()).eval();
+		(dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen()).eval();
 
 	this->cov.asEigen() += (M.asEigen() * M.transpose()).eval();
 

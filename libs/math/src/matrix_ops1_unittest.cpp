@@ -36,7 +36,7 @@ TEST(Matrices, A_times_B_dyn)
 	// Dyn. size, double.
 	CMatrixDouble A(3, 2, dat_A);
 	CMatrixDouble B(2, 2, dat_B);
-	CMatrixDouble C = A.asEigen() * B.asEigen();
+	CMatrixDouble C = A * B;
 	CMatrixDouble C_ok(3, 2, dat_Cok);
 	CMatrixDouble err = C - C_ok;
 	EXPECT_NEAR(0, fabs(err.sum()), 1e-5)
@@ -62,7 +62,7 @@ TEST(Matrices, SerializeCMatrixD)
 	CMatrixDouble A(3, 2, dat_A);
 	CMatrixFixed<double, 3, 2> fA;
 
-	CMatrixD As = A;
+	CMatrixD As = CMatrixD(A);
 
 	mrpt::io::CMemoryStream membuf;
 	auto arch = mrpt::serialization::archiveFrom(membuf);
@@ -92,8 +92,12 @@ TEST(Matrices, EigenVal2x2dyn)
 	const double dat_C1[] = {14.6271, 5.8133, 5.8133, 16.8805};
 	CMatrixDouble C1(2, 2, dat_C1);
 
-	Eigen::MatrixXd C1_V, C1_D;
-	C1.eigenVectors(C1_V, C1_D);
+	CMatrixDouble C1_V;
+	std::vector<double> C1_Ds;
+	C1.eig(C1_V, C1_Ds);
+
+	CMatrixDouble C1_D;
+	C1_D.setDiagonal(C1_Ds);
 
 	CMatrixDouble C1_RR = C1_V * C1_D * C1_V.transpose();
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
@@ -104,8 +108,12 @@ TEST(Matrices, EigenVal3x3dyn)
 	const double dat_C1[] = {8, 6, 1, 6, 9, 4, 1, 4, 10};
 	CMatrixDouble C1(3, 3, dat_C1);
 
-	Eigen::MatrixXd C1_V, C1_D;
-	C1.eigenVectors(C1_V, C1_D);
+	CMatrixDouble C1_V;
+	std::vector<double> C1_Ds;
+	C1.eig(C1_V, C1_Ds);
+
+	CMatrixDouble C1_D;
+	C1_D.setDiagonal(C1_Ds);
 
 	CMatrixDouble C1_RR = C1_V * C1_D * C1_V.transpose();
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
@@ -116,8 +124,12 @@ TEST(Matrices, EigenVal2x2fix)
 	const double dat_C1[] = {14.6271, 5.8133, 5.8133, 16.8805};
 	CMatrixDouble22 C1(dat_C1);
 
-	Eigen::Matrix2d C1_V, C1_D;
-	C1.eigenVectors(C1_V, C1_D);
+	CMatrixDouble22 C1_V;
+	std::vector<double> C1_Ds;
+	C1.eig(C1_V, C1_Ds);
+
+	CMatrixDouble22 C1_D;
+	C1_D.setDiagonal(C1_Ds);
 
 	CMatrixDouble22 C1_RR = C1_V * C1_D * C1_V.transpose();
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
@@ -128,54 +140,13 @@ TEST(Matrices, EigenVal3x3fix)
 	const double dat_C1[] = {8, 6, 1, 6, 9, 4, 1, 4, 10};
 	CMatrixDouble33 C1(dat_C1);
 
-	CMatrixDouble33 C1_V, C1_D;
-	C1.eigenVectors(C1_V, C1_D);
+	CMatrixDouble33 C1_V;
+	std::vector<double> C1_Ds;
+	C1.eig(C1_V, C1_Ds);
+
+	CMatrixDouble33 C1_D;
+	C1_D.setDiagonal(C1_Ds);
 
 	CMatrixDouble33 C1_RR = C1_V * C1_D * C1_V.transpose();
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
 }
-
-#if 0  // JL: Disabled since it fails in some PPA build servers. Reported to
-	   // Eigen list for possible fixes...
-
-// Compare the two ways of computing matrix eigenvectors: generic & for symmetric matrices:
-TEST(Matrices,EigenVal4x4_sym_vs_generic)
-{
-	const double   dat_C1[] = {
-		13.737245,10.248641,-5.839599,11.108320,
-		10.248641,14.966139,-5.259922,11.662222,
-		-5.839599,-5.259922,9.608822,-4.342505,
-		11.108320,11.662222,-4.342505,12.121940 };
-	const CMatrixDouble44  C1(dat_C1);
-
-	CMatrixDouble44 eigvecs_sym, eigvecs_gen, eigvals_symM, eigvals_genM;
-	CVectorDouble   eigvals_sym, eigvals_gen;
-
-	C1.eigenVectorsVec(eigvecs_gen,eigvals_gen);
-	C1.eigenVectorsSymmetricVec(eigvecs_sym,eigvals_sym);
-
-	eigvals_symM.setZero();eigvals_symM.diagonal() = eigvals_sym;
-	eigvals_genM.setZero();eigvals_genM.diagonal() = eigvals_gen;
-
-	EXPECT_NEAR( (C1-eigvecs_gen*eigvals_genM*(~eigvecs_gen)).array().abs().sum(),0,1e-5)
-		<< endl << endl
-		<< "eigvecs_gen*eigvals_gen*(~eigvecs_gen):\n" << eigvecs_gen*eigvals_genM*(~eigvecs_gen) << endl
-		<< "C1:\n" << C1 << endl
-		<< "eigvals_sym:\n" <<  eigvals_sym << endl
-		<< "eigvals_gen:\n" << eigvals_gen << endl
-		<< "eigvals_symM:\n" <<  eigvals_symM << endl
-		<< "eigvals_genM:\n" << eigvals_genM << endl
-		<< "eigvecs_gen:\n" << eigvecs_gen << endl
-		<< "eigvecs_sym:\n" << eigvecs_sym << endl<< endl;
-
-	EXPECT_NEAR( (C1-eigvecs_sym*eigvals_symM*(~eigvecs_sym)).array().abs().sum(),0,1e-5)
-		<< endl << endl
-		<< "eigvecs_sym*eigvals_sym*(~eigvecs_sym):\n" << eigvecs_sym*eigvals_symM*(~eigvecs_sym) << endl
-		<< "C1:\n" << C1 << endl;
-
-	EXPECT_NEAR( (eigvals_gen-eigvals_sym).array().abs().sum(),0,1e-5)
-		<< endl << endl
-		<< "eigvals_gen:\n" << eigvals_gen<< endl
-		<< "eigvals_sym:\n" << eigvals_sym << endl;
-}
-#endif

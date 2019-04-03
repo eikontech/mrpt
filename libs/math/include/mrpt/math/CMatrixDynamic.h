@@ -158,6 +158,19 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 		*this = m;
 	}
 
+	/** Convert from Eigen product */
+	template <typename _Lhs, typename _Rhs, int Option>
+	CMatrixDynamic(const Eigen::Product<_Lhs, _Rhs, Option>& p)
+	{
+		*this = p.template eval();
+	}
+	/** Convert from Eigen binary op */
+	template <typename Op, typename Lhs, typename Rhs>
+	CMatrixDynamic(const Eigen::CwiseBinaryOp<Op, Lhs, Rhs>& p)
+	{
+		*this = p.template eval();
+	}
+
 	/** Convert from a fixed-size matrix */
 	template <int N, int M>
 	explicit CMatrixDynamic(const CMatrixFixed<T, N, M>& m)

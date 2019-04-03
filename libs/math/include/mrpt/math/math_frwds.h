@@ -37,12 +37,14 @@ template <typename Derived>
 struct EigenBase;
 template <typename VectorType, int Size>
 class VectorBlock;
+template <typename _Lhs, typename _Rhs, int Option>
+class Product;
+template <typename BinaryOp, typename LhsType, typename RhsType>
+class CwiseBinaryOp;
 }  // namespace Eigen
 
 namespace mrpt::math
 {
-struct TPoseOrPoint;
-
 /** For usage in one of the constructors of CMatrixFixed or
    CMatrixDynamic (and derived classes), if it's not required
 	 to fill it with zeros at the constructor to save time. */
@@ -51,28 +53,9 @@ enum TConstructorFlags_Matrices
 	UNINITIALIZED_MATRIX = 0
 };
 
-// ---------------- Forward declarations: Classes ----------------
 template <class T>
 class CMatrixDynamic;
 template <typename T, std::size_t ROWS, std::size_t COLS>
 class CMatrixFixed;
-
-template <class T>
-class CQuaternion;
-
-#if 0
-template <class CONTAINER1, class CONTAINER2>
-void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum);
-template <class CONTAINER>
-inline typename CONTAINER::Scalar norm(const CONTAINER& v);
-template <class CONTAINER>
-inline typename CONTAINER::Scalar norm_inf(const CONTAINER& v);
-
-template <class MAT_A, class SKEW_3VECTOR, class MAT_OUT>
-void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out);
-template <class SKEW_3VECTOR, class MAT_A, class MAT_OUT>
-void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out);
-
-#endif
 
 }  // namespace mrpt::math

@@ -23,6 +23,7 @@ namespace mrpt::math
  *    VECTORLIKE: vector_float, CVectorDouble, CVectorFixed<>, double [N],
  * ...
  *    MATRIXLIKE: CMatrixDynamic, CMatrixFixed
+ *  \ingroup mrpt_math_grp
  */
 template <
 	class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3, class MATRIXLIKE,

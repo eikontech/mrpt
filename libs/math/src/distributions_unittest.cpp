@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;

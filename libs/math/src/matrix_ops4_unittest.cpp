@@ -14,7 +14,11 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -52,7 +56,7 @@ TEST(Matrices, meanAndStd)
 
 	// Compute mean & std of each column:
 	CVectorDouble result_mean, result_std;
-	A.meanAndStd(result_mean, result_std);
+	mrpt::math::meanAndCovMat(A, result_mean, result_std);
 
 	// Result from MATLAB:
 	const double dat_good_M[] = {
@@ -64,8 +68,8 @@ TEST(Matrices, meanAndStd)
 		0.604303301, 0.328759015, 0.582584159, 0.382009344, 0.644788760};
 	const Eigen::Matrix<double, 10, 1> good_S(dat_good_S);
 
-	EXPECT_NEAR((result_mean - good_M).array().abs().sum(), 0, 1e-4);
-	EXPECT_NEAR((result_std - good_S).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((result_mean.asEigen() - good_M).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((result_std.asEigen() - good_S).array().abs().sum(), 0, 1e-4);
 }
 
 TEST(Matrices, meanAndStdAll)
@@ -99,7 +103,7 @@ TEST(Matrices, meanAndStdAll)
 
 	// Compute mean & std of each column:
 	double result_mean, result_std;
-	A.meanAndStdAll(result_mean, result_std);
+	mrpt::math::meanAndStd(A, result_mean, result_std);
 
 	// Result from MATLAB:
 	const double good_M = 2.282504177034;
@@ -119,7 +123,7 @@ TEST(Matrices, laplacian)
 	const CMatrixDouble W(6, 6, W_vals);
 
 	CMatrixDouble L;
-	W.laplacian(L);
+	mrpt::math::laplacian(W, L);
 
 	const double real_laplacian_vals[6 * 6] = {
 		2, -1, 0,  0, -1, 0,  -1, 3,  -1, 0,  -1, 0, 0, -1, 2, -1, 0, 0,
@@ -127,25 +131,6 @@ TEST(Matrices, laplacian)
 	const CMatrixDouble GT_L(6, 6, real_laplacian_vals);
 
 	EXPECT_NEAR((GT_L - L).array().abs().sum(), 0, 1e-4);
-}
-
-TEST(Matrices, largestEigenvector)
-{
-	{
-		const double dat_C1[] = {13.737245, 10.248641, -5.839599, 11.108320,
-								 10.248641, 14.966139, -5.259922, 11.662222,
-								 -5.839599, -5.259922, 9.608822,  -4.342505,
-								 11.108320, 11.662222, -4.342505, 12.121940};
-		const CMatrixDouble44 C1(dat_C1);
-
-		const double dat_REAL_EIGVEC[] = {0.54800, 0.57167, -0.29604, 0.53409};
-		const Eigen::Matrix<double, 4, 1> REAL_EIGVEC(dat_REAL_EIGVEC);
-		// const double REAL_LARGEST_EIGENVALUE =  38.40966;
-
-		mrpt::math::CVectorDouble lev;
-		C1.largestEigenvector(lev, 1e-3, 20);
-		EXPECT_NEAR((REAL_EIGVEC - lev).array().abs().sum(), 0, 1e-3);
-	}
 }
 
 TEST(Matrices, loadFromTextFile)

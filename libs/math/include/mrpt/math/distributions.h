@@ -10,7 +10,6 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/math_frwds.h>
-
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 
@@ -87,7 +86,7 @@ typename MATRIXLIKE::Scalar normalPDF(
 	ASSERTDEB_(size_t(cov.cols()) == size_t(d.size()));
 	return std::exp(
 			   static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
-			   mrpt::math::multiply_HCHt_scalar(d, cov.inverse())) /
+			   mrpt::math::multiply_HCHt_scalar(d, cov.inverse_LLt())) /
 		   (::pow(
 				static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
 				static_cast<typename MATRIXLIKE::Scalar>(0.5 * cov.cols())) *

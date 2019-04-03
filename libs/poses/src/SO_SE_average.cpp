@@ -98,8 +98,8 @@ mrpt::math::CMatrixDouble33 SO_average<3>::get_average() const
 	D(1, 1) = d2;
 	D(2, 2) = d3;
 	mrpt::math::CMatrixDouble33 ret = (m_accum_rot.asEigen() * svd.matrixU() *
-	                                   D.asEigen() * svd.matrixU().transpose())
-	                                      .eval();
+									   D.asEigen() * svd.matrixU().transpose())
+										  .eval();
 	return ret;
 }
 

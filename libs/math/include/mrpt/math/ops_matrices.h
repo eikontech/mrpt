@@ -8,12 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/math_frwds.h>  // forward declarations
-
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
-
+#include <mrpt/math/mat2eig.h>
+#include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/ops_containers.h>  // Many generic operations
 
 /** \file ops_matrices.h
@@ -42,7 +41,7 @@ inline void multiply_HCHt(
 template <typename VECTOR_H, typename MAT_C>
 typename MAT_C::Scalar multiply_HCHt_scalar(const VECTOR_H& H, const MAT_C& C)
 {
-	return (H.matrix().transpose() * C.asEigen() * H.matrix()).eval()(0, 0);
+	return (mat2eig(H).transpose() * mat2eig(C) * mat2eig(H))(0, 0);
 }
 
 /** Computes the mean vector and covariance from a list of samples in an NxM
@@ -128,9 +127,9 @@ void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
 	out.setSize(N, 3);
 	for (size_t i = 0; i < N; i++)
 	{
-		out.set_unsafe(i, 0, A(i, 1) * v[2] - A(i, 2) * v[1]);
-		out.set_unsafe(i, 1, -A(i, 0) * v[2] + A(i, 2) * v[0]);
-		out.set_unsafe(i, 2, A(i, 0) * v[1] - A(i, 1) * v[0]);
+		out(i, 0) = A(i, 1) * v[2] - A(i, 2) * v[1];
+		out(i, 1) = -A(i, 0) * v[2] + A(i, 2) * v[0];
+		out(i, 2) = A(i, 0) * v[1] - A(i, 1) * v[0];
 	}
 	MRPT_END
 }
@@ -149,11 +148,133 @@ void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out)
 	out.setSize(3, N);
 	for (size_t i = 0; i < N; i++)
 	{
-		out.set_unsafe(0, i, -A(1, i) * v[2] + A(2, i) * v[1]);
-		out.set_unsafe(1, i, A(0, i) * v[2] - A(2, i) * v[0]);
-		out.set_unsafe(2, i, -A(0, i) * v[1] + A(1, i) * v[0]);
+		out(0, i) = -A(1, i) * v[2] + A(2, i) * v[1];
+		out(1, i) = A(0, i) * v[2] - A(2, i) * v[0];
+		out(2, i) = -A(0, i) * v[1] + A(1, i) * v[0];
 	}
 	MRPT_END
+}
+
+/** Computes the Laplacian of a square graph weight matrix.
+ *  The laplacian matrix is L = D - W, with D a diagonal matrix with the degree
+ * of each node, W the edge weights.
+ */
+template <typename MATIN, typename MATOUT>
+void laplacian(const MATIN& g, MATOUT& ret)
+{
+	if (g.rows() != g.cols())
+		throw std::runtime_error("laplacian: Defined for square matrixes only");
+	const auto N = g.rows();
+	ret = -g;
+	for (typename MATIN::Index i = 0; i < N; i++)
+	{
+		typename MATIN::Scalar deg = 0;
+		for (typename MATIN::Index j = 0; j < N; j++) deg += g(j, i);
+		ret(i, i) += deg;
+	}
+}
+
+/** Get a submatrix from a square matrix, by collecting the elements
+ * M(idxs,idxs), where idxs is a sequence
+ * {block_indices(i):block_indices(i)+BLOCKSIZE-1} for all "i" up to the size
+ * of block_indices. A perfect application of this method is in extracting
+ * covariance matrices of a subset of variables from the full covariance matrix.
+ * \sa extractSubmatrix, extractSubmatrixSymmetrical
+ */
+template <std::size_t BLOCKSIZE, typename MAT, typename MATRIX>
+void extractSubmatrixSymmetricalBlocks(
+	const MAT& m, const std::vector<size_t>& block_indices, MATRIX& out)
+{
+	if (BLOCKSIZE < 1)
+		throw std::runtime_error(
+			"extractSubmatrixSymmetricalBlocks: BLOCKSIZE must be >=1");
+	if (m.cols() != m.rows())
+		throw std::runtime_error(
+			"extractSubmatrixSymmetricalBlocks: Matrix is not square.");
+
+	const size_t N = block_indices.size();
+	const size_t nrows_out = N * BLOCKSIZE;
+	out.resize(nrows_out, nrows_out);
+	if (!N) return;  // Done
+	for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
+	{
+		for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
+		{
+#if defined(_DEBUG)
+			if (block_indices[dst_col_blk] * BLOCKSIZE + BLOCKSIZE - 1 >=
+				size_t(m.cols()))
+				throw std::runtime_error(
+					"extractSubmatrixSymmetricalBlocks: Indices out of range!");
+#endif
+			out.template block<BLOCKSIZE, BLOCKSIZE>(
+				dst_row_blk * BLOCKSIZE, dst_col_blk * BLOCKSIZE) =
+				m.template block<BLOCKSIZE, BLOCKSIZE>(
+					block_indices[dst_row_blk] * BLOCKSIZE,
+					block_indices[dst_col_blk] * BLOCKSIZE);
+		}
+	}
+}
+
+//! \overload for BLOCKSIZE determined at runtime
+template <typename MAT, typename MATRIX>
+void extractSubmatrixSymmetricalBlocksDyn(
+	const MAT& m, const std::size_t BLOCKSIZE,
+	const std::vector<size_t>& block_indices, MATRIX& out)
+{
+	if (BLOCKSIZE < 1)
+		throw std::runtime_error(
+			"extractSubmatrixSymmetricalBlocks: BLOCKSIZE must be >=1");
+	if (m.cols() != m.rows())
+		throw std::runtime_error(
+			"extractSubmatrixSymmetricalBlocks: Matrix is not square.");
+
+	const size_t N = block_indices.size();
+	const size_t nrows_out = N * BLOCKSIZE;
+	out.resize(nrows_out, nrows_out);
+	if (!N) return;  // Done
+	for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
+	{
+		for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
+		{
+#if defined(_DEBUG)
+			if (block_indices[dst_col_blk] * BLOCKSIZE + BLOCKSIZE - 1 >=
+				size_t(m.cols()))
+				throw std::runtime_error(
+					"extractSubmatrixSymmetricalBlocks: Indices out of range!");
+#endif
+			out.block(
+				dst_row_blk * BLOCKSIZE, dst_col_blk * BLOCKSIZE, BLOCKSIZE,
+				BLOCKSIZE) =
+				m.block(
+					block_indices[dst_row_blk] * BLOCKSIZE,
+					block_indices[dst_col_blk] * BLOCKSIZE, BLOCKSIZE,
+					BLOCKSIZE);
+		}
+	}
+}
+
+/** Get a submatrix from a square matrix, by collecting the elements
+ * M(idxs,idxs), where idxs is the sequence of indices passed as argument. A
+ * perfect application of this method is in extracting covariance matrices of a
+ * subset of variables from the full covariance matrix. \sa extractSubmatrix,
+ * extractSubmatrixSymmetricalBlocks
+ */
+template <typename MAT, typename MATRIX>
+void extractSubmatrixSymmetrical(
+	const MAT& m, const std::vector<size_t>& indices, MATRIX& out)
+{
+	if (m.cols() != m.rows())
+		throw std::runtime_error(
+			"extractSubmatrixSymmetrical: Matrix is not square.");
+
+	const size_t N = indices.size();
+	const size_t nrows_out = N;
+	out.resize(nrows_out, nrows_out);
+	if (!N) return;  // Done
+	for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
+		for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
+			out(dst_row_blk, dst_col_blk) =
+				m(indices[dst_row_blk], indices[dst_col_blk]);
 }
 
 /**  @} */  // end of grouping

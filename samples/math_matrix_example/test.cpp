@@ -190,8 +190,7 @@ void TestMatrixs()
 	l.loadFromTextFile(myDataDir + string("matrix1.txt"));
 	t = tictac.Tac();
 	cout << "Read (text file) in " << 1e6 * t << "us:\n" << l << endl;
-
-	m.laplacian(l);
+	mrpt::math::laplacian(m, l);
 
 	cout << "Laplacian:\n" << l << endl;
 

@@ -14,6 +14,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -39,7 +40,7 @@ TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
 	// Row major
 	const CMatrixFixed<double, 3, 4> mat =
-		Eigen::Map<CMatrixFixed<double, 3, 4>::Base, MRPT_MAX_ALIGN_BYTES>(
+		Eigen::Map<Eigen::Matrix<double, 3, 4>, MRPT_MAX_ALIGN_BYTES>(
 			test_nums);
 
 	for (int r = 0; r < 3; r++)

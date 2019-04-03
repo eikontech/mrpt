@@ -229,6 +229,6 @@ TEST(SparseMatrix, CholeskyDecomp)
 	CMatrixDouble Ud;  // Upper triangle
 	D.chol(Ud);
 
-	const double err = ((Ud.transpose()) - L).array().abs().mean();
+	const double err = (Ud.transpose() - L.asEigen()).array().abs().mean();
 	EXPECT_TRUE(err < 1e-8);
 }

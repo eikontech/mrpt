@@ -14,7 +14,9 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -75,7 +77,7 @@ TEST(Matrices, extractSubmatrixSymmetricalBlocks)
 		vs.push_back(3);
 
 		CMatrixDouble E;
-		M.extractSubmatrixSymmetricalBlocks(2, vs, E);
+		mrpt::math::extractSubmatrixSymmetricalBlocks<2>(M, vs, E);
 
 		const double valsE[] = {3, 4, 7, 8, 10, 11, 14, 15,
 								3, 4, 7, 8, 10, 11, 14, 15};
@@ -102,7 +104,7 @@ TEST(Matrices, extractSubmatrixSymmetrical)
 		vs.push_back(7);
 
 		CMatrixDouble E;
-		M.extractSubmatrixSymmetrical(vs, E);
+		mrpt::math::extractSubmatrixSymmetrical(M, vs, E);
 
 		const double valsE[] = {3, 4, 7, 8, 10, 11, 14, 15,
 								3, 4, 7, 8, 10, 11, 14, 15};

@@ -9,6 +9,19 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/distributions.h>  // for chi2inv
+#include <mrpt/math/ops_matrices.h>  // extractSubmatrix
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/slam/data_association.h>
+#include <memory>
+#include <memory>  // unique_ptr
+#include <nanoflann.hpp>  // For kd-tree's
+#include <numeric>  // accumulate
+#include <set>
+
 /*
    For all data association algorithms, the individual compatibility is
    estabished by
@@ -22,20 +35,6 @@
 	- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
 
 */
-
-#include <mrpt/math/data_utils.h>
-#include <mrpt/math/distributions.h>  // for chi2inv
-#include <mrpt/poses/CPoint2DPDFGaussian.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/slam/data_association.h>
-
-#include <memory>
-#include <memory>  // unique_ptr
-#include <numeric>  // accumulate
-#include <set>
-
-#include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
-#include <nanoflann.hpp>  // For kd-tree's
 
 using namespace std;
 using namespace mrpt;
@@ -91,7 +90,8 @@ double joint_pdf_metric(
 	//  COV = PREDICTIONS_COV(INDX,INDX) + OBSERVATIONS_COV(INDX2,INDX2)
 	// ----------------------------------------------------------------------
 	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> COV;
-	Y_predictions_cov.extractSubmatrixSymmetricalBlocks(
+	mrpt::math::extractSubmatrixSymmetricalBlocksDyn(
+		Y_predictions_cov,
 		info.length_O,  // dims of cov. submatrices
 		indices_pred, COV);
 

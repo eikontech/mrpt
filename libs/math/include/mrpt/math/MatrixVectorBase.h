@@ -24,7 +24,14 @@ class CMatrixDynamic;
 template <typename T, std::size_t ROWS, std::size_t COLS>
 class CMatrixFixed;
 
-/*! Selection of the number format in MatrixVectorBase::saveToTextFile() */
+#if defined _WIN32 || defined __CYGWIN__
+#define DLL_PUBLIC  //__attribute__((dllexport))
+#else
+#define DLL_PUBLIC __attribute__((visibility("default")))
+#endif
+
+/*! Selection of the number format in MatrixVectorBase::saveToTextFile()
+ * \ingroup mrpt_math_grp */
 enum TMatrixTextFileFormat
 {
 	/** engineering format '%e' */
@@ -251,6 +258,17 @@ class MatrixVectorBase
 		return mvbDerived().asEigen().transpose();
 	}
 
+	auto array()
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().array();
+	}
+	auto array() const
+	{
+		internalAssertEigenDefined<Derived>();
+		return mvbDerived().asEigen().array();
+	}
+
 	auto operator-() const
 	{
 		internalAssertEigenDefined<Derived>();
@@ -304,10 +322,10 @@ class MatrixVectorBase
 	const Scalar& coeff(int r, int c) const { return mvbDerived()(r, c); }
 
 	/** Minimum value in the matrix/vector */
-	Scalar minCoeff() const;
+	DLL_PUBLIC Scalar minCoeff() const;
 
 	/** Maximum value in the matrix/vector */
-	Scalar maxCoeff() const;
+	DLL_PUBLIC Scalar maxCoeff() const;
 
 	/** returns true if matrix is NxN */
 	bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows(); }
@@ -318,32 +336,35 @@ class MatrixVectorBase
 		return mvbDerived().cols() == 0 && mvbDerived().rows == 0;
 	}
 
-	void operator+=(Scalar s);
-	void operator-=(Scalar s);
-	void operator*=(Scalar s);
+	DLL_PUBLIC void operator+=(Scalar s);
+	DLL_PUBLIC void operator-=(Scalar s);
+	DLL_PUBLIC void operator*=(Scalar s);
 
 	/** Determinant of matrix. */
-	Scalar det() const;
+	DLL_PUBLIC Scalar det() const;
+
+	/** Sum of all elements in matrix/vector. */
+	DLL_PUBLIC Scalar sum() const;
 
 	/** Returns the inverse of a general matrix using LU */
-	Derived inverse() const;
+	DLL_PUBLIC Derived inverse() const;
 
 	/** Returns the inverse of a symmetric matrix using LLt */
-	Derived inverse_LLt() const;
+	DLL_PUBLIC Derived inverse_LLt() const;
 
 	/** Finds the rank of the matrix via LU decomposition.
 	 * Uses Eigen's default threshold unless `threshold>0`. */
-	int rank(Scalar threshold = 0) const;
+	DLL_PUBLIC int rank(Scalar threshold = 0) const;
 
 	/** Cholesky M=U<sup>T</sup> * U decomposition for symmetric matrix
 	 * (upper-half of the matrix is actually ignored.
 	 * \return false if Cholesky fails
 	 */
-	bool chol(Derived& U) const;
+	DLL_PUBLIC bool chol(Derived& U) const;
 
 	/** Returns a string representation of the vector/matrix, using Eigen's
 	 * default settings. */
-	std::string asStr() const;
+	DLL_PUBLIC std::string asStr() const;
 
 	/** Computes the eigenvectors and eigenvalues for a square, general matrix.
 	 * Use eig_symmetric() for symmetric matrices for better accuracy and
@@ -356,11 +377,11 @@ class MatrixVectorBase
 	 * \param[out] eVals The container where eigenvalues will be stored.
 	 * \return false if eigenvalues could not be determined.
 	 */
-	bool eig(
+	DLL_PUBLIC bool eig(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
 	/** Read: eig() */
-	bool eig_symmetric(
+	DLL_PUBLIC bool eig_symmetric(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
 	/** Reads a matrix from a string in Matlab-like format, for example:
@@ -375,14 +396,15 @@ class MatrixVectorBase
 	 * matrix will be resized to 0x0.
 	 * \sa inMatlabFormat, CConfigFile::read_matrix
 	 */
-	bool fromMatlabStringFormat(
+	DLL_PUBLIC bool fromMatlabStringFormat(
 		const std::string& s,
 		mrpt::optional_ref<std::ostream> dump_errors_here = std::nullopt);
 
 	/** Exports the matrix as a string compatible with Matlab/Octave.
 	 * \sa fromMatlabStringFormat()
 	 */
-	std::string inMatlabFormat(const std::size_t decimal_digits = 6) const;
+	DLL_PUBLIC std::string inMatlabFormat(
+		const std::size_t decimal_digits = 6) const;
 
 	/** Saves the vector/matrix to a file compatible with MATLAB/Octave
 	 * text format.
@@ -396,7 +418,7 @@ class MatrixVectorBase
 	 * not needed. \sa loadFromTextFile, CMatrixDynamic::inMatlabFormat,
 	 * SAVE_MATRIX
 	 */
-	void saveToTextFile(
+	DLL_PUBLIC void saveToTextFile(
 		const std::string& file,
 		mrpt::math::TMatrixTextFileFormat fileFormat =
 			mrpt::math::MATRIX_FORMAT_ENG,
@@ -409,24 +431,24 @@ class MatrixVectorBase
 	 * \exception std::runtime_error On format error.
 	 * \sa saveToTextFile, fromMatlabStringFormat
 	 */
-	void loadFromTextFile(std::istream& f);
+	DLL_PUBLIC void loadFromTextFile(std::istream& f);
 
 	/// \overload
-	void loadFromTextFile(const std::string& file);
+	DLL_PUBLIC void loadFromTextFile(const std::string& file);
 
 	/** Removes columns of the matrix.
 	 * This "unsafe" version assumes indices sorted in ascending order. */
-	void unsafeRemoveColumns(const std::vector<std::size_t>& idxs);
+	DLL_PUBLIC void unsafeRemoveColumns(const std::vector<std::size_t>& idxs);
 
 	/** Removes columns of the matrix. Indices may be unsorted and duplicated */
-	void removeColumns(const std::vector<std::size_t>& idxsToRemove);
+	DLL_PUBLIC void removeColumns(const std::vector<std::size_t>& idxsToRemove);
 
 	/** Removes rows of the matrix.
 	 * This "unsafe" version assumes indices sorted in ascending order. */
-	void unsafeRemoveRows(const std::vector<std::size_t>& idxs);
+	DLL_PUBLIC void unsafeRemoveRows(const std::vector<std::size_t>& idxs);
 
 	/** Removes rows of the matrix. Indices may be unsorted and duplicated */
-	void removeRows(const std::vector<std::size_t>& idxsToRemove);
+	DLL_PUBLIC void removeRows(const std::vector<std::size_t>& idxsToRemove);
 
 	/** Copies the given input submatrix/vector into this matrix/vector,
 	 * starting at the given top-left coordinates. */
@@ -468,9 +490,9 @@ class MatrixVectorBase
 		if constexpr (!mrpt::is_defined_v<typename DER::eigen_t>)
 		{
 			static_assert(
-			    mrpt::is_defined_v<typename DER::eigen_t>,
-			    "Using this method requires including `<Eigen/Dense>` in the "
-			    "calling C++ file");
+				mrpt::is_defined_v<typename DER::eigen_t>,
+				"Using this method requires including `<Eigen/Dense>` in the "
+				"calling C++ file");
 		}
 	}
 };

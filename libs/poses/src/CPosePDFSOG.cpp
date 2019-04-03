@@ -300,8 +300,8 @@ void CPosePDFSOG::bayesianFusion(
 	// Normal distribution canonical form constant:
 	// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
 	double a =
-	    -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
-	            (eta.transpose() * p2->cov.asEigen() * eta.asEigen())(0, 0));
+		-0.5 * (3 * log(M_2PI) - log(covInv.det()) +
+				(eta.transpose() * p2->cov.asEigen() * eta.asEigen())(0, 0));
 
 	this->m_modes.clear();
 	for (const auto& m : p1->m_modes)
@@ -335,12 +335,12 @@ void CPosePDFSOG::bayesianFusion(
 
 		double a_i =
 			-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-		            (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
-		             eta_i.asEigen())(0, 0));
+					(eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
+					 eta_i.asEigen())(0, 0));
 		double new_a_i =
 			-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-		            (new_eta_i.transpose() * newKernel.cov.asEigen() *
-		             new_eta_i.asEigen())(0, 0));
+					(new_eta_i.transpose() * newKernel.cov.asEigen() *
+					 new_eta_i.asEigen())(0, 0));
 
 		// newKernel.w	   = (it)->w * exp( a + a_i - new_a_i );
 		newKernel.log_w = m.log_w + a + a_i - new_a_i;
@@ -488,9 +488,9 @@ void CPosePDFSOG::normalizeWeights()
 						normalizeWeights
  ---------------------------------------------------------------*/
 void CPosePDFSOG::evaluatePDFInArea(
-    const double& x_min, const double& x_max, const double& y_min,
-    const double& y_max, const double& resolutionXY, const double& phi,
-    CMatrixDouble& outMatrix, bool sumOverAllPhis)
+	const double& x_min, const double& x_max, const double& y_min,
+	const double& y_max, const double& resolutionXY, const double& phi,
+	CMatrixDouble& outMatrix, bool sumOverAllPhis)
 {
 	MRPT_START
 

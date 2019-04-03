@@ -21,10 +21,11 @@
 #include <type_traits>
 #include <vector>
 
-namespace mrpt
+namespace mrpt::math
 {
-namespace math
-{
+template <class T>
+class CQuaternion;
+
 /** Base type of all TPoseXX and TPointXX classes in mrpt::math.
  * Useful for type traits. No virtual methods at all. */
 struct TPoseOrPoint
@@ -2380,9 +2381,9 @@ mrpt::serialization::CArchive& operator<<(
 
 /** @} */  // end of grouping
 
-}  // end of namespace math
+}  // namespace mrpt::math
 
-namespace typemeta
+namespace mrpt::typemeta
 {
 // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TPoint2D, mrpt::math)
@@ -2401,5 +2402,4 @@ MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TObject3D, mrpt::math)
 MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TTwist2D, mrpt::math)
 MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TTwist3D, mrpt::math)
 
-}  // namespace typemeta
-}  // namespace mrpt
+}  // namespace mrpt::typemeta

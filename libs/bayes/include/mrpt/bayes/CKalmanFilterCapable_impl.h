@@ -585,7 +585,8 @@ void CKalmanFilterCapable<
 							}
 							// Extract the subset that is involved in this
 							// observation:
-							m_S.extractSubmatrixSymmetrical(S_idxs, S_observed);
+							mrpt::math::extractSubmatrixSymmetrical(
+								m_S, S_idxs, S_observed);
 						}
 						else
 						{  // Non-SLAM problems:

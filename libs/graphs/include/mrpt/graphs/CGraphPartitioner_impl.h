@@ -13,6 +13,7 @@
 #error "This file can't be included from outside of CGraphPartitioner.h"
 #endif
 
+#include <mrpt/math/ops_matrices.h>  // laplacian()
 #include <iostream>  // cout
 
 namespace mrpt::graphs
@@ -48,7 +49,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 
 	// Compute eigen-vectors of laplacian:
 	GRAPH_MATRIX LAPLACIAN;
-	Adj.laplacian(LAPLACIAN);
+	mrpt::math::laplacian(Adj, LAPLACIAN);
 
 	LAPLACIAN.eigenVectors(eigenVectors, eigenValues);
 

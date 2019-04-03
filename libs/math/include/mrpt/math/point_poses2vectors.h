@@ -13,6 +13,8 @@
 
 namespace mrpt::math
 {
+struct TPoseOrPoint;
+
 /** \name Container initializer from pose classes
  * @{
  */

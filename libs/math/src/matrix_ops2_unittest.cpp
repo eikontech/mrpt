@@ -11,13 +11,13 @@
 // building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
+#include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorFixed.h>
-#include <mrpt/math/ops_matrices.h>
-//#include <mrpt/math/utils.h>
-#include <gtest/gtest.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -65,8 +65,7 @@ TEST(Matrices, inv_6x6_fix)
 		0.000000000000000,   1.000000000000000,   0.000000000000000,
 		1.000000000000000,   0.000000000000000,   1.000000000000000};
 	CMatrixDouble66 A(dat_A);
-	CMatrixDouble66 C;
-	A.inverse_LLt(C);
+	const CMatrixDouble66 C = A.inverse_LLt();
 	const double dat_AInv[] = {
 		-0.000303131460181, -0.002689371550382, 1.383348917627708,
 		0.000000000000000,  0.000000000000000,  0.000000000000000,
@@ -131,9 +130,8 @@ TEST(Matrices, transpose)
 	const CMatrixDouble A(2, 3, dat_A);
 	const CMatrixDouble At(3, 2, dat_At);
 
-	EXPECT_EQ(A.t(), At);
-	EXPECT_EQ(~A, At);
-	EXPECT_EQ(A.t().t(), A);
+	EXPECT_EQ(A.transpose(), At.asEigen());
+	EXPECT_EQ(A.transpose().transpose(), A.asEigen());
 }
 
 TEST(Matrices, multiply_A_skew3)
@@ -145,8 +143,8 @@ TEST(Matrices, multiply_A_skew3)
 		const CMatrixDouble S = CMatrixDouble(mrpt::math::skew_symmetric3(v));
 
 		CMatrixDouble R;
-		R.multiply_A_skew3(A, v);
-		EXPECT_EQ(R, (A * S).eval());
+		mrpt::math::multiply_A_skew3(A, v, R);
+		EXPECT_EQ(R.asEigen(), (A * S).eval());
 	}
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
@@ -156,7 +154,7 @@ TEST(Matrices, multiply_A_skew3)
 		const CMatrixFixed<double, 3, 3> S = mrpt::math::skew_symmetric3(v);
 
 		CMatrixFixed<double, 2, 3> R;
-		R.multiply_A_skew3(A, v);
+		mrpt::math::multiply_A_skew3(A, v, R);
 		EXPECT_TRUE(R == A * S);
 	}
 }
@@ -170,7 +168,7 @@ TEST(Matrices, multiply_skew3_A)
 		const CMatrixDouble S = CMatrixDouble(mrpt::math::skew_symmetric3(v));
 
 		CMatrixDouble R;
-		R.multiply_skew3_A(v, A);
+		mrpt::math::multiply_skew3_A(v, A, R);
 		EXPECT_TRUE(R == S * A);
 	}
 	{
@@ -181,7 +179,7 @@ TEST(Matrices, multiply_skew3_A)
 		const CMatrixFixed<double, 3, 3> S = mrpt::math::skew_symmetric3(v);
 
 		CMatrixFixed<double, 3, 2> R;
-		R.multiply_skew3_A(v, A);
+		mrpt::math::multiply_skew3_A(v, A, R);
 		EXPECT_TRUE(R == S * A);
 	}
 }
@@ -207,76 +205,75 @@ TEST(Matrices, fromMatlabStringFormat)
 
 	CMatrixDouble M1, M2, M3, M4, M5, M6;
 
-	if (!fromMatlabStringFormat(M1, mat1) ||
+	if (!M1.fromMatlabStringFormat(mat1) ||
 		(CMatrixFixed<double, 2, 3>(vals1) - M1).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat1;
 
 	{
 		CMatrixFixed<double, 2, 3> M1b;
-		if (!fromMatlabStringFormat(M1b, mat1) ||
+		if (!M1b.fromMatlabStringFormat(mat1) ||
 			(CMatrixFixed<double, 2, 3>(vals1) - M1b).array().abs().sum() >
 				1e-4)
 			GTEST_FAIL() << mat1;
 	}
 
-	if (!fromMatlabStringFormat(M2, mat2) || M2.cols() != 2 || M2.rows() != 3 ||
+	if (!M2.fromMatlabStringFormat(mat2) || M2.cols() != 2 || M2.rows() != 3 ||
 		(CMatrixFixed<double, 3, 2>(vals2) - M2).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat2;
 
 	{
 		CMatrixFixed<double, 3, 2> M2b;
-		if (!fromMatlabStringFormat(M2b, mat2) ||
+		if (!M2b.fromMatlabStringFormat(mat2) ||
 			(CMatrixFixed<double, 3, 2>(vals2) - M2b).array().abs().sum() >
 				1e-4)
 			GTEST_FAIL() << mat2;
 	}
 
-	if (!fromMatlabStringFormat(M3, mat3)) GTEST_FAIL() << mat3;
+	if (!M3.fromMatlabStringFormat(mat3)) GTEST_FAIL() << mat3;
 
 	{
 		CVectorDouble m;
-		if (!fromMatlabStringFormat(m, mat3) || m.size() != 1)
+		if (!m.fromMatlabStringFormat(mat3) || m.size() != 1)
 			GTEST_FAIL() << "CVectorDouble:" << mat3;
 	}
 	{
 		CVectorFixedDouble<1> m;
-		if (!fromMatlabStringFormat(m, mat3))
+		if (!m.fromMatlabStringFormat(mat3))
 			GTEST_FAIL() << "CVectorFixedDouble<1>:" << mat3;
 	}
 
 	{
 		CVectorDouble m;
-		if (!fromMatlabStringFormat(m, mat31) || m.size() != 3)
+		if (!m.fromMatlabStringFormat(mat31) || m.size() != 3)
 			GTEST_FAIL() << "CVectorDouble:" << mat31;
 	}
 	{
 		CVectorFixedDouble<3> m;
-		if (!fromMatlabStringFormat(m, mat31))
+		if (!m.fromMatlabStringFormat(mat31))
 			GTEST_FAIL() << "CVectorFixedDouble<3>:" << mat31;
 	}
 
 	{
-		Eigen::Matrix<double, 1, 3> m;
-		if (!fromMatlabStringFormat(m, mat13))
+		CMatrixFixed<double, 1, 3> m;
+		if (!m.fromMatlabStringFormat(mat13))
 			GTEST_FAIL() << "Matrix<double,1,3>:" << mat13;
 	}
 	{
-		Eigen::Matrix<double, 1, Eigen::Dynamic> m;
-		if (!fromMatlabStringFormat(m, mat13) || m.size() != 3)
+		CVectorDynamic<double> m;
+		if (!m.fromMatlabStringFormat(mat13) || m.size() != 3)
 			GTEST_FAIL() << "Matrix<double,1,Dynamic>:" << mat13;
 	}
 
 	// This one MUST BE detected as WRONG:
-	if (fromMatlabStringFormat(M4, mat4, nullptr /*dont dump errors to cerr*/))
-		GTEST_FAIL() << mat4;
+	if (M4.fromMatlabStringFormat(mat4)) GTEST_FAIL() << mat4;
 
-	if (!fromMatlabStringFormat(M5, mat5) || M5.rows() != 0 || M5.cols() != 0)
+	if (!M5.fromMatlabStringFormat(mat5) || M5.rows() != 0 || M5.cols() != 0)
 		GTEST_FAIL() << mat5;
 
-	if (!fromMatlabStringFormat(M6, mat6)) GTEST_FAIL() << mat6;
+	if (!M6.fromMatlabStringFormat(mat6)) GTEST_FAIL() << mat6;
 
 	// Check correct values loaded:
 	CMatrixDouble RES = M1 * M2;
 
-	EXPECT_NEAR(0, (M6 - M1 * M2).array().square().sum(), 1e-3);
+	EXPECT_NEAR(0, (M6 - RES).array().square().sum(), 1e-3);
 }

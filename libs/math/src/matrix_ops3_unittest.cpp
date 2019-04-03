@@ -16,6 +16,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -342,7 +343,7 @@ TEST(Matrices, chol_10x10_fix)
 		2.5655678993, 2.9541115932, 2.1854562572, 2.4463194915, 2.7170092067,
 		3.0742063088, 1.8710847505, 2.8907499694, 1.6731209980, 3.9093678727};
 	CMatrixFixed<double, 10, 10> A(dat_A);
-	CMatrixDouble C;
+	CMatrixFixed<double, 10, 10> C;
 	A.chol(C);
 
 	const double dat_CHOL[] = {

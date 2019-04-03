@@ -336,7 +336,7 @@ void CPosePDFGaussianInf::inverse(CPosePDF& o) const
 
 	// o.cov = H * cov * Ht. It's the same with inverse covariances.
 	out->cov_inv.asEigen().noalias() =
-	    (H.asEigen() * cov_inv.asEigen() * H.transpose()).eval();
+		(H.asEigen() * cov_inv.asEigen() * H.transpose()).eval();
 }
 
 /*---------------------------------------------------------------

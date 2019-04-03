@@ -11,6 +11,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/slerp.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;

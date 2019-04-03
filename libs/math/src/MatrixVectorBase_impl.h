@@ -393,19 +393,25 @@ std::string MatrixVectorBase<Scalar, Derived>::asStr() const
 template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::det() const
 {
-	return mvbDerived().det();
+	return mvbDerived().asEigen().det();
+}
+
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::sum() const
+{
+	return mvbDerived().asEigen().array().det();
 }
 
 template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::minCoeff() const
 {
-	return mvbDerived().minCoeff();
+	return mvbDerived().asEigen().minCoeff();
 }
 
 template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff() const
 {
-	return mvbDerived().maxCoeff();
+	return mvbDerived().asEigen().maxCoeff();
 }
 
 template <typename Scalar, class Derived>
@@ -509,7 +515,7 @@ template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::chol(Derived& U) const
 {
 	Eigen::LLT<typename Derived::PlainObject> Chol =
-	    mvbDerived().template selfadjointView<Eigen::Lower>().llt();
+		mvbDerived().template selfadjointView<Eigen::Lower>().llt();
 	if (Chol.info() == Eigen::NoConvergence) return false;
 	U = Derived(Chol.matrixU());
 	return true;
