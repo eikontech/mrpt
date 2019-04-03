@@ -25,6 +25,9 @@ CVectorDynamic<T2> CVectorDynamic<T>::cast() const
 }
 
 // Explicit instantiation of "MatrixVectorBase_impl.h" methods:
+#define DO_VECDYN_INSTANTIATION(T_)                \
+	template class mrpt::math::CVectorDynamic<T_>; \
+	template class mrpt::math::MatrixVectorBase<T_, CVectorDynamic<T_>>;
 
-template class mrpt::math::CVectorDynamic<float>;
-template class mrpt::math::CVectorDynamic<double>;
+DO_VECDYN_INSTANTIATION(float)
+DO_VECDYN_INSTANTIATION(double)

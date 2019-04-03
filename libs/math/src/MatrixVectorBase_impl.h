@@ -205,9 +205,10 @@ void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
 			strTime);
 	}
 
-	for (Index i = 0; i < mvbDerived().rows(); i++)
+	const auto& m = mvbDerived();
+	for (Index i = 0; i < m.rows(); i++)
 	{
-		for (Index j = 0; j < mvbDerived().cols(); j++)
+		for (Index j = 0; j < m.cols(); j++)
 		{
 			switch (fileFormat)
 			{
@@ -393,13 +394,13 @@ std::string MatrixVectorBase<Scalar, Derived>::asStr() const
 template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::det() const
 {
-	return mvbDerived().asEigen().det();
+	return mvbDerived().asEigen().eval().determinant();
 }
 
 template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::sum() const
 {
-	return mvbDerived().asEigen().array().det();
+	return mvbDerived().asEigen().array().sum();
 }
 
 template <typename Scalar, class Derived>
@@ -461,20 +462,21 @@ template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::eig(
 	Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
-	Eigen::EigenSolver<typename Derived::eigen_t> es(mvbDerived());
+	Eigen::EigenSolver<typename Derived::eigen_t> es(mvbDerived().asEigen());
 	if (es.info() != Eigen::Success) return false;
-	const auto eigenVal = es.eigenvalues();
+	const auto eigenVal = es.eigenvalues().real();
 	ASSERT_EQUAL_(eigenVal.rows(), mvbDerived().rows());
 	const auto N = eigenVal.rows();
 
 	if (sorted)
 	{
-		detail::sortEigResults(eigenVal, es.eigenvectors(), eVals, eVecs);
+		detail::sortEigResults(
+			eigenVal, es.eigenvectors().real(), eVals, eVecs);
 	}
 	else
 	{
 		eVals.resize(N);
-		eVecs = es.eigenvectors();
+		eVecs = es.eigenvectors().real();
 		for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
 	}
 	return true;
@@ -484,20 +486,22 @@ template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::eig_symmetric(
 	Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
 {
-	Eigen::SelfAdjointEigenSolver<typename Derived::eigen_t> es(mvbDerived());
+	Eigen::SelfAdjointEigenSolver<typename Derived::eigen_t> es(
+		mvbDerived().asEigen());
 	if (es.info() != Eigen::Success) return false;
-	const auto eigenVal = es.eigenvalues();
+	const auto eigenVal = es.eigenvalues().real();
 	ASSERT_EQUAL_(eigenVal.rows(), mvbDerived().rows());
 	const auto N = eigenVal.rows();
 
 	if (sorted)
 	{
-		detail::sortEigResults(eigenVal, es.eigenvectors(), eVals, eVecs);
+		detail::sortEigResults(
+			eigenVal, es.eigenvectors().real(), eVals, eVecs);
 	}
 	else
 	{
 		eVals.resize(N);
-		eVecs = es.eigenvectors();
+		eVecs = es.eigenvectors().real();
 		for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
 	}
 	return true;
@@ -506,7 +510,8 @@ bool MatrixVectorBase<Scalar, Derived>::eig_symmetric(
 template <typename Scalar, class Derived>
 int MatrixVectorBase<Scalar, Derived>::rank(Scalar threshold) const
 {
-	Eigen::FullPivLU<typename Derived::eigen_t> lu(mvbDerived());
+	Eigen::FullPivLU<typename Derived::eigen_t> lu(
+		mvbDerived().asEigen().eval());
 	if (threshold > 0) lu.setThreshold(threshold);
 	return lu.rank();
 }
@@ -514,10 +519,10 @@ int MatrixVectorBase<Scalar, Derived>::rank(Scalar threshold) const
 template <typename Scalar, class Derived>
 bool MatrixVectorBase<Scalar, Derived>::chol(Derived& U) const
 {
-	Eigen::LLT<typename Derived::PlainObject> Chol =
-		mvbDerived().template selfadjointView<Eigen::Lower>().llt();
+	Eigen::LLT<typename Derived::eigen_t> Chol =
+		mvbDerived().asEigen().template selfadjointView<Eigen::Lower>().llt();
 	if (Chol.info() == Eigen::NoConvergence) return false;
-	U = Derived(Chol.matrixU());
+	U = typename Derived::eigen_t(Chol.matrixU());
 	return true;
 }
 
@@ -525,7 +530,7 @@ template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::matProductOf(
 	const Derived& A, const Derived& B)
 {
-	*this = (A.asEigen() * B.asEigen()).eval();
+	mvbDerived().asEigen() = (A.asEigen() * B.asEigen()).eval();
 }
 
 template <typename Scalar, class Derived>

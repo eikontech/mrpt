@@ -15,12 +15,18 @@
 
 // Explicit instantiation of "MatrixVectorBase_impl.h" methods:
 
-#define EXPL_INST_VECTOR_FIX(T_)                       \
-	template class mrpt::math::CMatrixFixed<T_, 2, 1>; \
-	template class mrpt::math::CMatrixFixed<T_, 3, 1>; \
-	template class mrpt::math::CMatrixFixed<T_, 4, 1>; \
-	template class mrpt::math::CMatrixFixed<T_, 5, 1>; \
-	template class mrpt::math::CMatrixFixed<T_, 6, 1>
+// --
+#define DO_VECFIXED_INSTANTIATION_NM(T_, N_)            \
+	template class mrpt::math::CMatrixFixed<T_, N_, 1>; \
+	template class mrpt::math::MatrixVectorBase<        \
+		T_, mrpt::math::CMatrixFixed<T_, N_, 1>>;
 
-EXPL_INST_VECTOR_FIX(float);
-EXPL_INST_VECTOR_FIX(double);
+#define DO_VECFIXED_INSTANTIATION(T_)   \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 2) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 3) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 4) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 5) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 6)
+
+DO_VECFIXED_INSTANTIATION(float);
+DO_VECFIXED_INSTANTIATION(double);

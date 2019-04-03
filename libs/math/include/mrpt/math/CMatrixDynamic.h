@@ -341,6 +341,9 @@ class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
 	}
 	void resize(size_t row, size_t col) { setSize(row, col); }
 
+	/** Resizes as a Nx1 vector */
+	void resize(size_t vectorLen) { setSize(vectorLen, 1); }
+
 	/** Resize the matrix */
 	inline void resize(const matrix_size_t& siz, bool zeroNewElements = false)
 	{

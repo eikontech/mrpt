@@ -24,12 +24,6 @@ class CMatrixDynamic;
 template <typename T, std::size_t ROWS, std::size_t COLS>
 class CMatrixFixed;
 
-#if defined _WIN32 || defined __CYGWIN__
-#define DLL_PUBLIC  //__attribute__((dllexport))
-#else
-#define DLL_PUBLIC __attribute__((visibility("default")))
-#endif
-
 /*! Selection of the number format in MatrixVectorBase::saveToTextFile()
  * \ingroup mrpt_math_grp */
 enum TMatrixTextFileFormat
@@ -75,7 +69,7 @@ class MatrixVectorBase
 
 	static Derived Zero()
 	{
-		static_assert(
+		ASSERTMSG_(
 			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
 			"Zero() without arguments can be used only for fixed-size "
 			"matrices/vectors");
@@ -85,9 +79,9 @@ class MatrixVectorBase
 	}
 	static Derived Identity()
 	{
-		static_assert(
+		ASSERTMSG_(
 			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
-			"Zero() without arguments can be used only for fixed-size "
+			"Identity() without arguments can be used only for fixed-size "
 			"matrices/vectors");
 		Derived m;
 		m.setIdentity();
@@ -322,10 +316,10 @@ class MatrixVectorBase
 	const Scalar& coeff(int r, int c) const { return mvbDerived()(r, c); }
 
 	/** Minimum value in the matrix/vector */
-	DLL_PUBLIC Scalar minCoeff() const;
+	Scalar minCoeff() const;
 
 	/** Maximum value in the matrix/vector */
-	DLL_PUBLIC Scalar maxCoeff() const;
+	Scalar maxCoeff() const;
 
 	/** returns true if matrix is NxN */
 	bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows(); }
@@ -333,38 +327,38 @@ class MatrixVectorBase
 	/** returns true if matrix/vector has size=0 */
 	bool empty() const
 	{
-		return mvbDerived().cols() == 0 && mvbDerived().rows == 0;
+		return mvbDerived().cols() == 0 && mvbDerived().rows() == 0;
 	}
 
-	DLL_PUBLIC void operator+=(Scalar s);
-	DLL_PUBLIC void operator-=(Scalar s);
-	DLL_PUBLIC void operator*=(Scalar s);
+	void operator+=(Scalar s);
+	void operator-=(Scalar s);
+	void operator*=(Scalar s);
 
 	/** Determinant of matrix. */
-	DLL_PUBLIC Scalar det() const;
+	Scalar det() const;
 
 	/** Sum of all elements in matrix/vector. */
-	DLL_PUBLIC Scalar sum() const;
+	Scalar sum() const;
 
 	/** Returns the inverse of a general matrix using LU */
-	DLL_PUBLIC Derived inverse() const;
+	Derived inverse() const;
 
 	/** Returns the inverse of a symmetric matrix using LLt */
-	DLL_PUBLIC Derived inverse_LLt() const;
+	Derived inverse_LLt() const;
 
 	/** Finds the rank of the matrix via LU decomposition.
 	 * Uses Eigen's default threshold unless `threshold>0`. */
-	DLL_PUBLIC int rank(Scalar threshold = 0) const;
+	int rank(Scalar threshold = 0) const;
 
 	/** Cholesky M=U<sup>T</sup> * U decomposition for symmetric matrix
 	 * (upper-half of the matrix is actually ignored.
 	 * \return false if Cholesky fails
 	 */
-	DLL_PUBLIC bool chol(Derived& U) const;
+	bool chol(Derived& U) const;
 
 	/** Returns a string representation of the vector/matrix, using Eigen's
 	 * default settings. */
-	DLL_PUBLIC std::string asStr() const;
+	std::string asStr() const;
 
 	/** Computes the eigenvectors and eigenvalues for a square, general matrix.
 	 * Use eig_symmetric() for symmetric matrices for better accuracy and
@@ -377,11 +371,11 @@ class MatrixVectorBase
 	 * \param[out] eVals The container where eigenvalues will be stored.
 	 * \return false if eigenvalues could not be determined.
 	 */
-	DLL_PUBLIC bool eig(
+	bool eig(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
 	/** Read: eig() */
-	DLL_PUBLIC bool eig_symmetric(
+	bool eig_symmetric(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
 	/** Reads a matrix from a string in Matlab-like format, for example:
@@ -396,14 +390,14 @@ class MatrixVectorBase
 	 * matrix will be resized to 0x0.
 	 * \sa inMatlabFormat, CConfigFile::read_matrix
 	 */
-	DLL_PUBLIC bool fromMatlabStringFormat(
+	bool fromMatlabStringFormat(
 		const std::string& s,
 		mrpt::optional_ref<std::ostream> dump_errors_here = std::nullopt);
 
 	/** Exports the matrix as a string compatible with Matlab/Octave.
 	 * \sa fromMatlabStringFormat()
 	 */
-	DLL_PUBLIC std::string inMatlabFormat(
+	std::string inMatlabFormat(
 		const std::size_t decimal_digits = 6) const;
 
 	/** Saves the vector/matrix to a file compatible with MATLAB/Octave
@@ -418,7 +412,7 @@ class MatrixVectorBase
 	 * not needed. \sa loadFromTextFile, CMatrixDynamic::inMatlabFormat,
 	 * SAVE_MATRIX
 	 */
-	DLL_PUBLIC void saveToTextFile(
+	void saveToTextFile(
 		const std::string& file,
 		mrpt::math::TMatrixTextFileFormat fileFormat =
 			mrpt::math::MATRIX_FORMAT_ENG,
@@ -431,24 +425,24 @@ class MatrixVectorBase
 	 * \exception std::runtime_error On format error.
 	 * \sa saveToTextFile, fromMatlabStringFormat
 	 */
-	DLL_PUBLIC void loadFromTextFile(std::istream& f);
+	void loadFromTextFile(std::istream& f);
 
 	/// \overload
-	DLL_PUBLIC void loadFromTextFile(const std::string& file);
+	void loadFromTextFile(const std::string& file);
 
 	/** Removes columns of the matrix.
 	 * This "unsafe" version assumes indices sorted in ascending order. */
-	DLL_PUBLIC void unsafeRemoveColumns(const std::vector<std::size_t>& idxs);
+	void unsafeRemoveColumns(const std::vector<std::size_t>& idxs);
 
 	/** Removes columns of the matrix. Indices may be unsorted and duplicated */
-	DLL_PUBLIC void removeColumns(const std::vector<std::size_t>& idxsToRemove);
+	void removeColumns(const std::vector<std::size_t>& idxsToRemove);
 
 	/** Removes rows of the matrix.
 	 * This "unsafe" version assumes indices sorted in ascending order. */
-	DLL_PUBLIC void unsafeRemoveRows(const std::vector<std::size_t>& idxs);
+	void unsafeRemoveRows(const std::vector<std::size_t>& idxs);
 
 	/** Removes rows of the matrix. Indices may be unsorted and duplicated */
-	DLL_PUBLIC void removeRows(const std::vector<std::size_t>& idxsToRemove);
+	void removeRows(const std::vector<std::size_t>& idxsToRemove);
 
 	/** Copies the given input submatrix/vector into this matrix/vector,
 	 * starting at the given top-left coordinates. */

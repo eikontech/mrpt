@@ -98,13 +98,13 @@ class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
 	template <typename _Lhs, typename _Rhs, int Option>
 	CMatrixFixed(const Eigen::Product<_Lhs, _Rhs, Option>& p)
 	{
-		*this = p.template eval();
+		*this = p.eval();
 	}
 	/** Convert from Eigen binary op */
 	template <typename Op, typename Lhs, typename Rhs>
 	CMatrixFixed(const Eigen::CwiseBinaryOp<Op, Lhs, Rhs>& p)
 	{
-		*this = p.template eval();
+		*this = p.eval();
 	}
 
 	/** Convert from Eigen block */

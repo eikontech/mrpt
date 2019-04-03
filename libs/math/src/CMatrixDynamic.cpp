@@ -25,8 +25,9 @@ CMatrixDynamic<T2> CMatrixDynamic<T>::cast() const
 }
 
 // Template instantiation:
-template class mrpt::math::CMatrixDynamic<float>;
-template class mrpt::math::CMatrixDynamic<double>;
-#ifdef HAVE_LONG_DOUBLE
-template class mrpt::math::CMatrixDynamic<long double>;
-#endif
+#define DO_MATDYN_INSTANTIATION(T_)                \
+	template class mrpt::math::CMatrixDynamic<T_>; \
+	template class mrpt::math::MatrixVectorBase<T_, CMatrixDynamic<T_>>;
+
+DO_MATDYN_INSTANTIATION(float)
+DO_MATDYN_INSTANTIATION(double)
