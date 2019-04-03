@@ -10,7 +10,7 @@
 
 #include <mrpt/core/alignment_req.h>
 #include <mrpt/core/exceptions.h>
-#include <mrpt/math/MatrixVectorBase.h>
+#include <mrpt/math/MatrixBase.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
@@ -30,7 +30,7 @@ namespace mrpt::math
  * \ingroup mrpt_math_grp
  */
 template <typename T, std::size_t ROWS, std::size_t COLS>
-class CMatrixFixed : public MatrixVectorBase<T, CMatrixFixed<T, ROWS, COLS>>
+class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 {
    private:
 	/** RowMajor matrix data */

@@ -11,7 +11,7 @@
 #include <mrpt/core/aligned_std_basicstring.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
 #include <mrpt/core/format.h>
-#include <mrpt/math/MatrixVectorBase.h>
+#include <mrpt/math/MatrixBase.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/typemeta/TTypeName.h>
@@ -37,7 +37,7 @@ namespace mrpt::math
  * \ingroup mrpt_math_grp
  */
 template <class T>
-class CMatrixDynamic : public MatrixVectorBase<T, CMatrixDynamic<T>>
+class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 {
    private:
 	using vec_t = mrpt::aligned_std_basicstring<T>;

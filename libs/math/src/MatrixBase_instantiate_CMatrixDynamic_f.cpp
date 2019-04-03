@@ -11,21 +11,10 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <Eigen/Dense>
-
-using namespace mrpt::math;
-
-template <typename T>
-template <typename T2>
-CMatrixDynamic<T2> CMatrixDynamic<T>::cast() const
-{
-	CMatrixDynamic<T2> r(rows(), cols());
-	r.asEigen() = asEigen().template cast<T2>();
-	return r;
-}
+#include "MatrixBase_impl.h"
 
 // Template instantiation:
 #define DO_MATDYN_INSTANTIATION(T_) \
-	template class mrpt::math::CMatrixDynamic<T_>;
+    template class mrpt::math::MatrixBase<T_, mrpt::math::CMatrixDynamic<T_>>;
 
 DO_MATDYN_INSTANTIATION(float)
-DO_MATDYN_INSTANTIATION(double)

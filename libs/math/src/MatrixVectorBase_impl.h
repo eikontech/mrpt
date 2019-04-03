@@ -10,7 +10,6 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/MatrixVectorBase.h>
-#include <Eigen/Eigenvalues>  // EigenSolver
 #include <cstdint>
 #include <cstdio>  // fopen(),...
 #include <ctime>  // time(),...
@@ -330,71 +329,11 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(
 }
 
 template <typename Scalar, class Derived>
-void MatrixVectorBase<Scalar, Derived>::unsafeRemoveColumns(
-	const std::vector<std::size_t>& idxs)
-{
-	std::size_t k = 1;
-	const auto nR = mvbDerived().rows();
-	for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
-	{
-		const auto nC = mvbDerived().cols() - *it - k;
-		if (nC > 0)
-			mvbDerived().asEigen().block(0, *it, nR, nC) =
-				mvbDerived().asEigen().block(0, *it + 1, nR, nC).eval();
-	}
-	mvbDerived().setSize(nR, mvbDerived().cols() - idxs.size());
-}
-
-template <typename Scalar, class Derived>
-void MatrixVectorBase<Scalar, Derived>::removeColumns(
-	const std::vector<std::size_t>& idxsToRemove)
-{
-	std::vector<std::size_t> idxs = idxsToRemove;
-	std::sort(idxs.begin(), idxs.end());
-	auto itEnd = std::unique(idxs.begin(), idxs.end());
-	idxs.resize(itEnd - idxs.begin());
-	unsafeRemoveColumns(idxs);
-}
-
-template <typename Scalar, class Derived>
-void MatrixVectorBase<Scalar, Derived>::unsafeRemoveRows(
-	const std::vector<size_t>& idxs)
-{
-	std::size_t k = 1;
-	const auto nC = mvbDerived().cols();
-	for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
-	{
-		const auto nR = mvbDerived().rows() - *it - k;
-		if (nR > 0)
-			mvbDerived().asEigen().block(*it, 0, nR, nC) =
-				mvbDerived().asEigen().block(*it + 1, 0, nR, nC).eval();
-	}
-	mvbDerived().setSize(mvbDerived().rows() - idxs.size(), nC);
-}
-
-template <typename Scalar, class Derived>
-void MatrixVectorBase<Scalar, Derived>::removeRows(
-	const std::vector<size_t>& idxsToRemove)
-{
-	std::vector<std::size_t> idxs = idxsToRemove;
-	std::sort(idxs.begin(), idxs.end());
-	auto itEnd = std::unique(idxs.begin(), idxs.end());
-	idxs.resize(itEnd - idxs.begin());
-	unsafeRemoveRows(idxs);
-}
-
-template <typename Scalar, class Derived>
 std::string MatrixVectorBase<Scalar, Derived>::asStr() const
 {
 	std::stringstream ss;
 	ss << mvbDerived();
 	return ss.str();
-}
-
-template <typename Scalar, class Derived>
-Scalar MatrixVectorBase<Scalar, Derived>::det() const
-{
-	return mvbDerived().asEigen().eval().determinant();
 }
 
 template <typename Scalar, class Derived>
@@ -431,128 +370,6 @@ template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::operator*=(Scalar s)
 {
 	mvbDerived().asEigen().array() *= s;
-}
-
-namespace detail
-{
-// Aux func to sort by ascending eigenvalues:
-template <typename Scalar, typename VEC1, typename MATRIX1, typename MATRIX2>
-void sortEigResults(
-	const VEC1& eVals, const MATRIX1& eVecs, std::vector<Scalar>& sorted_eVals,
-	MATRIX2& sorted_eVecs)
-{
-	const int64_t N = static_cast<int64_t>(eVals.size());
-	std::vector<std::pair<Scalar, int64_t>> D;
-	D.reserve(N);
-	for (int64_t i = 0; i < N; i++) D.emplace_back(eVals[i], i);
-	std::sort(D.begin(), D.end());
-
-	// store:
-	sorted_eVecs.resize(eVecs.rows(), eVecs.cols());
-	sorted_eVals.resize(N);
-	for (int64_t i = 0; i < N; i++)
-	{
-		sorted_eVals[i] = D[i].first;
-		sorted_eVecs.col(i) = eVecs.col(D[i].second);
-	}
-}
-}  // namespace detail
-
-template <typename Scalar, class Derived>
-bool MatrixVectorBase<Scalar, Derived>::eig(
-	Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
-{
-	Eigen::EigenSolver<typename Derived::eigen_t> es(mvbDerived().asEigen());
-	if (es.info() != Eigen::Success) return false;
-	const auto eigenVal = es.eigenvalues().real();
-	ASSERT_EQUAL_(eigenVal.rows(), mvbDerived().rows());
-	const auto N = eigenVal.rows();
-
-	if (sorted)
-	{
-		detail::sortEigResults(
-			eigenVal, es.eigenvectors().real(), eVals, eVecs);
-	}
-	else
-	{
-		eVals.resize(N);
-		eVecs = es.eigenvectors().real();
-		for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
-	}
-	return true;
-}
-
-template <typename Scalar, class Derived>
-bool MatrixVectorBase<Scalar, Derived>::eig_symmetric(
-	Derived& eVecs, std::vector<Scalar>& eVals, bool sorted) const
-{
-	Eigen::SelfAdjointEigenSolver<typename Derived::eigen_t> es(
-		mvbDerived().asEigen());
-	if (es.info() != Eigen::Success) return false;
-	const auto eigenVal = es.eigenvalues().real();
-	ASSERT_EQUAL_(eigenVal.rows(), mvbDerived().rows());
-	const auto N = eigenVal.rows();
-
-	if (sorted)
-	{
-		detail::sortEigResults(
-			eigenVal, es.eigenvectors().real(), eVals, eVecs);
-	}
-	else
-	{
-		eVals.resize(N);
-		eVecs = es.eigenvectors().real();
-		for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
-	}
-	return true;
-}
-
-template <typename Scalar, class Derived>
-int MatrixVectorBase<Scalar, Derived>::rank(Scalar threshold) const
-{
-	Eigen::FullPivLU<typename Derived::eigen_t> lu(
-		mvbDerived().asEigen().eval());
-	if (threshold > 0) lu.setThreshold(threshold);
-	return lu.rank();
-}
-
-template <typename Scalar, class Derived>
-bool MatrixVectorBase<Scalar, Derived>::chol(Derived& U) const
-{
-	Eigen::LLT<typename Derived::eigen_t> Chol =
-		mvbDerived().asEigen().template selfadjointView<Eigen::Lower>().llt();
-	if (Chol.info() == Eigen::NoConvergence) return false;
-	U = typename Derived::eigen_t(Chol.matrixU());
-	return true;
-}
-
-template <typename Scalar, class Derived>
-void MatrixVectorBase<Scalar, Derived>::matProductOf(
-	const Derived& A, const Derived& B)
-{
-	mvbDerived().asEigen() = (A.asEigen() * B.asEigen()).eval();
-}
-
-template <typename Scalar, class Derived>
-Derived MatrixVectorBase<Scalar, Derived>::inverse() const
-{
-	ASSERT_EQUAL_(mvbDerived().cols(), mvbDerived().rows());
-	const auto N = mvbDerived().cols();
-	const auto I = Derived::eigen_t::Identity(N, N);
-	Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
-	inv.asEigen() = mvbDerived().asEigen().llt().solve(I).eval();
-	return inv;
-}
-
-template <typename Scalar, class Derived>
-Derived MatrixVectorBase<Scalar, Derived>::inverse_LLt() const
-{
-	ASSERT_EQUAL_(mvbDerived().cols(), mvbDerived().rows());
-	const auto N = mvbDerived().cols();
-	const auto I = Derived::eigen_t::Identity(N, N);
-	Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
-	inv.asEigen() = mvbDerived().asEigen().llt().solve(I).eval();
-	return inv;
 }
 
 }  // namespace mrpt::math

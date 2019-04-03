@@ -9,23 +9,19 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <Eigen/Dense>
+#include "MatrixVectorBase_impl.h"
 
-using namespace mrpt::math;
+#define DO_VECFIXED_INSTANTIATION_NM(T_, N_) \
+	template class mrpt::math::MatrixVectorBase<T_,mrpt::math::CMatrixFixed<T_,N_, 1>>;
 
-template <typename T>
-template <typename T2>
-CMatrixDynamic<T2> CMatrixDynamic<T>::cast() const
-{
-	CMatrixDynamic<T2> r(rows(), cols());
-	r.asEigen() = asEigen().template cast<T2>();
-	return r;
-}
+#define DO_VECFIXED_INSTANTIATION(T_)   \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 2) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 3) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 4) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 5) \
+	DO_VECFIXED_INSTANTIATION_NM(T_, 6)
 
-// Template instantiation:
-#define DO_MATDYN_INSTANTIATION(T_) \
-	template class mrpt::math::CMatrixDynamic<T_>;
-
-DO_MATDYN_INSTANTIATION(float)
-DO_MATDYN_INSTANTIATION(double)
+DO_VECFIXED_INSTANTIATION(float);
+DO_VECFIXED_INSTANTIATION(double);

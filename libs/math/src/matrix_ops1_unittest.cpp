@@ -53,7 +53,7 @@ TEST(Matrices, A_times_B_fix)
 	C = A * B;
 	Err = C - CMatrixFixed<double, 3, 2>(C_ok);
 
-	EXPECT_NEAR(0, fabs(Err.sum()), 1e-5)
+	EXPECT_NEAR(0, fabs(Err.asEigen().array().sum()), 1e-5)
 		<< "A:   " << A << "B:   " << B << "A*B: " << C << endl;
 }
 

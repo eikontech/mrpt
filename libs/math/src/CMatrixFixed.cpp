@@ -11,7 +11,9 @@
 
 #include <mrpt/math/CMatrixFixed.h>
 #include <Eigen/Dense>
-#include "MatrixVectorBase_impl.h"
+
+// See also: "MatrixBase_*.cpp" and "MatrixVectorBase_*.cpp"
+// for explicit instantiations of the corresponding base classes.
 
 using namespace mrpt::math;
 
@@ -25,10 +27,8 @@ CMatrixFixed<T2, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast() const
 }
 
 // Template instantiations:
-#define DO_MATFIXED_INSTANTIATION_NM(T_, N_, M_)         \
-	template class mrpt::math::CMatrixFixed<T_, N_, M_>; \
-	template class mrpt::math::MatrixVectorBase<         \
-		T_, mrpt::math::CMatrixFixed<T_, N_, M_>>;
+#define DO_MATFIXED_INSTANTIATION_NM(T_, N_, M_) \
+	template class mrpt::math::CMatrixFixed<T_, N_, M_>;
 
 #define DO_MATFIXED_INSTANTIATION(T_)      \
 	DO_MATFIXED_INSTANTIATION_NM(T_, 2, 2) \

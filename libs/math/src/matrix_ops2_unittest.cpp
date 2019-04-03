@@ -210,7 +210,7 @@ TEST(Matrices, fromMatlabStringFormat)
 		GTEST_FAIL() << mat1;
 
 	{
-		CMatrixFixed<double, 2, 3> M1b;
+		CMatrixDouble M1b;
 		if (!M1b.fromMatlabStringFormat(mat1) ||
 			(CMatrixFixed<double, 2, 3>(vals1) - M1b).array().abs().sum() >
 				1e-4)
@@ -222,7 +222,7 @@ TEST(Matrices, fromMatlabStringFormat)
 		GTEST_FAIL() << mat2;
 
 	{
-		CMatrixFixed<double, 3, 2> M2b;
+		CMatrixDouble M2b;
 		if (!M2b.fromMatlabStringFormat(mat2) ||
 			(CMatrixFixed<double, 3, 2>(vals2) - M2b).array().abs().sum() >
 				1e-4)
@@ -237,7 +237,7 @@ TEST(Matrices, fromMatlabStringFormat)
 			GTEST_FAIL() << "CVectorDouble:" << mat3;
 	}
 	{
-		CVectorFixedDouble<1> m;
+		CVectorDouble m;
 		if (!m.fromMatlabStringFormat(mat3))
 			GTEST_FAIL() << "CVectorFixedDouble<1>:" << mat3;
 	}
@@ -254,7 +254,7 @@ TEST(Matrices, fromMatlabStringFormat)
 	}
 
 	{
-		CMatrixFixed<double, 1, 3> m;
+		CMatrixDouble m;
 		if (!m.fromMatlabStringFormat(mat13))
 			GTEST_FAIL() << "Matrix<double,1,3>:" << mat13;
 	}

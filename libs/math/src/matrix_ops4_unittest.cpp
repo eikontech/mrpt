@@ -99,7 +99,7 @@ TEST(Matrices, meanAndStdAll)
 		2.6694845663, 1.7205860530, 2.1518695071, 2.1110960664, 1.6731209980,
 		2.5655678993, 2.9541115932, 2.1854562572, 2.4463194915, 2.7170092067,
 		3.0742063088, 1.8710847505, 2.8907499694, 1.6731209980, 3.9093678727};
-	CMatrixFixed<double, 10, 10> A(dat_A);
+	CMatrixDouble A(10, 10, dat_A);
 
 	// Compute mean & std of each column:
 	double result_mean, result_std;
@@ -196,9 +196,10 @@ TEST(Matrices, loadFromTextFile)
 	{
 		const std::string s1 =
 			"1 2 3\n"
-			"4 5 6\n";
+		    "0 1 0\n"
+		    "4 5 6\n";
 		std::stringstream s(s1);
-		CMatrixFixed<double, 2, 3> M;
+		CMatrixDouble33 M;
 		bool retval = false;
 		try
 		{
@@ -218,7 +219,7 @@ TEST(Matrices, loadFromTextFile)
 			"1 2 3\n"
 			"4 5\n";
 		std::stringstream s(s1);
-		CMatrixFixed<double, 2, 3> M;
+		CMatrixDouble M;
 		bool retval = false;
 		try
 		{
@@ -250,7 +251,7 @@ TEST(Matrices, loadFromTextFile)
 	{
 		const std::string s1 = "  \n";
 		std::stringstream s(s1);
-		CMatrixFixed<double, 2, 3> M;
+		CMatrixDouble M;
 		bool retval = false;
 		try
 		{
@@ -268,7 +269,7 @@ TEST(Matrices, loadFromTextFile)
 			"1 2 3\n"
 			"1 2 3";
 		std::stringstream s(s1);
-		CMatrixFixed<double, 2, 3> M;
+		CMatrixDouble22 M;
 		bool retval = false;
 		try
 		{

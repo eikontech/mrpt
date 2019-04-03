@@ -173,95 +173,90 @@ void mrpt::math::ransac_detect_3D_planes(
 		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y, \
 		const CVectorDynamic<_TYPE_>& z,                                  \
 		vector<pair<size_t, TPlane>>& out_detected_planes,                \
-		const double threshold, const size_t min_inliers_for_valid_plane);
+		const double threshold, const size_t min_inliers_for_valid_plane)
 
-EXPLICIT_INST_ransac_detect_3D_planes(float)
-	EXPLICIT_INST_ransac_detect_3D_planes(double)
-#ifdef HAVE_LONG_DOUBLE
-		EXPLICIT_INST_ransac_detect_3D_planes(long double)
-#endif
+EXPLICIT_INST_ransac_detect_3D_planes(float);
+EXPLICIT_INST_ransac_detect_3D_planes(double);
 
-	/*---------------------------------------------------------------
-			Aux. functions needed by ransac_detect_2D_lines
-	 ---------------------------------------------------------------*/
-	namespace mrpt
+/*---------------------------------------------------------------
+		Aux. functions needed by ransac_detect_2D_lines
+ ---------------------------------------------------------------*/
+namespace mrpt
 {
-	namespace math
+namespace math
+{
+template <typename T>
+void ransac2Dline_fit(
+	const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices,
+	vector<CMatrixDynamic<T>>& fitModels)
+{
+	ASSERT_(useIndices.size() == 2);
+
+	TPoint2D p1(allData(0, useIndices[0]), allData(1, useIndices[0]));
+	TPoint2D p2(allData(0, useIndices[1]), allData(1, useIndices[1]));
+
+	try
 	{
-	template <typename T>
-	void ransac2Dline_fit(
-		const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices,
-		vector<CMatrixDynamic<T>>& fitModels)
-	{
-		ASSERT_(useIndices.size() == 2);
+		TLine2D line(p1, p2);
+		fitModels.resize(1);
+		CMatrixDynamic<T>& M = fitModels[0];
 
-		TPoint2D p1(allData(0, useIndices[0]), allData(1, useIndices[0]));
-		TPoint2D p2(allData(0, useIndices[1]), allData(1, useIndices[1]));
-
-		try
-		{
-			TLine2D line(p1, p2);
-			fitModels.resize(1);
-			CMatrixDynamic<T>& M = fitModels[0];
-
-			M.setSize(1, 3);
-			for (size_t i = 0; i < 3; i++) M(0, i) = line.coefs[i];
-		}
-		catch (exception&)
-		{
-			fitModels.clear();
-			return;
-		}
+		M.setSize(1, 3);
+		for (size_t i = 0; i < 3; i++) M(0, i) = line.coefs[i];
 	}
-
-	template <typename T>
-	void ransac2Dline_distance(
-		const CMatrixDynamic<T>& allData,
-		const vector<CMatrixDynamic<T>>& testModels, const T distanceThreshold,
-		unsigned int& out_bestModelIndex,
-		std::vector<size_t>& out_inlierIndices)
+	catch (exception&)
 	{
-		out_inlierIndices.clear();
-		out_bestModelIndex = 0;
-
-		if (testModels.empty()) return;  // No model, no inliers.
-
-		ASSERTMSG_(
-			testModels.size() == 1,
-			format(
-				"Expected testModels.size()=1, but it's = %u",
-				static_cast<unsigned int>(testModels.size())));
-		const CMatrixDynamic<T>& M = testModels[0];
-
-		ASSERT_(M.rows() == 1 && M.cols() == 3);
-
-		TLine2D line;
-		line.coefs[0] = M(0, 0);
-		line.coefs[1] = M(0, 1);
-		line.coefs[2] = M(0, 2);
-
-		const size_t N = allData.cols();
-		out_inlierIndices.reserve(100);
-		for (size_t i = 0; i < N; i++)
-		{
-			const double d =
-				line.distance(TPoint2D(allData(0, i), allData(1, i)));
-			if (d < distanceThreshold) out_inlierIndices.push_back(i);
-		}
+		fitModels.clear();
+		return;
 	}
+}
 
-	/** Return "true" if the selected points are a degenerate (invalid) case.
-	 */
-	template <typename T>
-	bool ransac2Dline_degenerate(
-		const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices)
+template <typename T>
+void ransac2Dline_distance(
+	const CMatrixDynamic<T>& allData,
+	const vector<CMatrixDynamic<T>>& testModels, const T distanceThreshold,
+	unsigned int& out_bestModelIndex, std::vector<size_t>& out_inlierIndices)
+{
+	out_inlierIndices.clear();
+	out_bestModelIndex = 0;
+
+	if (testModels.empty()) return;  // No model, no inliers.
+
+	ASSERTMSG_(
+		testModels.size() == 1,
+		format(
+			"Expected testModels.size()=1, but it's = %u",
+			static_cast<unsigned int>(testModels.size())));
+	const CMatrixDynamic<T>& M = testModels[0];
+
+	ASSERT_(M.rows() == 1 && M.cols() == 3);
+
+	TLine2D line;
+	line.coefs[0] = M(0, 0);
+	line.coefs[1] = M(0, 1);
+	line.coefs[2] = M(0, 2);
+
+	const size_t N = allData.cols();
+	out_inlierIndices.reserve(100);
+	for (size_t i = 0; i < N; i++)
 	{
-		MRPT_UNUSED_PARAM(allData);
-		MRPT_UNUSED_PARAM(useIndices);
-		return false;
+		const double d = line.distance(TPoint2D(allData(0, i), allData(1, i)));
+		if (d < distanceThreshold) out_inlierIndices.push_back(i);
 	}
-	}  // namespace math
-}  // end namespace
+}
+
+/** Return "true" if the selected points are a degenerate (invalid) case.
+ */
+template <typename T>
+bool ransac2Dline_degenerate(
+	const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices)
+{
+	MRPT_UNUSED_PARAM(allData);
+	MRPT_UNUSED_PARAM(useIndices);
+	return false;
+}
+}  // namespace math
+}  // namespace mrpt
 
 /*---------------------------------------------------------------
 				ransac_detect_2D_lines
@@ -332,10 +327,7 @@ void mrpt::math::ransac_detect_2D_lines(
 	template void mrpt::math::ransac_detect_2D_lines<_TYPE_>(             \
 		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y, \
 		std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,      \
-		const double threshold, const size_t min_inliers_for_valid_line);
+		const double threshold, const size_t min_inliers_for_valid_line)
 
-EXPLICIT_INSTANT_ransac_detect_2D_lines(float)
-	EXPLICIT_INSTANT_ransac_detect_2D_lines(double)
-#ifdef HAVE_LONG_DOUBLE
-		EXPLICIT_INSTANT_ransac_detect_2D_lines(long double)
-#endif
+EXPLICIT_INSTANT_ransac_detect_2D_lines(float);
+EXPLICIT_INSTANT_ransac_detect_2D_lines(double);

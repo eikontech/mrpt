@@ -188,7 +188,3 @@ bool RANSAC_Template<NUMTYPE>::execute(
 // Template instantiation:
 template class mrpt::math::RANSAC_Template<float>;
 template class mrpt::math::RANSAC_Template<double>;
-
-#ifdef HAVE_LONG_DOUBLE
-template class mrpt::math::RANSAC_Template<long double>;
-#endif
