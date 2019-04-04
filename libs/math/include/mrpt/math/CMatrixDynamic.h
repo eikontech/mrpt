@@ -102,7 +102,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 					newData[r * m_Cols + c] = m_data[r * old_cols + c];
 		}
 		// New rows to zero?
-		if (m_Rows > old_rows)
+		if (newElementsToZero && m_Rows > old_rows)
 		{
 			if constexpr (std::is_trivial_v<T>)
 				::memset(
@@ -114,7 +114,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 						newData[r * m_Cols + c] = T();
 		}
 		// New cols to zero?
-		if (m_Cols > old_cols)
+		if (newElementsToZero && m_Cols > old_cols)
 		{
 			for (size_t r = 0; r < old_rows; r++)
 				if constexpr (std::is_trivial_v<T>)

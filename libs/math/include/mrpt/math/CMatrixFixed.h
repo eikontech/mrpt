@@ -249,14 +249,14 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	 */
 	inline T& operator()(int row, int col)
 	{
-		ASSERTDEB_(row < ROWS);
-		ASSERTDEB_(col < COLS);
+		ASSERTDEB_(static_cast<std::size_t>(row) < ROWS);
+		ASSERTDEB_(static_cast<std::size_t>(col) < COLS);
 		return m_data[row * COLS + col];
 	}
 	inline const T& operator()(int row, int col) const
 	{
-		ASSERTDEB_(row < ROWS);
-		ASSERTDEB_(col < COLS);
+		ASSERTDEB_(static_cast<std::size_t>(row) < ROWS);
+		ASSERTDEB_(static_cast<std::size_t>(col) < COLS);
 		return m_data[row * COLS + col];
 	}
 
@@ -264,13 +264,13 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	inline T& operator[](int i)
 	{
 		ASSERT_(ROWS == 1 || COLS == 1);
-		ASSERTDEB_(i < ROWS * COLS);
+		ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
 		return m_data[i];
 	}
 	inline const T& operator[](int i) const
 	{
 		ASSERT_(ROWS == 1 || COLS == 1);
-		ASSERTDEB_(i < ROWS * COLS);
+		ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
 		return m_data[i];
 	}
 

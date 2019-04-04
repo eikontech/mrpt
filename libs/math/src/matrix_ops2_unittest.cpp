@@ -285,8 +285,13 @@ TEST(Matrices, fromMatlabStringFormat)
 	}
 	{
 		CVectorDynamic<double> m;
-		if (!m.fromMatlabStringFormat(mat13) || m.size() != 3)
-			GTEST_FAIL() << "Matrix<double,1,Dynamic>:" << mat13;
+		bool ok = m.fromMatlabStringFormat(mat13);
+		const std::size_t len = m.size();
+		EXPECT_EQ(m.rows(), 3) << "Matrix<double,1,Dynamic>:" << mat13;
+		EXPECT_TRUE(ok) << "Matrix<double,1,Dynamic>:" << mat13;
+		EXPECT_EQ(m.rows(), 3) << "Matrix<double,1,Dynamic>:" << mat13;
+		EXPECT_EQ(m.cols(), 1) << "Matrix<double,1,Dynamic>:" << mat13;
+		EXPECT_EQ(len, 3) << "Matrix<double,1,Dynamic>:" << mat13;
 	}
 
 	// This one MUST BE detected as WRONG:

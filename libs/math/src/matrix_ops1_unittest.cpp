@@ -31,6 +31,14 @@ const double dat_Cok[] = {53, 64, -2, 32, 29, 30};
 
 #define CHECK_AND_RET_ERROR(_COND_, _MSG_) EXPECT_FALSE(_COND_) << _MSG_;
 
+TEST(Matrices, DynMat_size)
+{
+	CMatrixDouble A(3, 2, dat_A);
+	EXPECT_EQ(A.rows(), 3);
+	EXPECT_EQ(A.cols(), 2);
+	EXPECT_EQ(A.size(), 6U);
+}
+
 TEST(Matrices, A_times_B_dyn)
 {
 	// Dyn. size, double.
