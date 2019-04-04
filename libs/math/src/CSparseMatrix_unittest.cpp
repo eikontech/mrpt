@@ -42,7 +42,7 @@ void generateRandomSparseMatrix(
 void do_test_init_to_unit(size_t N)
 {
 	CMatrixDouble dense1;
-	dense1.asEigen().setIdentity(N, 1.0);
+	dense1.setIdentity(N);
 
 	CSparseMatrix SM(dense1);
 
