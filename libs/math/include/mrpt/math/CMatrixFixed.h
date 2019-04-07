@@ -52,9 +52,9 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	constexpr static int ColsAtCompileTime = COLS;
 	constexpr static int SizeAtCompileTime = ROWS * COLS;
 	constexpr static int is_mrpt_type = 1;
-	using eigen_t = Eigen::Matrix<
-		T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
-		COLS>;
+	constexpr static int StorageOrder =
+		(ROWS != 1 && COLS == 1) ? 0 /*colMajor*/ : 1 /*rowMajor*/;
+	using eigen_t = Eigen::Matrix<T, ROWS, COLS, StorageOrder, ROWS, COLS>;
 	/** @} */
 
 	/** @name Iterators interface
@@ -230,18 +230,24 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
 	{
+		static_assert(
+			std::is_same_v<EIGEN_MATRIX, eigen_t>,
+			"Please, do not override the default template arguments of this "
+			"method.");
 		return EIGEN_MAP(&m_data[0], ROWS, COLS);
 	}
 
 	/** \overload (const version) */
 	template <
-		typename EIGEN_MATRIX = Eigen::Matrix<
-			T, ROWS, COLS, (ROWS != 1 && COLS == 1) ? 0 /*rowMajor*/ : 1, ROWS,
-			COLS>,
+		typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
 			const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
 	{
+		static_assert(
+			std::is_same_v<EIGEN_MATRIX, eigen_t>,
+			"Please, do not override the default template arguments of this "
+			"method.");
 		return EIGEN_MAP(&m_data[0], ROWS, COLS);
 	}
 

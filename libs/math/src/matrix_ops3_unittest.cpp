@@ -40,7 +40,9 @@ TEST(Matrices, HCHt_3x2_2x2_2x3)
 	CMatrixDouble R;
 	H.multiply_HCHt(C, R);
 
-	EXPECT_NEAR((R_REAL - R).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((R_REAL - R).array().abs().sum(), 0, 1e-4) << "R:\n"
+														   << R << "\nR_REAL:\n"
+														   << R_REAL << "\n";
 }
 
 TEST(Matrices, HCHt_scalar_1x2_2x2_2x1)

@@ -61,7 +61,10 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	constexpr static int ColsAtCompileTime = -1;
 	constexpr static int SizeAtCompileTime = -1;
 	constexpr static int is_mrpt_type = 1;
-	using eigen_t = Eigen::Matrix<T, -1, -1, 1, -1, -1>;
+	constexpr static int StorageOrder = 1 /*rowMajor*/;
+	using eigen_t = Eigen::Matrix<
+		T, RowsAtCompileTime, ColsAtCompileTime, StorageOrder,
+		RowsAtCompileTime, ColsAtCompileTime>;
 	/** @} */
 
 	/** @name Iterators interface
@@ -528,15 +531,23 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
 	{
+		static_assert(
+			std::is_same_v<EIGEN_MATRIX, eigen_t>,
+			"Please, do not override the default template arguments of this "
+			"method.");
 		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 	/** \overload (const version) */
 	template <
-		typename EIGEN_MATRIX = Eigen::Matrix<T, -1, -1, 1, -1, -1>,
+		typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
 			const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
 	{
+		static_assert(
+			std::is_same_v<EIGEN_MATRIX, eigen_t>,
+			"Please, do not override the default template arguments of this "
+			"method.");
 		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 

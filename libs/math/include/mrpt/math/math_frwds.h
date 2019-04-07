@@ -22,6 +22,8 @@ template <typename PlainObjectType, int MapOptions, typename StrideType>
 class Map;
 template <int Value>
 class InnerStride;
+template <int Outter, int Inner>
+class Stride;
 template <
 	typename _Scalar, int _Rows, int _Cols, int _Options,
 	int _MaxRows /*= _Rows*/, int _MaxCols /* = _Cols*/>

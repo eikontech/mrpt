@@ -64,6 +64,12 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		m.setIdentity();
 		return m;
 	}
+	static Derived Identity(const std::size_t N)
+	{
+		Derived m;
+		m.setIdentity(N);
+		return m;
+	}
 
 	/** this = A*B, with A & B of the same type of this.
 	 * For products of different matrix types, use the regular * operator (which
@@ -105,7 +111,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 			R.asEigen() += res.eval();
 		else
 		{
-			R.resize(C.rows(), C.cols());
+			R.resize(mbDerived().rows(), mbDerived().rows());
 			R.asEigen() = res.eval();
 		}
 	}
