@@ -44,7 +44,7 @@ TEST(Matrices, A_times_B_dyn)
 	// Dyn. size, double.
 	CMatrixDouble A(3, 2, dat_A);
 	CMatrixDouble B(2, 2, dat_B);
-	CMatrixDouble C = A * B;
+	CMatrixDouble C = CMatrixDouble(A * B);
 	CMatrixDouble C_ok(3, 2, dat_Cok);
 	CMatrixDouble err = C - C_ok;
 	EXPECT_NEAR(0, fabs(err.sum()), 1e-5)
@@ -59,7 +59,7 @@ TEST(Matrices, A_times_B_fix)
 	CMatrixFixed<double, 3, 2> C, C_ok(dat_Cok), Err;
 
 	C = A * B;
-	Err = C - CMatrixFixed<double, 3, 2>(C_ok);
+	Err = C.asEigen() - CMatrixFixed<double, 3, 2>(C_ok).asEigen();
 
 	EXPECT_NEAR(0, fabs(Err.asEigen().array().sum()), 1e-5)
 		<< "A:   " << A << "B:   " << B << "A*B: " << C << endl;
@@ -107,7 +107,7 @@ TEST(Matrices, EigenVal2x2dyn)
 	CMatrixDouble C1_D;
 	C1_D.setDiagonal(C1_Ds);
 
-	CMatrixDouble C1_RR = C1_V * C1_D * C1_V.transpose();
+	CMatrixDouble C1_RR = CMatrixDouble(C1_V * C1_D * C1_V.transpose());
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
 }
 
@@ -123,7 +123,7 @@ TEST(Matrices, EigenVal3x3dyn)
 	CMatrixDouble C1_D;
 	C1_D.setDiagonal(C1_Ds);
 
-	CMatrixDouble C1_RR = C1_V * C1_D * C1_V.transpose();
+	CMatrixDouble C1_RR = CMatrixDouble(C1_V * C1_D * C1_V.transpose());
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
 }
 
@@ -139,7 +139,7 @@ TEST(Matrices, EigenVal2x2fix)
 	CMatrixDouble22 C1_D;
 	C1_D.setDiagonal(C1_Ds);
 
-	CMatrixDouble22 C1_RR = C1_V * C1_D * C1_V.transpose();
+	CMatrixDouble22 C1_RR = CMatrixDouble22(C1_V * C1_D * C1_V.transpose());
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
 }
 
@@ -155,6 +155,6 @@ TEST(Matrices, EigenVal3x3fix)
 	CMatrixDouble33 C1_D;
 	C1_D.setDiagonal(C1_Ds);
 
-	CMatrixDouble33 C1_RR = C1_V * C1_D * C1_V.transpose();
+	CMatrixDouble33 C1_RR = CMatrixDouble33(C1_V * C1_D * C1_V.transpose());
 	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
 }

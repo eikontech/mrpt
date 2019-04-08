@@ -83,35 +83,44 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 
 	/** Initializes from a C array with RowMajor values */
 	template <size_t N>
-	CMatrixFixed(const T (&vals)[N])
+	explicit CMatrixFixed(const T (&vals)[N])
 	{
 		this->loadFromArray(vals);
 	}
 
 	/** Convert from Eigen matrix */
 	template <class Derived>
-	CMatrixFixed(const Eigen::MatrixBase<Derived>& m)
+	explicit CMatrixFixed(const Eigen::MatrixBase<Derived>& m)
 	{
 		*this = m;
 	}
 	/** Convert from Eigen product */
 	template <typename _Lhs, typename _Rhs, int Option>
-	CMatrixFixed(const Eigen::Product<_Lhs, _Rhs, Option>& p)
+	explicit CMatrixFixed(const Eigen::Product<_Lhs, _Rhs, Option>& p)
 	{
 		*this = p.eval();
 	}
 	/** Convert from Eigen binary op */
 	template <typename Op, typename Lhs, typename Rhs>
-	CMatrixFixed(const Eigen::CwiseBinaryOp<Op, Lhs, Rhs>& p)
+	explicit CMatrixFixed(const Eigen::CwiseBinaryOp<Op, Lhs, Rhs>& p)
 	{
 		*this = p.eval();
 	}
 
 	/** Convert from Eigen block */
 	template <typename VectorType, int Size>
-	CMatrixFixed(const Eigen::VectorBlock<VectorType, Size>& m)
+	explicit CMatrixFixed(const Eigen::VectorBlock<VectorType, Size>& m)
 	{
 		*this = m;
+	}
+
+	/** Convenient ctor from size: in this class, it throws if size does not
+	 * match compile-time size. It is provided for the sake of offering a
+	 * uniform API with CMatrixDynamic. */
+	CMatrixFixed(const size_type cols, const size_type rows)
+	{
+		ASSERT_EQUAL_(cols, static_cast<size_type>(COLS));
+		ASSERT_EQUAL_(rows, static_cast<size_type>(ROWS));
 	}
 
 	MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CMatrixFixed)

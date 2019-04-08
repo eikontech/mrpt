@@ -268,6 +268,9 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
 				}
 			};  // end while procesing this row
 
+			if (!i && nRows == 0)
+				throw std::runtime_error("loadFromTextFile: Empty first line!");
+
 			// "i": # of columns:
 			if ((Derived::ColsAtCompileTime != Eigen::Dynamic &&
 				 Index(i) != Derived::ColsAtCompileTime))
@@ -370,6 +373,31 @@ template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::operator*=(Scalar s)
 {
 	mvbDerived().asEigen().array() *= s;
+}
+
+template <typename Scalar, class Derived>
+Derived MatrixVectorBase<Scalar, Derived>::operator+(const Derived& m2) const
+{
+	Derived ret(mvbDerived().cols(), mvbDerived().rows());
+	ret.asEigen() = mvbDerived().asEigen() + m2.asEigen();
+	return ret;
+}
+template <typename Scalar, class Derived>
+void MatrixVectorBase<Scalar, Derived>::operator+=(const Derived& m2)
+{
+	mvbDerived().asEigen() += m2.asEigen();
+}
+template <typename Scalar, class Derived>
+Derived MatrixVectorBase<Scalar, Derived>::operator-(const Derived& m2) const
+{
+	Derived ret(mvbDerived().cols(), mvbDerived().rows());
+	ret.asEigen() = mvbDerived().asEigen() - m2.asEigen();
+	return ret;
+}
+template <typename Scalar, class Derived>
+void MatrixVectorBase<Scalar, Derived>::operator-=(const Derived& m2)
+{
+	mvbDerived().asEigen() -= m2.asEigen();
 }
 
 }  // namespace mrpt::math

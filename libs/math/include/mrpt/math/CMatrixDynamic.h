@@ -145,7 +145,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	/** Constructors */
 	CMatrixDynamic(const CMatrixDynamic& m) { (*this) = m; }
 
-	CMatrixDynamic(size_t row = 1, size_t col = 1) { realloc(row, col); }
+	CMatrixDynamic(size_t row = 0, size_t col = 0) { realloc(row, col); }
 
 	/** Copy (casting from if needed) from another matrix  */
 	template <typename U>
@@ -163,13 +163,13 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 
 	/** Convert from Eigen product */
 	template <typename _Lhs, typename _Rhs, int Option>
-	CMatrixDynamic(const Eigen::Product<_Lhs, _Rhs, Option>& p)
+	explicit CMatrixDynamic(const Eigen::Product<_Lhs, _Rhs, Option>& p)
 	{
 		*this = p.template eval();
 	}
 	/** Convert from Eigen binary op */
 	template <typename Op, typename Lhs, typename Rhs>
-	CMatrixDynamic(const Eigen::CwiseBinaryOp<Op, Lhs, Rhs>& p)
+	explicit CMatrixDynamic(const Eigen::CwiseBinaryOp<Op, Lhs, Rhs>& p)
 	{
 		*this = p.template eval();
 	}

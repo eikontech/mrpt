@@ -47,7 +47,7 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
 		size_t(cov_inv.cols()) == size_t(mu.size()));
 	T ret = ::exp(
 		static_cast<T>(-0.5) *
-		mrpt::math::multiply_HCHt_scalar((x - mu).eval(), cov_inv));
+		mrpt::math::multiply_HCHt_scalar(x - mu, cov_inv));
 	return scaled_pdf
 			   ? ret
 			   : ret * ::sqrt(

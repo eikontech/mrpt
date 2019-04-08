@@ -230,6 +230,11 @@ class MatrixVectorBase
 	void operator-=(Scalar s);
 	void operator*=(Scalar s);
 
+	Derived operator+(const Derived& m2) const;
+	void operator+=(const Derived& m2);
+	Derived operator-(const Derived& m2) const;
+	void operator-=(const Derived& m2);
+
 	/** Sum of all elements in matrix/vector. */
 	Scalar sum() const;
 

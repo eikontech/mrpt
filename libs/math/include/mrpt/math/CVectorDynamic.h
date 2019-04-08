@@ -115,6 +115,13 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 		for (size_t i = 0; i < N; i++) m_data[i] = static_cast<T>(data[i]);
 	}
 
+	/** Convert from Eigen matrix */
+	template <class Derived>
+	explicit CVectorDynamic(const Eigen::MatrixBase<Derived>& m)
+	{
+		*this = m;
+	}
+
 	/** Number of rows in the vector */
 	size_type rows() const { return m_data.size(); }
 
@@ -135,6 +142,37 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	void resize(std::size_t N, bool zeroNewElements = false)
 	{
 		setSize(N, 1, zeroNewElements);
+	}
+
+	template <class MAT>
+	void setFromMatrixLike(const MAT& m)
+	{
+		MRPT_START
+		setSize(m.rows(), m.cols());
+		for (Index r = 0; r < rows(); r++)
+			for (Index c = 0; c < cols(); c++) (*this)(r, c) = m(r, c);
+		MRPT_END
+	}
+
+	/** Assignment operator from another matrix (possibly of a different type)
+	 */
+	template <typename U>
+	CVectorDynamic& operator=(const CMatrixDynamic<U>& m)
+	{
+		MRPT_START
+		setFromMatrixLike(m);
+		return *this;
+		MRPT_END
+	}
+
+	/** Assignment from an Eigen matrix */
+	template <class Derived>
+	CVectorDynamic& operator=(const Eigen::MatrixBase<Derived>& m)
+	{
+		MRPT_START
+		setFromMatrixLike(m);
+		return *this;
+		MRPT_END
 	}
 
 	void push_back(const T& val)

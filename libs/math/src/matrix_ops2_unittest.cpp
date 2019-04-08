@@ -303,7 +303,7 @@ TEST(Matrices, fromMatlabStringFormat)
 	if (!M6.fromMatlabStringFormat(mat6)) GTEST_FAIL() << mat6;
 
 	// Check correct values loaded:
-	CMatrixDouble RES = M1 * M2;
+	CMatrixDouble RES = CMatrixDouble(M1 * M2);
 
 	EXPECT_NEAR(0, (M6 - RES).array().square().sum(), 1e-3);
 }
