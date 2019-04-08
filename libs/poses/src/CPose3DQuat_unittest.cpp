@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -168,7 +169,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<7 + 3> x_incrs;
-			x_incrs.assign(1e-7);
+			x_incrs.fill(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
@@ -177,8 +178,8 @@ class Pose3DQuatTests : public ::testing::Test
 					CVectorFixedDouble<3>& Y)>(&func_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 7, num_df_dpoint);
+			num_df_dpose = numJacobs.asEigen().block<3, 7>(0, 0);
+			num_df_dpoint = numJacobs.asEigen().block<3, 3>(0, 7);
 		}
 
 		// Compare:
@@ -298,7 +299,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<7 + 3> x_incrs;
-			x_incrs.assign(1e-7);
+			x_incrs.fill(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
@@ -513,7 +514,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<7 + 3> x_incrs;
-			x_incrs.assign(1e-7);
+			x_incrs.fill(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
@@ -576,7 +577,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<4> x_incrs;
-			x_incrs.assign(1e-5);
+			x_incrs.fill(1e-5);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,

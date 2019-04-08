@@ -112,31 +112,6 @@ class MatrixVectorBase
 			start_row, start_col);
 	}
 
-	template <int NUM_ELEMENTS>
-	auto tail()
-	{
-		internalAssertEigenDefined<Derived>();
-		return mvbDerived().asEigen().template tail<NUM_ELEMENTS>();
-	}
-	template <int NUM_ELEMENTS>
-	auto tail() const
-	{
-		internalAssertEigenDefined<Derived>();
-		return mvbDerived().asEigen().template tail<NUM_ELEMENTS>();
-	}
-	template <int NUM_ELEMENTS>
-	auto head()
-	{
-		internalAssertEigenDefined<Derived>();
-		return mvbDerived().asEigen().template head<NUM_ELEMENTS>();
-	}
-	template <int NUM_ELEMENTS>
-	auto head() const
-	{
-		internalAssertEigenDefined<Derived>();
-		return mvbDerived().asEigen().template head<NUM_ELEMENTS>();
-	}
-
 	auto transpose()
 	{
 		internalAssertEigenDefined<Derived>();
@@ -234,6 +209,11 @@ class MatrixVectorBase
 	void operator+=(const Derived& m2);
 	Derived operator-(const Derived& m2) const;
 	void operator-=(const Derived& m2);
+
+	template <int N>
+	CMatrixFixed<Scalar, N, 1> tail() const;
+	template <int N>
+	CMatrixFixed<Scalar, N, 1> head() const;
 
 	/** Sum of all elements in matrix/vector. */
 	Scalar sum() const;

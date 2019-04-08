@@ -12,6 +12,7 @@
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;

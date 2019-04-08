@@ -10,6 +10,7 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/math_frwds.h>
 
 namespace mrpt::math

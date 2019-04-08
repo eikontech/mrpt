@@ -232,7 +232,7 @@ double CPointPDFGaussian::productIntegralWith2D(
 	//   Gaussians variables amounts to simply the evaluation of
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
-	CMatrixDouble22 C = cov.block<2, 2>(0, 0);
+	auto C = CMatrixDouble22(cov.block<2, 2>(0, 0));
 	C.asEigen() += p.cov.block<2, 2>(0, 0);  // Sum of covs:
 
 	CMatrixDouble22 C_inv = C.inverse_LLt();
@@ -324,9 +324,9 @@ double CPointPDFGaussian::mahalanobisDistanceTo(
 	}
 	else
 	{
-		CMatrixDouble22 C = COV.block<2, 2>(0, 0);
+		auto C = CMatrixDouble22(COV.block<2, 2>(0, 0));
 		const CMatrixDouble22 COV_inv = C.inverse_LLt();
-		CMatrixDouble12 deltaX2 = deltaX.block<1, 2>(0, 0);
+		auto deltaX2 = CMatrixDouble12(deltaX.block<1, 2>(0, 0));
 		return std::sqrt(deltaX2.multiply_HCHt_scalar(COV_inv));
 	}
 }

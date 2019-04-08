@@ -161,7 +161,7 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
 
 		const CMatrixFixed<double, 12, 12> J1a =
 			SE<3>::jacob_dAB_dA(Dinv, P1inv + P2);
-		const CMatrixDouble12_6 J1b = -SE<3>::jacob_dDexpe_de(Dinv);
+		const auto J1b = CMatrixDouble12_6(-SE<3>::jacob_dDexpe_de(Dinv));
 
 		J1 = dLnT_dT.asEigen() * J1a.asEigen() * J1b.asEigen();
 	}
@@ -262,11 +262,11 @@ SE<2>::tang2mat_jacob SE<2>::jacob_dDexpe_de(const SE<2>::type& D)
 	const auto c = D.phi_cos(), s = D.phi_sin();
 
 	// clang-format off
-	return (Eigen::Matrix3d() <<
+	return SE<2>::tang2mat_jacob((Eigen::Matrix3d() <<
 	        c, -s, 0,
 	        s,  c, 0,
 	        0,  0, 1
-	        ).finished();
+	        ).finished());
 	// clang-format on
 }
 

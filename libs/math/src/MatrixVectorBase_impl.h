@@ -400,4 +400,19 @@ void MatrixVectorBase<Scalar, Derived>::operator-=(const Derived& m2)
 	mvbDerived().asEigen() -= m2.asEigen();
 }
 
+template <typename Scalar, class Derived>
+template <int N>
+CMatrixFixed<Scalar, N, 1> MatrixVectorBase<Scalar, Derived>::tail() const
+{
+	return CMatrixFixed<Scalar, N, 1>(
+		mvbDerived().asEigen().template tail<N>());
+}
+template <typename Scalar, class Derived>
+template <int N>
+CMatrixFixed<Scalar, N, 1> MatrixVectorBase<Scalar, Derived>::head() const
+{
+	return CMatrixFixed<Scalar, N, 1>(
+		mvbDerived().asEigen().template head<N>());
+}
+
 }  // namespace mrpt::math

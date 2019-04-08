@@ -302,7 +302,7 @@ void CPosePDFGaussianInf::bayesianFusion(
 
 	const CMatrixDouble33 cov = this->cov_inv.inverse_LLt();
 
-	CMatrixDouble31 x = (cov.asEigen() * (C1_inv * x1 + C2_inv * x2)).eval();
+	auto x = CMatrixDouble31(cov.asEigen() * (C1_inv * x1 + C2_inv * x2));
 
 	this->mean.x(x(0, 0));
 	this->mean.y(x(1, 0));

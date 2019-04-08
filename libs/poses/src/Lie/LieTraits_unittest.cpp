@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -79,8 +80,8 @@ class SE_traits_tests : public ::testing::Test
 		P2.getHomogeneousMatrix(P2hm);
 		Pd.getInverseHomogeneousMatrix(Pd_inv_hm);
 
-		const CPose3D DinvP1invP2_(
-			CMatrixDouble44(Pd_inv_hm * P1_inv_hm * P2hm));
+		const CPose3D DinvP1invP2_(CMatrixDouble44(
+			Pd_inv_hm.asEigen() * P1_inv_hm.asEigen() * P2hm.asEigen()));
 		const POSE_TYPE DinvP1invP2(DinvP1invP2_);
 
 		// Pseudo-logarithm:
@@ -113,7 +114,7 @@ class SE_traits_tests : public ::testing::Test
 			params.P2 = P2;
 
 			CVectorFixedDouble<DIMS + DIMS> x_incrs;
-			x_incrs.assign(1e-4);
+			x_incrs.fill(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
@@ -124,8 +125,8 @@ class SE_traits_tests : public ::testing::Test
 					&func_numeric_DinvP1InvP2),
 				x_incrs, params, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_J1);
-			numJacobs.extractMatrix(0, DIMS, num_J2);
+			num_J1 = numJacobs.asEigen().block<DIMS, DIMS>(0, 0);
+			num_J2 = numJacobs.asEigen().block<DIMS, DIMS>(0, DIMS);
 		}
 
 		const double max_eror = 1e-3;
@@ -188,14 +189,14 @@ class SE_traits_tests : public ::testing::Test
 		CMatrixFixed<double, N, N> num_dAB_A;
 		{
 			CVectorFixedDouble<N> x_mean;
-			x_mean.assign(0);
+			x_mean.fill(0);
 
 			TParamsMat<N> params;
 			params.Avec = SE_TYPE::asManifoldVector(A);
 			params.Bvec = SE_TYPE::asManifoldVector(B);
 
 			CVectorFixedDouble<N> x_incrs;
-			x_incrs.assign(1e-4);
+			x_incrs.fill(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
@@ -211,14 +212,14 @@ class SE_traits_tests : public ::testing::Test
 		CMatrixFixed<double, N, N> num_dAB_B;
 		{
 			CVectorFixedDouble<N> x_mean;
-			x_mean.assign(0);
+			x_mean.fill(0);
 
 			TParamsMat<N> params;
 			params.Avec = SE_TYPE::asManifoldVector(A);
 			params.Bvec = SE_TYPE::asManifoldVector(B);
 
 			CVectorFixedDouble<N> x_incrs;
-			x_incrs.assign(1e-4);
+			x_incrs.fill(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,

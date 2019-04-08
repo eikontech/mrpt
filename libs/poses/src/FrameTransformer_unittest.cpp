@@ -11,6 +11,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/FrameTransformer.h>
+#include <Eigen/Dense>
 
 template <int DIM>
 void run_tf_test1(const mrpt::poses::CPose2D& A2B_)

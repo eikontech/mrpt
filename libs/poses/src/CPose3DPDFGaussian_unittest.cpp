@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -119,7 +120,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<12> x_incrs;
-			x_incrs.assign(1e-6);
+			x_incrs.fill(1e-6);
 			transform_gaussian_linear(
 				x_mean, x_cov, func_compose, DUMMY, y_mean, y_cov, x_incrs);
 		}
@@ -178,7 +179,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<2 * 6> x_incrs;
-			x_incrs.assign(1e-7);
+			x_incrs.fill(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
@@ -241,7 +242,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<2 * 6> x_incrs;
-			x_incrs.assign(1e-6);
+			x_incrs.fill(1e-6);
 			transform_gaussian_linear(
 				x_mean, x_cov, func_inv_compose, DUMMY, y_mean, y_cov, x_incrs);
 		}

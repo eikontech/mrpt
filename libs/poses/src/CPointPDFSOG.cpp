@@ -105,8 +105,8 @@ void CPointPDFSOG::getCovarianceAndMean(
 			auto estMean_i = CMatrixDouble31(it->val.mean);
 			estMean_i -= estMean;
 
-			CMatrixDouble33 partCov =
-				estMean_i.asEigen() * estMean_i.transpose();
+			auto partCov =
+				CMatrixDouble33(estMean_i.asEigen() * estMean_i.transpose());
 			partCov += it->val.cov;
 			partCov *= w;
 			estCov += partCov;

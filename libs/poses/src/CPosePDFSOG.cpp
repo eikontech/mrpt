@@ -204,7 +204,7 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 	newReferenceBase.getHomogeneousMatrix(HM);
 
 	// Clip the 4x4 matrix
-	CMatrixDouble33 M = HM.block<3, 3>(0, 0).eval();
+	auto M = CMatrixDouble33(HM.block<3, 3>(0, 0));
 
 	// The variance in phi is unmodified:
 	M(0, 2) = 0;
@@ -559,7 +559,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 				const double Wj = exp(m_modes[j].log_w) / sumW;
 				const double Wij_ = 1.0 / (Wi + Wj);
 
-				CMatrixDouble33 Pij = m_modes[i].cov * (Wi * Wij_);
+				auto Pij = CMatrixDouble33(m_modes[i].cov * (Wi * Wij_));
 				Pij.asEigen() += m_modes[j].cov.asEigen() * Wj * Wij_;
 
 				auto MUij = CMatrixDouble31(m_modes[j].mean);
