@@ -88,6 +88,34 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 	out_cov *= N_inv;
 }
 
+/** Computes a row with the mean values of each column in the matrix and the
+ * associated vector with the standard deviation of each column.
+ * \sa mean,meanAndStdAll \exception std::exception If the matrix/vector is
+ * empty.
+ * \param unbiased_variance Standard deviation is sum(vals-mean)/K, with K=N-1
+ * or N for unbiased_variance=true or false, respectively.
+ */
+template <class MAT_IN, class VEC>
+void meanAndStdColumns(
+	const MAT_IN& m, VEC& outMeanVector, VEC& outStdVector,
+	const bool unbiased_variance = true)
+{
+	const auto N = m.rows(), M = m.cols();
+	if (N == 0) throw std::runtime_error("meanAndStdColumns: Empty container.");
+	const double N_inv = 1.0 / N;
+	const double N_ =
+		unbiased_variance ? (N > 1 ? 1.0 / (N - 1) : 1.0) : 1.0 / N;
+	outMeanVector.resize(M);
+	outStdVector.resize(M);
+	for (decltype(m.cols()) i = 0; i < M; i++)
+	{
+		outMeanVector[i] = m.asEigen().col(i).array().sum() * N_inv;
+		outStdVector[i] = std::sqrt(
+			(m.asEigen().col(i).array() - outMeanVector[i]).square().sum() *
+			N_);
+	}
+}
+
 /** Computes the covariance matrix from a list of samples in an NxM matrix,
  * where each row is a sample, so the covariance is MxM.
  * \param v The set of data, as a NxM matrix.

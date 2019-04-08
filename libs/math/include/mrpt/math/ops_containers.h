@@ -302,8 +302,9 @@ void adjustRange(
 	if (curRan != 0) m *= (maxVal - minVal) / curRan;
 }
 
-/** Computes the standard deviation of a vector
- * \param v The set of data
+/** Computes the standard deviation of a vector (or all elements of a matrix)
+ * \param v The set of data, either as a vector, or a matrix (arrangement of
+ * data is ignored in this function).
  * \param out_mean The output for the estimated mean
  * \param out_std The output for the estimated standard deviation
  * \param unbiased If set to true or false the std is normalized by "N-1" or

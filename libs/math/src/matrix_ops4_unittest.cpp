@@ -25,7 +25,7 @@ using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace std;
 
-TEST(Matrices, meanAndStd)
+TEST(Matrices, meanAndStdColumns)
 {
 	/* meanAndStd: Computes a row with the mean values of each column in the
 	   matrix and
@@ -56,7 +56,7 @@ TEST(Matrices, meanAndStd)
 
 	// Compute mean & std of each column:
 	CVectorDouble result_mean, result_std;
-	mrpt::math::meanAndCovMat(A, result_mean, result_std);
+	mrpt::math::meanAndStdColumns(A, result_mean, result_std);
 
 	// Result from MATLAB:
 	const double dat_good_M[] = {
