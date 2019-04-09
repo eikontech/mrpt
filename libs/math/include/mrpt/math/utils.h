@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/math_frwds.h>
 #include <cmath>

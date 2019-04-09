@@ -14,12 +14,11 @@
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/serialization/CArchive.h>
-
+#include <Eigen/Dense>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -67,8 +66,8 @@ void CEllipsoid::render_dl() const
 			unsigned int i;
 
 			// Compute the new vectors for the ellipsoid:
-			CMatrixDouble M;
-			M.noalias() = double(m_quantiles) * m_eigVal * m_eigVec.transpose();
+			CMatrixDouble M = m_eigVal * m_eigVec.transpose();
+			M *= double(m_quantiles);
 
 			glBegin(GL_LINE_LOOP);
 

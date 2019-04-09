@@ -161,7 +161,7 @@ void generalizedEllipsoidPoints<2>(
 
 		out_params_pts.resize(out_params_pts.size() + 1);
 
-		Eigen::Matrix<float, 2, 1>& pt = out_params_pts.back();
+		auto& pt = out_params_pts.back();
 
 		pt[0] = mean[0] + ccos * U(0, 0) + ssin * U(0, 1);
 		pt[1] = mean[1] + ccos * U(1, 0) + ssin * U(1, 1);

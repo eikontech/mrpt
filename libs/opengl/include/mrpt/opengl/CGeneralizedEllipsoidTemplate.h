@@ -184,7 +184,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 		{
 			// 2) Generate "standard" ellipsoid:
 			std::vector<array_parameter_t> params_pts;
-			const cov_matrix_t Uscaled = static_cast<double>(m_quantiles) * m_U;
+			cov_matrix_t Uscaled = m_U;
+			Uscaled *= static_cast<double>(m_quantiles);
 			detail::generalizedEllipsoidPoints<DIM>(
 				Uscaled, m_mean, params_pts, m_numSegments, m_numSegments);
 

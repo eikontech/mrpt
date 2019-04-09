@@ -1467,13 +1467,13 @@ void CImage::getAsMatrixTiled(CMatrixFloat& outMatrix) const
 	if (isColor())
 	{
 		// Luminance: Y = 0.3R + 0.59G + 0.11B
-		for (unsigned int y = 0; y < matrix_ly; y++)
+		for (CMatrixFloat::Index y = 0; y < matrix_ly; y++)
 		{
 			unsigned char* min_pixels = (*this)(0, y % img.rows, 0);
 			unsigned char* max_pixels = min_pixels + img.cols * 3;
 			unsigned char* pixels = min_pixels;
 			float aux;
-			for (unsigned int x = 0; x < matrix_lx; x++)
+			for (CMatrixFloat::Index x = 0; x < matrix_lx; x++)
 			{
 				aux = *pixels++ * 0.30f;
 				aux += *pixels++ * 0.59f;
@@ -1485,12 +1485,12 @@ void CImage::getAsMatrixTiled(CMatrixFloat& outMatrix) const
 	}
 	else
 	{
-		for (unsigned int y = 0; y < matrix_ly; y++)
+		for (CMatrixFloat::Index y = 0; y < matrix_ly; y++)
 		{
 			unsigned char* min_pixels = (*this)(0, y % img.rows, 0);
 			unsigned char* max_pixels = min_pixels + img.cols;
 			unsigned char* pixels = min_pixels;
-			for (unsigned int x = 0; x < matrix_lx; x++)
+			for (CMatrixFloat::Index x = 0; x < matrix_lx; x++)
 			{
 				outMatrix(y, x) = *pixels++;
 				if (pixels >= max_pixels) pixels = min_pixels;

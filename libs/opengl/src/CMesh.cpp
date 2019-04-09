@@ -14,7 +14,7 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
-
+#include <Eigen/Dense>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -345,8 +345,7 @@ void CMesh::assignImage(const CImage& img)
 	m_textureImage = img;
 
 	// Delete content in Z
-	Z.setSize(img.getHeight(), img.getWidth());
-	Z.assign(0);
+	Z.setZero(img.getHeight(), img.getWidth());
 
 	m_modified_Image = true;
 	m_enableTransparency = false;

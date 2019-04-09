@@ -126,8 +126,7 @@ void CMeshFast::assignImage(const CImage& img)
 	m_textureImage = img;
 
 	// Delete content in Z
-	Z.setSize(img.getHeight(), img.getWidth());
-	Z.assign(0);
+	Z.setZero(img.getHeight(), img.getWidth());
 
 	// Update flags/states
 	m_modified_Image = true;
