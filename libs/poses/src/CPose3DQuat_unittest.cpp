@@ -183,25 +183,31 @@ class Pose3DQuatTests : public ::testing::Test
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint - num_df_dpoint).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpoint.asEigen() - num_df_dpoint.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl
-			<< num_df_dpoint << endl
+			<< num_df_dpoint.asEigen() << endl
 			<< "Implemented method: " << endl
 			<< df_dpoint << endl
 			<< "Error: " << endl
-			<< df_dpoint - num_df_dpoint << endl;
+			<< df_dpoint.asEigen() - num_df_dpoint.asEigen() << endl;
 
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	void test_invComposePoint(
@@ -308,34 +314,40 @@ class Pose3DQuatTests : public ::testing::Test
 					CVectorFixedDouble<3>& Y)>(&func_inv_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 7, num_df_dpoint);
+			num_df_dpose = numJacobs.block<3, 7>(0, 0);
+			num_df_dpoint = numJacobs.block<3, 3>(0, 7);
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint - num_df_dpoint).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpoint.asEigen() - num_df_dpoint.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "from pose: " << CPose3D(x1, y1, z1, yaw1, pitch1, roll1) << endl
 			<< "p:  " << p << endl
 			<< "local:  " << l << endl
 			<< "Numeric approximation of df_dpoint: " << endl
-			<< num_df_dpoint << endl
+			<< num_df_dpoint.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpoint << endl
+			<< df_dpoint.asEigen() << endl
 			<< "Error: " << endl
 			<< df_dpoint - num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "from pose: " << CPose3D(x1, y1, z1, yaw1, pitch1, roll1) << endl
 			<< "p:  " << p << endl
 			<< "local:  " << l << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	void test_fromYPRAndBack(
@@ -523,30 +535,36 @@ class Pose3DQuatTests : public ::testing::Test
 					CVectorFixedDouble<3>& Y)>(&func_spherical_coords),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 7, num_df_dpoint);
+			num_df_dpose = numJacobs.block<3, 7>(0, 0);
+			num_df_dpoint = numJacobs.block<3, 3>(0, 7);
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint - num_df_dpoint).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpoint.asEigen() - num_df_dpoint.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl
-			<< num_df_dpoint << endl
+			<< num_df_dpoint.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpoint << endl
+			<< df_dpoint.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpoint - num_df_dpoint << endl;
+			<< df_dpoint.asEigen() - num_df_dpoint.asEigen() << endl;
 
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	static void func_normalizeJacob(
@@ -586,18 +604,21 @@ class Pose3DQuatTests : public ::testing::Test
 					CVectorFixedDouble<4>& Y)>(&func_normalizeJacob),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
+			num_df_dpose = numJacobs.block<4, 4>(0, 0);
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 };
 

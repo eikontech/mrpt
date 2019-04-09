@@ -16,6 +16,7 @@
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/slam/data_association.h>
+#include <Eigen/Dense>
 #include <memory>
 #include <memory>  // unique_ptr
 #include <nanoflann.hpp>  // For kd-tree's
@@ -376,10 +377,10 @@ void mrpt::slam::data_association_full_covariance(
 			for (size_t i = 0; i < nPredictions; ++i)
 			{
 				// Evaluate sqr. mahalanobis distance of obs_j -> pred_i:
-				const size_t pred_cov_idx =
-					i * length_O;  // Extract the submatrix from the diagonal:
-				Y_predictions_cov.extractMatrix(
-					pred_cov_idx, pred_cov_idx, length_O, length_O, pred_i_cov);
+				// Extract the submatrix from the diagonal:
+				const size_t pred_cov_idx = i * length_O;
+				pred_i_cov = Y_predictions_cov.asEigen().block(
+					pred_cov_idx, pred_cov_idx, length_O, length_O);
 
 				for (size_t k = 0; k < length_O; k++)
 					diff_means_i_j[k] =
@@ -422,10 +423,10 @@ void mrpt::slam::data_association_full_covariance(
 				// "predictions_mean"
 
 				// Build the PDF of the prediction:
-				const size_t pred_cov_idx =
-					i * length_O;  // Extract the submatrix from the diagonal:
-				Y_predictions_cov.extractMatrix(
-					pred_cov_idx, pred_cov_idx, length_O, length_O, pred_i_cov);
+				// Extract the submatrix from the diagonal:
+				const size_t pred_cov_idx = i * length_O;
+				pred_i_cov = Y_predictions_cov.asEigen().block(
+					pred_cov_idx, pred_cov_idx, length_O, length_O);
 
 				for (size_t k = 0; k < length_O; k++)
 					diff_means_i_j[k] =

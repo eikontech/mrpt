@@ -112,10 +112,6 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 
 };  // End of class def.
 
-/** Dumps a point as a string [x,y] or [x,y,z]  */
-template <class DERIVEDCLASS>
-std::ostream& operator<<(std::ostream& o, const CPoint<DERIVEDCLASS>& p);
-
 /** Used by STL algorithms */
 template <class DERIVEDCLASS>
 bool operator<(const CPoint<DERIVEDCLASS>& a, const CPoint<DERIVEDCLASS>& b)

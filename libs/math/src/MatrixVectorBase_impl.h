@@ -399,20 +399,19 @@ void MatrixVectorBase<Scalar, Derived>::operator-=(const Derived& m2)
 {
 	mvbDerived().asEigen() -= m2.asEigen();
 }
-
 template <typename Scalar, class Derived>
-template <int N>
-CMatrixFixed<Scalar, N, 1> MatrixVectorBase<Scalar, Derived>::tail() const
+Derived MatrixVectorBase<Scalar, Derived>::operator*(const Derived& m2) const
 {
-	return CMatrixFixed<Scalar, N, 1>(
-		mvbDerived().asEigen().template tail<N>());
-}
-template <typename Scalar, class Derived>
-template <int N>
-CMatrixFixed<Scalar, N, 1> MatrixVectorBase<Scalar, Derived>::head() const
-{
-	return CMatrixFixed<Scalar, N, 1>(
-		mvbDerived().asEigen().template head<N>());
+	ASSERTMSG_(
+	    mvbDerived().cols() == mvbDerived().rows(),
+	    "Operator* implemented only for square matrices. Use `A.asEigen() * "
+	    "B.asEigen()` for general matrix products.");
+	Derived ret(mvbDerived().cols(), mvbDerived().rows());
+	if constexpr (Derived::RowsAtCompileTime == Derived::ColsAtCompileTime)
+	{
+		ret.asEigen() = mvbDerived().asEigen() * m2.asEigen();
+	}
+	return ret;
 }
 
 }  // namespace mrpt::math

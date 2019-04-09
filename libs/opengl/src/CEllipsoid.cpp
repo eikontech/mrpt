@@ -192,7 +192,7 @@ void CEllipsoid::serializeFrom(
 			{
 				CMatrixF c;
 				in >> c;
-				m_cov = c.cast<double>();
+				m_cov = c.cast_double();
 			}
 			else
 			{

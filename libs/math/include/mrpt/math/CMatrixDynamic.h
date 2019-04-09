@@ -551,8 +551,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		return EIGEN_MAP(&m_data[0], m_Rows, m_Cols);
 	}
 
-	template <typename T2>
-	CMatrixDynamic<T2> cast() const;
+	CMatrixDynamic<float> cast_float() const;
+	CMatrixDynamic<double> cast_double() const;
 
 };  // end of class CMatrixDynamic
 

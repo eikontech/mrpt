@@ -117,4 +117,7 @@ class CPoint2D : public CPoint<CPoint2D>,
 
 };  // End of class def.
 
+/** Dumps a point as a string (x,y) */
+std::ostream& operator<<(std::ostream& o, const CPoint2D& p);
+
 }  // namespace mrpt::poses

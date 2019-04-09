@@ -140,7 +140,7 @@ void CPosePDFSOG::serializeFrom(
 				{
 					CMatrixFloat33 mf;
 					mrpt::math::deserializeSymmetricMatrixFrom(mf, in);
-					m.cov = mf.cast<double>();
+					m.cov = mf.cast_double();
 				}
 				else
 				{

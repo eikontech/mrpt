@@ -455,11 +455,9 @@ void CPose3DQuat::sphericalCoordinates(
 
 		const CMatrixDouble33 dryp_dlocalpoint(vals);
 		if (out_jacob_dryp_dpoint)
-			out_jacob_dryp_dpoint->asEigen() =
-				dryp_dlocalpoint * jacob_dinv_dpoint;
+			*out_jacob_dryp_dpoint = dryp_dlocalpoint * jacob_dinv_dpoint;
 		if (out_jacob_dryp_dpose)
-			out_jacob_dryp_dpose->asEigen() =
-				dryp_dlocalpoint * jacob_dinv_dpose;
+			*out_jacob_dryp_dpose = dryp_dlocalpoint * jacob_dinv_dpose;
 	}
 }
 

@@ -76,14 +76,14 @@ void CPosePDFGaussian::serializeFrom(
 			in >> mean;
 			CMatrixFloat33 m;
 			mrpt::math::deserializeSymmetricMatrixFrom(m, in);
-			cov = m.cast<double>();
+			cov = m.cast_double();
 		}
 		break;
 		case 0:
 		{
 			CMatrixF auxCov;
 			in >> mean >> auxCov;
-			cov = auxCov.cast<double>();
+			cov = auxCov.cast_double();
 		}
 		break;
 		default:
@@ -204,7 +204,7 @@ void CPosePDFGaussian::rotateCov(const double ang)
 		const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
 
 	const CMatrixFixed<double, 3, 3> rot(rot_vals);
-	cov = (rot * cov * rot.transpose()).eval();
+	cov = (rot.asEigen() * cov.asEigen() * rot.asEigen().transpose()).eval();
 }
 
 /*---------------------------------------------------------------

@@ -178,6 +178,19 @@ class MatrixVectorBase
 		return mvbDerived().asEigen() * s;
 	}
 
+	template <int N>
+	CMatrixFixed<Scalar, N, 1> tail() const
+	{
+		return CMatrixFixed<Scalar, N, 1>(
+			mvbDerived().asEigen().template tail<N>());
+	}
+	template <int N>
+	CMatrixFixed<Scalar, N, 1> head() const
+	{
+		return CMatrixFixed<Scalar, N, 1>(
+			mvbDerived().asEigen().template head<N>());
+	}
+
 	/** @} */
 
 	/** @name Standalone operations (do NOT require `#include <Eigen/Dense>`)
@@ -209,11 +222,7 @@ class MatrixVectorBase
 	void operator+=(const Derived& m2);
 	Derived operator-(const Derived& m2) const;
 	void operator-=(const Derived& m2);
-
-	template <int N>
-	CMatrixFixed<Scalar, N, 1> tail() const;
-	template <int N>
-	CMatrixFixed<Scalar, N, 1> head() const;
+	Derived operator*(const Derived& m2) const;
 
 	/** Sum of all elements in matrix/vector. */
 	Scalar sum() const;
@@ -306,7 +315,13 @@ void internalAssertEigenDefined()
 	}
 }
 
-template <typename Scalar, class Derived>
+/** Stream as text. Implemented for all matrices and vectors, except for
+ * non-square fixed-size matrices. */
+template <
+	typename Scalar, class Derived,
+	typename = std::enable_if_t<
+		Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
+		(Derived::ColsAtCompileTime == 1)>>
 std::ostream& operator<<(
 	std::ostream& o, const MatrixVectorBase<Scalar, Derived>& m)
 {

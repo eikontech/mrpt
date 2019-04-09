@@ -18,11 +18,19 @@
 using namespace mrpt::math;
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
-template <typename T2>
-CMatrixFixed<T2, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast() const
+CMatrixFixed<float, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_float() const
 {
-	CMatrixFixed<T, ROWS, COLS> r(rows(), cols());
-	r.asEigen() = asEigen().template cast<T2>();
+	CMatrixFixed<float, ROWS, COLS> r(rows(), cols());
+	r.asEigen() = asEigen().template cast<float>();
+	return r;
+}
+
+template <typename T, std::size_t ROWS, std::size_t COLS>
+CMatrixFixed<double, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_double()
+	const
+{
+	CMatrixFixed<double, ROWS, COLS> r(rows(), cols());
+	r.asEigen() = asEigen().template cast<double>();
 	return r;
 }
 

@@ -335,14 +335,14 @@ class Pose3DTests : public ::testing::Test
 					CVectorFixedDouble<3>& Y)>(&func_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 6, num_df_dpoint);
+			num_df_dpose = numJacobs.block<3, 6>(0, 0);
+			num_df_dpoint = numJacobs.block<3, 3>(0, 6);
 		}
 
-		const double max_eror = use_aprox ? 0.1 : 3e-3;
+		const double max_error = use_aprox ? 0.1 : 3e-3;
 
 		EXPECT_NEAR(
-			0, (df_dpoint - num_df_dpoint).array().abs().sum(), max_eror)
+			0, (df_dpoint - num_df_dpoint).array().abs().sum(), max_error)
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl
@@ -352,15 +352,18 @@ class Pose3DTests : public ::testing::Test
 			<< "Error: " << endl
 			<< df_dpoint - num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), max_eror)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			max_error)
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	void test_ExpLnEqual(const CPose3D& p1)
@@ -405,8 +408,8 @@ class Pose3DTests : public ::testing::Test
 					CVectorFixedDouble<3>& Y)>(&func_inv_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 6, num_df_dpoint);
+			num_df_dpose = numJacobs.block<3, 6>(0, 0);
+			num_df_dpoint = numJacobs.block<3, 3>(0, 6);
 		}
 
 		EXPECT_NEAR(
@@ -421,15 +424,17 @@ class Pose3DTests : public ::testing::Test
 			<< df_dpoint - num_df_dpoint << endl;
 
 		EXPECT_NEAR(
-			0, (df_dpose - num_df_dpose).asEigen().array().abs().sum(), 3e-3)
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	void test_default_values(const CPose3D& p, const std::string& label)
@@ -500,15 +505,16 @@ class Pose3DTests : public ::testing::Test
 		}
 
 		EXPECT_NEAR(
-			0, (df_dse3 - num_df_dse3).asEigen().array().abs().sum(), 3e-3)
+			0, (df_dse3.asEigen() - num_df_dse3.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "p: " << p << endl
 			<< "x_l:  " << x_l << endl
 			<< "Numeric approximation of df_dse3: " << endl
-			<< num_df_dse3 << endl
+			<< num_df_dse3.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dse3 << endl
+			<< df_dse3.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dse3 - num_df_dse3 << endl;
+			<< df_dse3.asEigen() - num_df_dse3.asEigen() << endl;
 	}
 
 	void test_invComposePointJacob_se3(const CPose3D& p, const TPoint3D x_g)
@@ -540,15 +546,16 @@ class Pose3DTests : public ::testing::Test
 		}
 
 		EXPECT_NEAR(
-			0, (df_dse3 - num_df_dse3).asEigen().array().abs().sum(), 3e-3)
+			0, (df_dse3.asEigen() - num_df_dse3.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "p: " << p << endl
 			<< "x_g:  " << x_g << endl
 			<< "Numeric approximation of df_dse3: " << endl
-			<< num_df_dse3 << endl
+			<< num_df_dse3.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dse3 << endl
+			<< df_dse3.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dse3 - num_df_dse3 << endl;
+			<< df_dse3.asEigen() - num_df_dse3.asEigen() << endl;
 	}
 
 	static void func_jacob_expe_e(
@@ -594,9 +601,11 @@ class Pose3DTests : public ::testing::Test
 			1, 0, 0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 0, 0, 1, 0, 0,  0};
 		CMatrixFixed<double, 12, 6> M(vals);
 
-		EXPECT_NEAR((numJacobs - M).asEigen().array().abs().maxCoeff(), 0, 1e-5)
+		EXPECT_NEAR(
+			(numJacobs.asEigen() - M.asEigen()).array().abs().maxCoeff(), 0,
+			1e-5)
 			<< "M:\n"
-			<< M << "numJacobs:\n"
+			<< M.asEigen() << "numJacobs:\n"
 			<< numJacobs << "\n";
 	}
 
@@ -611,7 +620,7 @@ class Pose3DTests : public ::testing::Test
 		// ensure 3x3 rot vector is orthonormal (Sophus complains otherwise):
 		auto R = p.getRotationMatrix();
 		const auto Rsvd =
-			R.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+			R.asEigen().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
 		R = Rsvd.matrixU() * Rsvd.matrixV().transpose();
 		p.setRotationMatrix(R);
 
@@ -640,15 +649,16 @@ class Pose3DTests : public ::testing::Test
 		}
 
 		EXPECT_NEAR(
-			(numJacobs - theor_jacob).asEigen().array().abs().sum(), 0, 1e-3)
+			(numJacobs.asEigen() - theor_jacob.asEigen()).array().abs().sum(),
+			0, 1e-3)
 			<< "Pose: " << p << endl
 			<< "Pose matrix:\n"
 			<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << "Num. Jacob:\n"
 			<< numJacobs << endl
 			<< "Theor. Jacob:\n"
-			<< theor_jacob << endl
+			<< theor_jacob.asEigen() << endl
 			<< "ERR:\n"
-			<< theor_jacob - numJacobs << endl;
+			<< theor_jacob.asEigen() - numJacobs.asEigen() << endl;
 	}
 
 	static void func_jacob_expe_D(
@@ -682,16 +692,19 @@ class Pose3DTests : public ::testing::Test
 		}
 
 		EXPECT_NEAR(
-			(numJacobs - theor_jacob).asEigen().array().abs().maxCoeff(), 0,
-			1e-3)
+			(numJacobs.asEigen() - theor_jacob.asEigen())
+				.array()
+				.abs()
+				.maxCoeff(),
+			0, 1e-3)
 			<< "Pose: " << p << endl
 			<< "Pose matrix:\n"
 			<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << "Num. Jacob:\n"
 			<< numJacobs << endl
 			<< "Theor. Jacob:\n"
-			<< theor_jacob << endl
+			<< theor_jacob.asEigen() << endl
 			<< "ERR:\n"
-			<< theor_jacob - numJacobs << endl;
+			<< theor_jacob.asEigen() - numJacobs.asEigen() << endl;
 	}
 
 	static void func_jacob_D_expe(
@@ -725,16 +738,19 @@ class Pose3DTests : public ::testing::Test
 		}
 
 		EXPECT_NEAR(
-			(numJacobs - theor_jacob).asEigen().array().abs().maxCoeff(), 0,
-			1e-3)
+			(numJacobs.asEigen() - theor_jacob.asEigen())
+				.array()
+				.abs()
+				.maxCoeff(),
+			0, 1e-3)
 			<< "Pose: " << p << endl
 			<< "Pose matrix:\n"
 			<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << "Num. Jacob:\n"
 			<< numJacobs << endl
 			<< "Theor. Jacob:\n"
-			<< theor_jacob << endl
+			<< theor_jacob.asEigen() << endl
 			<< "ERR:\n"
-			<< theor_jacob - numJacobs << endl;
+			<< theor_jacob.asEigen() - numJacobs.asEigen() << endl;
 	}
 
 	struct TParams_func_jacob_Aexpe_D
@@ -778,16 +794,19 @@ class Pose3DTests : public ::testing::Test
 		}
 
 		EXPECT_NEAR(
-			(numJacobs - theor_jacob).asEigen().array().abs().maxCoeff(), 0,
-			1e-3)
+			(numJacobs.asEigen() - theor_jacob.asEigen())
+				.array()
+				.abs()
+				.maxCoeff(),
+			0, 1e-3)
 			<< "Pose A: " << A << endl
 			<< "Pose D: " << D << endl
 			<< "Num. Jacob:\n"
 			<< numJacobs << endl
 			<< "Theor. Jacob:\n"
-			<< theor_jacob << endl
+			<< theor_jacob.asEigen() << endl
 			<< "ERR:\n"
-			<< theor_jacob - numJacobs << endl;
+			<< theor_jacob.asEigen() - numJacobs.asEigen() << endl;
 	}
 };
 

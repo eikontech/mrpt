@@ -80,9 +80,7 @@ void CRangeBearingKFSLAM2D::getCurrentRobotPose(
 	out_robotPose.mean = CPose2D(m_xkk[0], m_xkk[1], m_xkk[2]);
 
 	// and cov:
-	CMatrixDynamic<kftype> COV(3, 3);
-	m_pkk.extractMatrix(0, 0, COV);
-	out_robotPose.cov = COV;
+	out_robotPose.cov = m_pkk.block<3, 3>(0, 0);
 
 	MRPT_END
 }
@@ -104,9 +102,7 @@ void CRangeBearingKFSLAM2D::getCurrentState(
 	out_robotPose.mean = CPose2D(m_xkk[0], m_xkk[1], m_xkk[2]);
 
 	// and cov:
-	CMatrixDynamic<kftype> COV(3, 3);
-	m_pkk.extractMatrix(0, 0, COV);
-	out_robotPose.cov = COV;
+	out_robotPose.cov = m_pkk.block<3, 3>(0, 0);
 
 	// Landmarks:
 	ASSERT_(((m_xkk.size() - 3) % 2) == 0);
@@ -661,8 +657,8 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		}
 
 		// Vehicle uncertainty
-		KFMatrix_VxV Pxx(UNINITIALIZED_MATRIX);
-		m_pkk.extractMatrix(0, 0, Pxx);
+		KFMatrix_VxV Pxx =
+			m_pkk.block<get_vehicle_size(), get_vehicle_size()>(0, 0);
 
 		// Build predictions:
 		// ---------------------------
@@ -948,13 +944,10 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 	CPoint2DPDFGaussian pointGauss;
 	pointGauss.mean.x(m_xkk[0]);
 	pointGauss.mean.y(m_xkk[1]);
-	CMatrixDynamic<kftype> COV;
-	m_pkk.extractMatrix(0, 0, 2, 2, COV);
-	pointGauss.cov = COV;
+	pointGauss.cov = m_pkk.block<2, 2>(0, 0);
 
 	{
-		opengl::CEllipsoid::Ptr ellip =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		auto ellip = opengl::CEllipsoid::Create();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -972,11 +965,9 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 	{
 		pointGauss.mean.x(m_xkk[3 + 2 * i + 0]);
 		pointGauss.mean.y(m_xkk[3 + 2 * i + 1]);
-		m_pkk.extractMatrix(3 + 2 * i, 3 + 2 * i, 2, 2, COV);
-		pointGauss.cov = COV;
+		pointGauss.cov = m_pkk.block<2, 2>(3 + 2 * i, 3 + 2 * i);
 
-		opengl::CEllipsoid::Ptr ellip =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		auto ellip = opengl::CEllipsoid::Create();
 
 		ellip->setName(format("%u", static_cast<unsigned int>(i)));
 		ellip->enableShowName(true);

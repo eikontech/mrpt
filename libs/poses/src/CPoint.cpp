@@ -44,12 +44,3 @@ void CPoint<DERIVEDCLASS>::asString(std::string& s) const
 // Explicit instantiations:
 template class CPoint<CPoint2D>;
 template class CPoint<CPoint3D>;
-
-template <class DERIVEDCLASS>
-std::ostream& operator<<(std::ostream& o, const CPoint<DERIVEDCLASS>& p)
-{
-	o << "(" << p[0] << "," << p[1];
-	if (p.is3DPoseOrPoint()) o << "," << p[2];
-	o << ")";
-	return o;
-}

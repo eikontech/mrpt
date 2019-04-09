@@ -10,6 +10,7 @@
 #include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
@@ -228,7 +229,7 @@ void CPosePDFGaussianInf::rotateCov(const double ang)
 	// NEW_COV^(-1) = (H C H^T)^(-1) = (H^T)^(-1) C^(-1) H^(-1)
 	// rot: Inverse of a rotation matrix is its trasposed.
 	//      But we need H^t^-1 -> H !! so rot stays unchanged:
-	cov_inv = (rot * cov_inv * rot.transpose()).eval();
+	cov_inv = rot.asEigen() * cov_inv.asEigen() * rot.asEigen().transpose();
 }
 
 void CPosePDFGaussianInf::drawSingleSample(CPose2D& outPart) const

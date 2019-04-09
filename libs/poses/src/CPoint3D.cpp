@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+#include <iostream>
 #include <limits>
 
 using namespace mrpt;
@@ -163,4 +164,10 @@ void CPoint3D::setToNaN()
 mrpt::math::TPoint3D CPoint3D::asTPoint() const
 {
 	return mrpt::math::TPoint3D(x(), y(), z());
+}
+
+std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPoint3D& p)
+{
+	o << "(" << p[0] << "," << p[1] << "," << p[2] << ")";
+	return o;
 }

@@ -206,8 +206,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	void insertMatrix(
 		const int row_start, const int col_start, const OTHERMATVEC& submat)
 	{
-		ASSERT_BELOW_(row_start + submat.rows(), mbDerived().rows());
-		ASSERT_BELOW_(col_start + submat.cols(), mbDerived().cols());
+		ASSERT_BELOWEQ_(row_start + submat.rows(), mbDerived().rows());
+		ASSERT_BELOWEQ_(col_start + submat.cols(), mbDerived().cols());
 		for (int r = 0; r < submat.rows(); r++)
 			for (int c = 0; c < submat.cols(); c++)
 				mbDerived()(r + row_start, c + col_start) = submat(r, c);

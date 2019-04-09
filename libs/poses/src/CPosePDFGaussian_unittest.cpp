@@ -68,7 +68,7 @@ class PosePDFGaussTests : public ::testing::Test
 
 			double DUMMY = 0;
 			CVectorFixedDouble<3> x_incrs;
-			x_incrs.assign(1e-6);
+			x_incrs.fill(1e-6);
 			transform_gaussian_linear(
 				x_mean, x_cov, func_inverse, DUMMY, y_mean, y_cov, x_incrs);
 		}

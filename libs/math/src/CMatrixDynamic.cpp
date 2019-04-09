@@ -15,11 +15,17 @@
 using namespace mrpt::math;
 
 template <typename T>
-template <typename T2>
-CMatrixDynamic<T2> CMatrixDynamic<T>::cast() const
+CMatrixDynamic<float> CMatrixDynamic<T>::cast_float() const
 {
-	CMatrixDynamic<T2> r(rows(), cols());
-	r.asEigen() = asEigen().template cast<T2>();
+	CMatrixDynamic<float> r(rows(), cols());
+	r.asEigen() = asEigen().template cast<float>();
+	return r;
+}
+template <typename T>
+CMatrixDynamic<double> CMatrixDynamic<T>::cast_double() const
+{
+	CMatrixDynamic<double> r(rows(), cols());
+	r.asEigen() = asEigen().template cast<double>();
 	return r;
 }
 

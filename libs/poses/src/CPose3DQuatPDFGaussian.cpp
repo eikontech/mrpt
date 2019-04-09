@@ -164,39 +164,12 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 
 		o.mean.getAsQuaternion(mean.quat(), &dq_dr_sub);
 
-// Cov:
-#if 1
+		// Cov:
 		CMatrixFixed<double, 7, 6> dq_dr;
 		dq_dr(0, 0) = dq_dr(1, 1) = dq_dr(2, 2) = 1;
 		dq_dr.insertMatrix(3, 3, dq_dr_sub);
 		// Now for the covariance:
 		dq_dr.multiply_HCHt(o.cov, this->cov);
-#else
-		CMatrixDouble33 cov_R(UNINITIALIZED_MATRIX);
-		CMatrixDouble33 cov_T(UNINITIALIZED_MATRIX);
-		CMatrixDouble33 cov_TR(UNINITIALIZED_MATRIX);
-		o.cov.extractMatrix(3, 3, cov_R);
-		o.cov.extractMatrix(0, 0, cov_T);
-		o.cov.extractMatrix(0, 3, cov_TR);
-
-		// [        S_T       |   S_TR * H^t    ]
-		// [ -----------------+---------------- ]
-		// [  (S_TR * H^t)^t  |  H * S_R * H^t  ]
-
-		// top-left:
-		this->cov.insertMatrix(0, 0, cov_T);
-
-		// diagonals:
-		CMatrixFixed<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
-		cov_TQ.multiply_ABt(cov_TR, dq_dr_sub);
-		this->cov.insertMatrix(0, 3, cov_TQ);
-		this->cov.insertMatrixTranspose(3, 0, cov_TQ);
-
-		// bottom-right:
-		CMatrixDouble44 cov_q(UNINITIALIZED_MATRIX);
-		dq_dr_sub.multiply_HCHt(cov_R, cov_q);
-		this->cov.insertMatrix(3, 3, cov_q);
-#endif
 	}
 	else
 	{

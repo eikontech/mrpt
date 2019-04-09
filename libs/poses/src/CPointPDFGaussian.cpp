@@ -80,7 +80,7 @@ void CPointPDFGaussian::serializeFrom(
 
 			CMatrixF c;
 			in >> c;
-			cov = c.asEigen().cast<double>();
+			cov = c.cast_double();
 		}
 		break;
 		case 1:

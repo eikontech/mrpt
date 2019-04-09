@@ -185,8 +185,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 					CVectorFixedDouble<7>& Y)>(&func_compose),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dx);
-			numJacobs.extractMatrix(0, 7, num_df_du);
+			num_df_dx = numJacobs.block<7, 7>(0, 0);
+			num_df_du = numJacobs.block<7, 7>(0, 7);
 		}
 
 		// Compare:

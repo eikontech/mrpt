@@ -289,8 +289,8 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		return m_data[i];
 	}
 
-	template <typename T2>
-	CMatrixFixed<T2, ROWS, COLS> cast() const;
+	CMatrixFixed<float, ROWS, COLS> cast_float() const;
+	CMatrixFixed<double, ROWS, COLS> cast_double() const;
 
 	/** @} */
 };

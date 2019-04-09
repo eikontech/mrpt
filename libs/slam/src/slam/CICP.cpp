@@ -905,7 +905,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 	}  // end of "if m2 is not empty"
 
-	return CPosePDFGaussian::Create(q, C_inv.cast<double>());
+	return CPosePDFGaussian::Create(q, C_inv.cast_double());
 	MRPT_END
 }
 

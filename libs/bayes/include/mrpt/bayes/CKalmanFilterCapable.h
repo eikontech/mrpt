@@ -221,10 +221,10 @@ template <
 class CKalmanFilterCapable : public mrpt::system::COutputLogger
 {
    public:
-	static inline size_t get_vehicle_size() { return VEH_SIZE; }
-	static inline size_t get_observation_size() { return OBS_SIZE; }
-	static inline size_t get_feature_size() { return FEAT_SIZE; }
-	static inline size_t get_action_size() { return ACT_SIZE; }
+	static constexpr size_t get_vehicle_size() { return VEH_SIZE; }
+	static constexpr size_t get_observation_size() { return OBS_SIZE; }
+	static constexpr size_t get_feature_size() { return FEAT_SIZE; }
+	static constexpr size_t get_action_size() { return ACT_SIZE; }
 	inline size_t getNumberOfLandmarksInTheMap() const
 	{
 		return detail::getNumberOfLandmarksInMap(*this);
@@ -278,8 +278,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 */
 	inline void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
 	{
-		m_pkk.extractMatrix(
-			VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE, feat_cov);
+		feat_cov = m_pkk.block<FEAT_SIZE, FEAT_SIZE>(
+			VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE);
 	}
 
    protected:

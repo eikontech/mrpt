@@ -105,7 +105,7 @@ void CRangeBearingKFSLAM::getCurrentRobotPose(
 	out_robotPose.mean.m_quat[3] = m_xkk[6];
 
 	// and cov:
-	m_pkk.extractMatrix(0, 0, out_robotPose.cov);
+	out_robotPose.cov = m_pkk.block<7, 7>(0, 0);
 
 	MRPT_END
 }
@@ -152,7 +152,7 @@ void CRangeBearingKFSLAM::getCurrentState(
 	out_robotPose.mean.m_quat[3] = m_xkk[6];
 
 	// and cov:
-	m_pkk.extractMatrix(0, 0, out_robotPose.cov);
+	out_robotPose.cov = m_pkk.block<7, 7>(0, 0);
 
 	// Landmarks:
 	ASSERT_(((m_xkk.size() - get_vehicle_size()) % get_feature_size()) == 0);
@@ -655,8 +655,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		}
 
 		// Vehicle uncertainty
-		KFMatrix_VxV Pxx(UNINITIALIZED_MATRIX);
-		m_pkk.extractMatrix(0, 0, Pxx);
+		KFMatrix_VxV Pxx = m_pkk.block<7, 7>(0, 0);
 
 		// Build predictions:
 		// ---------------------------
@@ -979,13 +978,10 @@ void CRangeBearingKFSLAM::getAs3DObject(
 	pointGauss.mean.x(m_xkk[0]);
 	pointGauss.mean.y(m_xkk[1]);
 	pointGauss.mean.z(m_xkk[2]);
-	CMatrixDynamic<kftype> COV;
-	m_pkk.extractMatrix(0, 0, 3, 3, COV);
-	pointGauss.cov = COV;
+	pointGauss.cov = m_pkk.block<3, 3>(0, 0);
 
 	{
-		opengl::CEllipsoid::Ptr ellip =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		auto ellip = opengl::CEllipsoid::Create();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -1007,14 +1003,12 @@ void CRangeBearingKFSLAM::getAs3DObject(
 			m_xkk[get_vehicle_size() + get_feature_size() * i + 1]);
 		pointGauss.mean.z(
 			m_xkk[get_vehicle_size() + get_feature_size() * i + 2]);
-		m_pkk.extractMatrix(
-			get_vehicle_size() + get_feature_size() * i,
-			get_vehicle_size() + get_feature_size() * i, get_feature_size(),
-			get_feature_size(), COV);
-		pointGauss.cov = COV;
 
-		opengl::CEllipsoid::Ptr ellip =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		pointGauss.cov = m_pkk.block<get_feature_size(), get_feature_size()>(
+			get_vehicle_size() + get_feature_size() * i,
+			get_vehicle_size() + get_feature_size() * i);
+
+		auto ellip = opengl::CEllipsoid::Create();
 
 		ellip->setName(format("%u", static_cast<unsigned int>(i)));
 		ellip->enableShowName(true);

@@ -188,8 +188,8 @@ class Pose3DPDFGaussTests : public ::testing::Test
 					CVectorFixedDouble<6>& Y)>(&func_compose),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dx);
-			numJacobs.extractMatrix(0, 6, num_df_du);
+			num_df_dx = numJacobs.block<6, 6>(0, 0);
+			num_df_du = numJacobs.block<6, 6>(0, 6);
 		}
 
 		// Compare:
