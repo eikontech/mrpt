@@ -34,7 +34,7 @@ class CMesh3D : public CRenderizableDisplayList
 	DEFINE_SERIALIZABLE(CMesh3D)
 
 	using f_verts = std::array<int, 4>;
-	using coord3D = mrpt::math::TPoint3D;
+	using coord3D = mrpt::math::TPoint3Df;
 
    protected:
 	bool m_enableTransparency;

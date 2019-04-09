@@ -10,11 +10,12 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/img/color_maps.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
-
+#include <Eigen/Dense>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -81,8 +82,8 @@ void CMeshFast::render_dl() const
 	glDisable(GL_LIGHTING);
 
 	glBegin(GL_POINTS);
-	for (unsigned int i = 0; i < X.rows(); i++)
-		for (unsigned int j = 0; j < X.cols(); j++)
+	for (int i = 0; i < X.rows(); i++)
+		for (int j = 0; j < X.cols(); j++)
 		{
 			if (m_isImage && m_textureImage.isColor())
 				glColor4f(C_r(i, j), C_g(i, j), C_b(i, j), m_color.A / 255.f);
@@ -258,7 +259,8 @@ void CMeshFast::updateColorsMatrix() const
 		// Color is proportional to difference between height of a cell and
 		//  the mean of the nearby cells MEANS:
 		C = Z;
-		C.normalize(0.01f, 0.99f);
+
+		mrpt::math::normalize(C, 0.01f, 0.99f);
 	}
 
 	m_modified_Image = false;

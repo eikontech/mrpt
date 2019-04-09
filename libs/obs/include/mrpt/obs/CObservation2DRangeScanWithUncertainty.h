@@ -23,9 +23,9 @@ class CObservation2DRangeScanWithUncertainty
 	CObservation2DRangeScan rangeScan;
 	/** The same ranges than in rangeScan.scan[], for convenience as an Eigen
 	 * container, and with `double` precision */
-	Eigen::VectorXd rangesMean;
+	mrpt::math::CVectorDouble rangesMean;
 	/** The covariance matrix for all the ranges in rangeScan.scan[] */
-	Eigen::MatrixXd rangesCovar;
+	mrpt::math::CMatrixDouble rangesCovar;
 
 	struct TEvalParams
 	{

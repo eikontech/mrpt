@@ -9,9 +9,10 @@
 #pragma once
 
 #include <mrpt/containers/printf_vector.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/ops_containers.h>
-//#include <mrpt/math/types_math.h>
 #include <mrpt/system/COutputLogger.h>
 #include <functional>
 
@@ -30,12 +31,12 @@ namespace mrpt::math
  * functor. Default type is a vector of NUMTYPE.
  * \ingroup mrpt_math_grp
  */
-template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE>
+template <typename VECTORTYPE = CVectorDouble, class USERPARAM = VECTORTYPE>
 class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 {
    public:
 	using NUMTYPE = typename VECTORTYPE::Scalar;
-	using matrix_t = Eigen::Matrix<NUMTYPE, Eigen::Dynamic, Eigen::Dynamic>;
+	using matrix_t = CMatrixDynamic<NUMTYPE>;
 	using vector_t = VECTORTYPE;
 
 	CLevenbergMarquardtTempl()
@@ -132,7 +133,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 		// Compute the gradient:
 		functor(x, userParam, f_x);
-		J.multiply_Atb(f_x, g);
+		g = J.transpose() * f_x;
 
 		// Start iterations:
 		bool found = math::norm_inf(g) <= e1;
@@ -158,9 +159,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 			out_info.path.block(iter, 0, 1, N) = x.transpose();
 		}
 		else
-			out_info.path = Eigen::Matrix<
-				NUMTYPE, Eigen::Dynamic,
-				Eigen::Dynamic>();  // Empty matrix
+			out_info.path = matrix_t();  // Empty matrix
 
 		while (!found && ++iter < maxIter)
 		{

@@ -636,8 +636,7 @@ class CObservation3DRangeScan : public CObservation
 		 * bitfield of possible categories.
 		 * \sa hasPixelLabels
 		 */
-		using TPixelLabelMatrix =
-			Eigen::Matrix<bitmask_t, Eigen::Dynamic, Eigen::Dynamic>;
+		using TPixelLabelMatrix = mrpt::math::CMatrixDynamic<bitmask_t>;
 		TPixelLabelMatrix pixelLabels;
 
 		void setSize(const int NROWS, const int NCOLS) override

@@ -14,7 +14,6 @@
 #include <mrpt/poses/SO_SE_average.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
-#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -200,71 +199,7 @@ void CPose3DPDFSOG::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG));
 
 	THROW_EXCEPTION("TODO!!!");
-#if 0
-/*
-	CPose3DPDFSOG		*p1 = (CPose3DPDFSOG*)&p1_;
-	CPose3DPDFSOG		*p2 = (CPose3DPDFSOG*)&p2_;
 
-	// Compute the new kernel means, covariances, and weights after multiplying to the Gaussian "p2":
-	CPosePDFGaussian	auxGaussianProduct,auxSOG_Kernel_i;
-	TGaussianMode		newKernel;
-
-
-
-	CMatrixD				covInv( p2->cov.inverse_LLt() );
-	CMatrixD				eta(3,1);
-	eta(0,0) = p2->mean.x;
-	eta(1,0) = p2->mean.y;
-	eta(2,0) = p2->mean.phi;
-	eta = covInv * eta;
-
-	// Normal distribution canonical form constant:
-	// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
-	double				a = -0.5*( 3*log(M_2PI) - log( covInv.det() ) + (~eta * p2->cov * eta)(0,0) );
-
-	this->m_modes.clear();
-	for (std::deque<TGaussianMode>::iterator it =p1->m_modes.begin();it!=p1->m_modes.end();++it)
-	{
-		auxSOG_Kernel_i.mean = it->mean;
-		auxSOG_Kernel_i.cov  = it->cov;
-		auxGaussianProduct.bayesianFusion( auxSOG_Kernel_i, *p2 );
-
-		// ----------------------------------------------------------------------
-		// The new weight is given by:
-		//
-		//   w'_i = w_i * exp( a + a_i - a' )
-		//
-		//      a = -1/2 ( dimensionality * log(2pi) - log(det(Cov^-1)) + (Cov^-1 * mu)^t * Cov^-1 * (Cov^-1 * mu) )
-		//
-		// ----------------------------------------------------------------------
-		newKernel.mean = auxGaussianProduct.mean;
-		newKernel.cov  = auxGaussianProduct.cov;
-
-		CMatrixD		covInv_i( auxSOG_Kernel_i.cov.inverse_LLt() );
-		CMatrixD		eta_i(3,1);
-		eta_i(0,0) = auxSOG_Kernel_i.mean.x;
-		eta_i(1,0) = auxSOG_Kernel_i.mean.y;
-		eta_i(2,0) = auxSOG_Kernel_i.mean.phi;
-		eta_i = covInv_i * eta_i;
-
-		CMatrixD		new_covInv_i( newKernel.cov.inverse_LLt() );
-		CMatrixD		new_eta_i(3,1);
-		new_eta_i(0,0) = newKernel.mean.x;
-		new_eta_i(1,0) = newKernel.mean.y;
-		new_eta_i(2,0) = newKernel.mean.phi;
-		new_eta_i = new_covInv_i * new_eta_i;
-
-		double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~eta_i * auxSOG_Kernel_i.cov * eta_i)(0,0) );
-		double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~new_eta_i * newKernel.cov * new_eta_i)(0,0) );
-
-		newKernel.w	   = it->w * exp( a + a_i - new_a_i );
-
-		// Add to the results (in "this") the new kernel:
-		this->m_modes.push_back( newKernel );
-	}
-*/
-	normalizeWeights();
-#endif
 	MRPT_END
 }
 

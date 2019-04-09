@@ -66,7 +66,8 @@ mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out,
 	const CMatrixFixed<float, NROWS, NCOLS>& M)
 {
-	CMatrixF aux = CMatrixFloat(M);
+	CMatrixF aux;
+	aux = M;
 	out.WriteObject(&aux);
 	return out;
 }
@@ -77,7 +78,8 @@ mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out,
 	const CMatrixFixed<double, NROWS, NCOLS>& M)
 {
-	CMatrixD aux = CMatrixD(M);
+	CMatrixD aux;
+	aux = M;
 	out.WriteObject(&aux);
 	return out;
 }
@@ -86,23 +88,6 @@ mrpt::serialization::CArchive& operator<<(
 
 /** @name Operators for text streaming of MRPT matrices
 	@{ */
-
-/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default
- * output. */
-template <typename T, size_t NROWS, size_t NCOLS>
-inline std::ostream& operator<<(
-	std::ostream& s, const CMatrixFixed<T, NROWS, NCOLS>& m)
-{
-	return s << m.asEigen() << "\n";
-}
-
-/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default
- * output. */
-template <typename T>
-inline std::ostream& operator<<(std::ostream& s, const CMatrixDynamic<T>& m)
-{
-	return s << m.asEigen() << "\n";
-}
 
 /** Binary serialization of symmetric matrices, saving the space of duplicated
  * values. \sa serializeSymmetricMatrixTo() */

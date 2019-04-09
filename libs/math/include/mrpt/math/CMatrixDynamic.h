@@ -473,20 +473,20 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 			ASSERT_(in.size() == m_Cols);
 		const auto row = m_Rows;
 		realloc(row + 1, m_Cols = in.size());
-		for (size_t i = 0; i < m_Cols; i++) m_data[row][i] = in[i];
+		for (size_t i = 0; i < m_Cols; i++) (*this)(row, i) = in[i];
 	}
 
 	template <typename VECTOR>
 	void setRow(const Index row, const VECTOR& v)
 	{
-		ASSERT_EQUAL_(cols(), v.size());
+		ASSERT_EQUAL_(cols(), static_cast<size_type>(v.size()));
 		for (Index c = 0; c < cols(); c++) (*this)(row, c) = v[c];
 	}
 
 	template <typename VECTOR>
 	void setCol(const Index col, const VECTOR& v)
 	{
-		ASSERT_EQUAL_(rows(), v.size());
+		ASSERT_EQUAL_(rows(), static_cast<size_type>(v.size()));
 		for (Index r = 0; r < rows(); r++) (*this)(r, col) = v[r];
 	}
 
@@ -508,9 +508,9 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 			c = 0;
 		}
 		else
-			ASSERT_(in.size() == m_Rows);
+			ASSERT_EQUAL_(static_cast<decltype(m_Rows)>(in.size()), m_Rows);
 		realloc(r, c + 1);
-		for (size_t i = 0; i < m_Rows; i++) m_data[i][m_Cols - 1] = in[i];
+		for (size_t i = 0; i < m_Rows; i++) (*this)(i, m_Cols - 1) = in[i];
 	}
 
 	/** Returns a vector containing the matrix's values.
@@ -520,8 +520,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	{
 		out.clear();
 		out.reserve(m_Rows * m_Cols);
-		for (size_t i = 0; i < m_Rows; i++)
-			out.insert(out.end(), &(m_data[i][0]), &(m_data[i][m_Cols]));
+		out.insert(out.end(), m_data.begin(), m_data.end());
 	}
 
 	/** Get as an Eigen-compatible Eigen::Map object  */

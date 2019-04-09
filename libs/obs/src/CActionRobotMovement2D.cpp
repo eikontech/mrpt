@@ -16,6 +16,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -663,8 +664,6 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 
 	ASSERT_(IS_CLASS(poseChange, CPosePDFGaussian));
 
-	CMatrixDouble33 D;
-
 	const auto* gPdf = dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
 	ASSERT_(gPdf != nullptr);
 	const CMatrixDouble33& cov = gPdf->cov;
@@ -676,10 +675,13 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
 	 *    as diagonal elements, sorted in <i>ascending</i> order.
 	 */
-	cov.eigenVectors(m_fastDrawGauss_Z, D);
+	std::vector<double> eigvals;
+	cov.eig_symmetric(m_fastDrawGauss_Z, eigvals);
+	CMatrixDouble33 D;
+	D.setDiagonal(eigvals);
 
 	// Scale eigenvectors with eigenvalues:
-	D = D.array().sqrt().matrix();
+	D.asEigen() = D.array().sqrt().matrix();
 	m_fastDrawGauss_Z = m_fastDrawGauss_Z * D;
 
 	MRPT_END

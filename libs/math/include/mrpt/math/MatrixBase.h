@@ -116,15 +116,6 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		}
 	}
 
-	/** this = A * A<sup>T</sup> */
-	template <typename MAT_A>
-	void multiply_AAt(const MAT_A& A)
-	{
-		internalAssertEigenDefined<Derived>();
-		mbDerived().resize(A.rows(), A.rows());
-		mbDerived().asEigen() = (A.asEigen() * A.asEigen().transpose()).eval();
-	}
-
 	auto col(int colIdx)
 	{
 		internalAssertEigenDefined<Derived>();
@@ -211,6 +202,45 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		for (int r = 0; r < submat.rows(); r++)
 			for (int c = 0; c < submat.cols(); c++)
 				mbDerived()(r + row_start, c + col_start) = submat(r, c);
+	}
+
+	/** this = A * A<sup>T</sup> */
+	template <typename MAT_A>
+	void multiply_AAt(const MAT_A& A)
+	{
+		using Index = typename Derived::Index;
+		const auto N = A.rows();
+		mbDerived().resize(N, N);
+		for (Index r = 0; r < N; r++)
+		{
+			// Only 1/2 of computations required:
+			for (Index c = r; c < N; c++)
+			{
+				typename Derived::Scalar s = 0;
+				for (Index i = 0; i < N; i++) s += A(r, i) * A(c, i);
+				mbDerived()(r, c) = s;
+				mbDerived()(c, r) = s;
+			}
+		}
+	}
+	/** this = A<sup>T</sup> * A */
+	template <typename MAT_A>
+	void multiply_AtA(const MAT_A& A)
+	{
+		using Index = typename Derived::Index;
+		const auto N = A.cols();
+		mbDerived().resize(N, N);
+		for (Index r = 0; r < N; r++)
+		{
+			// Only 1/2 of computations required:
+			for (Index c = r; c < N; c++)
+			{
+				typename Derived::Scalar s = 0;
+				for (Index i = 0; i < N; i++) s += A(i, r) * A(i, c);
+				mbDerived()(r, c) = s;
+				mbDerived()(c, r) = s;
+			}
+		}
 	}
 
 	/** @} */

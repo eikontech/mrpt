@@ -10,6 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/img/color_maps.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/poses/CPose3D.h>
@@ -477,7 +478,7 @@ void CMesh::updateColorsMatrix() const
 		C = Z;
 
 		// If mask is empty -> Normalize the whole mesh
-		if (mask.empty()) C.normalize(0.01f, 0.99f);
+		if (mask.empty()) mrpt::math::normalize(C, 0.01f, 0.99f);
 
 		// Else -> Normalize color ignoring masked-out cells:
 		else

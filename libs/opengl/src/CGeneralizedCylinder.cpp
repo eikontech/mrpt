@@ -15,7 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-
+#include <Eigen/Dense>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -239,16 +239,17 @@ void CGeneralizedCylinder::getClosedSection(
 {
 	if (index1 > index2) swap(index1, index2);
 	if (index2 >= axis.size() - 1) throw std::logic_error("Out of range");
-	CMatrixDynamic<TPoint3D> ROIpoints;
 	if (!meshUpToDate) updateMesh();
-	pointsMesh.extractRows(index1, index2 + 1, ROIpoints);
+	auto ROIpoints = CMatrixDynamic<TPoint3D>(
+	    pointsMesh.asEigen().block(index1, 0, index2 + 1, pointsMesh.cols()));
+
 	// At this point, ROIpoints contains a matrix of TPoints in which the number
 	// of rows equals (index2-index1)+2 and there is a column
 	// for each vertex in the generatrix.
 	if (!closed)
 	{
-		vector<TPoint3D> vec;
-		ROIpoints.extractCol(0, vec);
+		CVectorDynamic<TPoint3D> vec(ROIpoints.rows());
+		vec.asEigen() = ROIpoints.col(0);
 		ROIpoints.appendCol(vec);
 	}
 	vector<TPoint3D> vertices;
@@ -272,7 +273,7 @@ void CGeneralizedCylinder::getClosedSection(
 	for (size_t i = 0; i < nr + 1; i++) tmp[i] = i * (nc + 1);
 	faces.push_back(tmp);
 	for (size_t i = 0; i < nr + 1; i++) tmp[i] = i * (nc + 2) - 1;
-	poly = mrpt::make_aligned_shared<CPolyhedron>(vertices, faces);
+	poly = CPolyhedron::Create(vertices, faces);
 }
 
 void CGeneralizedCylinder::removeVisibleSectionAtStart()

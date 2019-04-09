@@ -435,10 +435,17 @@ void CObservation3DRangeScan::load() const
 			CMatrixFloat M;
 			M.loadFromTextFile(fil);
 			ASSERT_EQUAL_(M.rows(), 3);
+			const auto N = M.cols();
 
-			M.extractRow(0, const_cast<std::vector<float>&>(points3D_x));
-			M.extractRow(1, const_cast<std::vector<float>&>(points3D_y));
-			M.extractRow(2, const_cast<std::vector<float>&>(points3D_z));
+			auto& xs = const_cast<std::vector<float>&>(points3D_x);
+			auto& ys = const_cast<std::vector<float>&>(points3D_y);
+			auto& zs = const_cast<std::vector<float>&>(points3D_z);
+			xs.resize(N);
+			ys.resize(N);
+			zs.resize(N);
+			::memcpy(&xs[0], &M(0, 0), sizeof(float) * N);
+			::memcpy(&ys[0], &M(1, 0), sizeof(float) * N);
+			::memcpy(&zs[0], &M(2, 0), sizeof(float) * N);
 		}
 		else
 		{
@@ -739,7 +746,7 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 
 	initial_x.resize(8);
 	CVectorDouble increments_x(initial_x.size());
-	increments_x.assign(1e-4);
+	increments_x.fill(1e-4);
 
 	CVectorDouble optimal_x;
 
@@ -778,7 +785,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 	// Copy zone of range image
 	obs.hasRangeImage = hasRangeImage;
 	if (hasRangeImage)
-		rangeImage.extractSubmatrix(r1, r2, c1, c2, obs.rangeImage);
+		obs.rangeImage = rangeImage.asEigen().block(r2 - r1, c2 - c1, r1, c1);
 
 	// Copy zone of intensity image
 	obs.hasIntensityImage = hasIntensityImage;

@@ -9,6 +9,8 @@
 #pragma once
 
 #include <mrpt/core/round.h>  // round()
+#include <mrpt/math/CVectorFixed.h>
+#include <Eigen/Dense>  // block<>()
 
 namespace mrpt::obs::detail
 {
@@ -236,9 +238,8 @@ void project3DPointsFromDepthImageInto(
 				T_inv.block<3, 1>(0, 3) = t_inv.cast_float();
 			}
 
-			Eigen::Matrix<float, 4, 1> pt_wrt_color, pt_wrt_depth;
+			CVectorFixedFloat<4> pt_wrt_color, pt_wrt_depth;
 			pt_wrt_depth[3] = 1;
-
 			mrpt::img::TColor pCol;
 
 			// For each local point:
@@ -320,11 +321,11 @@ void project3DPointsFromDepthImageInto(
 			transf_to_apply.composeFrom(
 				*pp.robotPoseInTheWorld, mrpt::poses::CPose3D(transf_to_apply));
 
-		const Eigen::Matrix<float, 4, 4> HM =
+		const auto HM =
 			transf_to_apply
 				.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
-				.cast<float>();
-		Eigen::Matrix<float, 4, 1> pt, pt_transf;
+		        .cast_float();
+		mrpt::math::CVectorFixedFloat<4> pt, pt_transf;
 		pt[3] = 1;
 
 		const size_t nPts = pca.size();
@@ -431,12 +432,11 @@ inline void do_project_3d_pointcloud_SSE2(
 				D_zeros);  // want points OUTSIDE of min and max to be valid
 	for (int r = 0; r < H; r++)
 	{
-		const float* D_ptr =
-			&rangeImage.coeffRef(r, 0);  // Matrices are 16-aligned
+		const float* D_ptr = &rangeImage(r, 0);  // Matrices are 16-aligned
 		const float* Dgt_ptr =
-			!fp.rangeMask_min ? nullptr : &fp.rangeMask_min->coeffRef(r, 0);
+		    !fp.rangeMask_min ? nullptr : &(*fp.rangeMask_min)(r, 0);
 		const float* Dlt_ptr =
-			!fp.rangeMask_max ? nullptr : &fp.rangeMask_max->coeffRef(r, 0);
+		    !fp.rangeMask_max ? nullptr : &(*fp.rangeMask_max)(r, 0);
 
 		for (int c = 0; c < W_4; c++)
 		{

@@ -66,7 +66,7 @@ void CEllipsoid::render_dl() const
 			unsigned int i;
 
 			// Compute the new vectors for the ellipsoid:
-			CMatrixDouble M = m_eigVal * m_eigVec.transpose();
+			auto M = CMatrixDouble(m_eigVal.asEigen() * m_eigVec.transpose());
 			M *= double(m_quantiles);
 
 			glBegin(GL_LINE_LOOP);
@@ -294,11 +294,13 @@ void CEllipsoid::setCovMatrix(
 	{
 		// Not null matrix: compute the eigen-vectors & values:
 		m_prevComputedCov = m_cov;
-		if (m_cov.eigenVectors(m_eigVec, m_eigVal))
+		std::vector<double> eigvals;
+		if (m_cov.eig_symmetric(m_eigVec, eigvals))
 		{
-			m_eigVal = m_eigVal.array().sqrt().matrix();
 			// Do the scale at render to avoid recomputing the m_eigVal for
 			// different m_quantiles
+			m_eigVal.setDiagonal(eigvals);
+			m_eigVal.array() = m_eigVal.array().sqrt().matrix();
 		}
 		else
 		{

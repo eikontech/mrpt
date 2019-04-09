@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <fstream>
 #include <iostream>
 
 using namespace mrpt::obs;

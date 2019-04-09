@@ -631,7 +631,7 @@ void CDifodo::computeWeights()
 		acu_trans = transformations[i] * acu_trans;
 
 	// Alternative way to compute the log
-	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
+	CMatrixDouble44 mat_aux = acu_trans.cast_double();
 
 	const CVectorFixedDouble<6> kai_level_acu(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
@@ -903,7 +903,7 @@ void CDifodo::filterLevelSolution()
 	for (unsigned int i = 0; i < level; i++)
 		acu_trans = transformations[i] * acu_trans;
 
-	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
+	CMatrixDouble44 mat_aux = acu_trans.cast_double();
 	const CVectorFixedDouble<6> kai_level_acu(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
 
@@ -934,7 +934,7 @@ void CDifodo::filterLevelSolution()
 		Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	// Compute the rigid transformation
-	mrpt::math::CVectorFixedDouble<6> aux_vel(kai_loc_fil.cast<double>() / fps);
+	mrpt::math::CVectorFixedDouble<6> aux_vel(kai_loc_fil.cast_double() / fps);
 	const poses::CPose3D aux2 = mrpt::poses::Lie::SE<3>::exp(aux_vel);
 
 	CMatrixDouble44 trans;
@@ -953,7 +953,7 @@ void CDifodo::poseUpdate()
 
 	// Compute the new estimates in the local and absolutes reference frames
 	//---------------------------------------------------------------------
-	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
+	CMatrixDouble44 mat_aux = acu_trans.cast_double();
 
 	const CVectorFixedDouble<6> kai_level_acu(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);

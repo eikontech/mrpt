@@ -273,6 +273,20 @@ inline void minimum_maximum(
 	V.minimum_maximum(curMin, curMax);
 }
 
+/** Scales all elements such as the minimum & maximum values are shifted to the
+ * given values */
+template <class CONTAINER, typename Scalar>
+void normalize(CONTAINER& c, Scalar valMin, Scalar valMax)
+{
+	if (c.empty()) return;
+	const Scalar curMin = c.minCoeff();
+	const Scalar curMax = c.maxCoeff();
+	Scalar minMaxDelta = curMax - curMin;
+	if (minMaxDelta == 0) minMaxDelta = 1;
+	const Scalar minMaxDelta_ = (valMax - valMin) / minMaxDelta;
+	c.array() = (c.array() - curMin) * minMaxDelta_ + valMin;
+}
+
 /** Counts the number of elements that appear in both STL-like containers
  * (comparison through the == operator)
  *  It is assumed that no repeated elements appear within each of the
