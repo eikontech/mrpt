@@ -564,7 +564,7 @@ void CKinect::getNextObservation(
 		// buffer is not beeing filled right now:
 		m_latest_obs.rangeImage.setSize(
 			m_cameraParamsDepth.nrows, m_cameraParamsDepth.ncols);
-		m_latest_obs.rangeImage.setConstant(0);  // "0" means: error in range
+		m_latest_obs.rangeImage.fill(0);  // "0" means: error in range
 		m_latest_obs_cs.unlock();
 		there_is_obs = true;
 	}

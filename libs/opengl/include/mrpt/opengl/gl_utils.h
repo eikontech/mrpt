@@ -49,7 +49,7 @@ struct TRenderInfo
 	 */
 	void projectPoint(
 		float x, float y, float z, float& proj_x, float& proj_y,
-	    float& proj_z_depth) const;
+		float& proj_z_depth) const;
 
 	/** Exactly like projectPoint but the (x,y) projected coordinates are given
 	 * in pixels instead of normalized coordinates. */

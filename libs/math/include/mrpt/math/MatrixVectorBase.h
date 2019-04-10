@@ -20,6 +20,8 @@
 namespace mrpt::math
 {
 template <class T>
+class CVectorDynamic;
+template <class T>
 class CMatrixDynamic;
 template <typename T, std::size_t ROWS, std::size_t COLS>
 class CMatrixFixed;
@@ -214,15 +216,33 @@ class MatrixVectorBase
 		return mvbDerived().cols() == 0 && mvbDerived().rows() == 0;
 	}
 
+	/** Compute the norm-infinite of a vector ($f[ ||\mathbf{v}||_\infnty $f]),
+	 * ie the maximum absolute value of the elements. */
+	Scalar norm_inf() const;
+
+	/** Compute the L2 norm of a vector/array/matrix (the Euclidean distance
+	 * to the origin, taking all the elements as a single vector). \sa norm */
+	Scalar norm() const;
+
 	void operator+=(Scalar s);
 	void operator-=(Scalar s);
 	void operator*=(Scalar s);
+
+	CMatrixDynamic<Scalar> operator*(const CMatrixDynamic<Scalar>& v);
 
 	Derived operator+(const Derived& m2) const;
 	void operator+=(const Derived& m2);
 	Derived operator-(const Derived& m2) const;
 	void operator-=(const Derived& m2);
 	Derived operator*(const Derived& m2) const;
+
+	/** this = A<sup>T</sup> * b , with `A` and `b` a dynamic matrix & vector */
+	void multiply_Ab(
+		const CMatrixDynamic<Scalar>& A, const CVectorDynamic<Scalar>& b);
+
+	/** this = A * b , with `A` and `b` a dynamic matrix & vector */
+	void multiply_Atb(
+		const CMatrixDynamic<Scalar>& A, const CVectorDynamic<Scalar>& b);
 
 	/** Sum of all elements in matrix/vector. */
 	Scalar sum() const;

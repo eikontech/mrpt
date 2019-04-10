@@ -376,6 +376,14 @@ void MatrixVectorBase<Scalar, Derived>::operator*=(Scalar s)
 }
 
 template <typename Scalar, class Derived>
+CMatrixDynamic<Scalar> MatrixVectorBase<Scalar, Derived>::operator*(
+	const CMatrixDynamic<Scalar>& v)
+{
+	return CMatrixDynamic<Scalar>(
+		(mvbDerived().asEigen() * v.asEigen()).eval());
+}
+
+template <typename Scalar, class Derived>
 Derived MatrixVectorBase<Scalar, Derived>::operator+(const Derived& m2) const
 {
 	Derived ret(mvbDerived().cols(), mvbDerived().rows());
@@ -403,15 +411,41 @@ template <typename Scalar, class Derived>
 Derived MatrixVectorBase<Scalar, Derived>::operator*(const Derived& m2) const
 {
 	ASSERTMSG_(
-	    mvbDerived().cols() == mvbDerived().rows(),
-	    "Operator* implemented only for square matrices. Use `A.asEigen() * "
-	    "B.asEigen()` for general matrix products.");
+		mvbDerived().cols() == mvbDerived().rows(),
+		"Operator* implemented only for square matrices. Use `A.asEigen() * "
+		"B.asEigen()` for general matrix products.");
 	Derived ret(mvbDerived().cols(), mvbDerived().rows());
 	if constexpr (Derived::RowsAtCompileTime == Derived::ColsAtCompileTime)
 	{
 		ret.asEigen() = mvbDerived().asEigen() * m2.asEigen();
 	}
 	return ret;
+}
+
+template <typename Scalar, class Derived>
+void MatrixVectorBase<Scalar, Derived>::multiply_Ab(
+	const CMatrixDynamic<Scalar>& A, const CVectorDynamic<Scalar>& b)
+{
+	mvbDerived() = A.asEigen() * b.asEigen();
+}
+
+template <typename Scalar, class Derived>
+void MatrixVectorBase<Scalar, Derived>::multiply_Atb(
+	const CMatrixDynamic<Scalar>& A, const CVectorDynamic<Scalar>& b)
+{
+	mvbDerived() = A.asEigen().transpose() * b.asEigen();
+}
+
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::norm_inf() const
+{
+	return mvbDerived().asEigen().template lpNorm<Eigen::Infinity>();
+}
+
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::norm() const
+{
+	return mvbDerived().asEigen().norm();
 }
 
 }  // namespace mrpt::math

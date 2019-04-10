@@ -169,7 +169,7 @@ TEST(Matrices, multiply_A_skew3)
 
 		CMatrixDouble R;
 		mrpt::math::multiply_A_skew3(A, v, R);
-		EXPECT_EQ(R.asEigen(), (A * S).eval());
+		EXPECT_EQ(R, A * S);
 	}
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};

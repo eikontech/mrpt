@@ -103,7 +103,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 			q2y, -q2z, q2r,  q2x,  q2z, q2y, -q2x, q2r};
 
 		df_dx.block<4, 4>(3, 3).noalias() =
-		    (norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
+			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
 	}
 
 	// df_du ===================================================
@@ -129,7 +129,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 			qy, qz,  qr,  -qx, qz, -qy, qx,  qr};
 
 		df_du.block<4, 4>(3, 3).noalias() =
-		    (norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
+			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
 	}
 
 	if (out_x_oplus_u) *out_x_oplus_u = x_plus_u;

@@ -324,7 +324,7 @@ void project3DPointsFromDepthImageInto(
 		const auto HM =
 			transf_to_apply
 				.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
-		        .cast_float();
+				.cast_float();
 		mrpt::math::CVectorFixedFloat<4> pt, pt_transf;
 		pt[3] = 1;
 
@@ -434,9 +434,9 @@ inline void do_project_3d_pointcloud_SSE2(
 	{
 		const float* D_ptr = &rangeImage(r, 0);  // Matrices are 16-aligned
 		const float* Dgt_ptr =
-		    !fp.rangeMask_min ? nullptr : &(*fp.rangeMask_min)(r, 0);
+			!fp.rangeMask_min ? nullptr : &(*fp.rangeMask_min)(r, 0);
 		const float* Dlt_ptr =
-		    !fp.rangeMask_max ? nullptr : &(*fp.rangeMask_max)(r, 0);
+			!fp.rangeMask_max ? nullptr : &(*fp.rangeMask_max)(r, 0);
 
 		for (int c = 0; c < W_4; c++)
 		{

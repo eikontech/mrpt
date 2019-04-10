@@ -9,6 +9,7 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/CVectorFixed.h>
 #include <Eigen/Dense>
 #include "MatrixVectorBase_impl.h"

@@ -489,8 +489,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		//  * Manifold Epsilon of right2left pose (6)
 		//  * Left-cam-params (<=9)
 		//  * Right-cam-params (<=9)
-		out.left_params_inv_variance.setConstant(0);
-		out.right_params_inv_variance.setConstant(0);
+		out.left_params_inv_variance.fill(0);
+		out.right_params_inv_variance.fill(0);
 		const size_t base_idx_H_CPs = H.cols() - 2 * nUnknownsCamParams;
 		for (size_t i = 0; i < nUnknownsCamParams; i++)
 		{
@@ -1158,7 +1158,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				x0[1] = nP.y/nP.z;
 
 				CVectorFixedDouble<2> x_incrs;
-				x_incrs.setConstant(1e-6);
+				x_incrs.fill(1e-6);
 
 				Eigen::Matrix<double,2,2> num_dhl_dbl, num_dhr_dbr;
 				mrpt::math::estimateJacobian(x0, &eval_h_b, x_incrs, camparam_l, num_dhl_dbl );
@@ -1187,7 +1187,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				x0[2]=pt_wrt_left.z;
 
 				CVectorFixedDouble<3> x_incrs;
-				x_incrs.setConstant(1e-8);
+				x_incrs.fill(1e-8);
 
 				Eigen::Matrix<double,2,3> num_dbl_dpl, num_dbr_dpr;
 				const int dumm=0;
@@ -1219,10 +1219,10 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			{
 				// Test jacob_deps_D_p_deps:
 				CVectorFixedDouble<6> x0;
-				x0.setConstant(0);
+				x0.fill(0);
 
 				CVectorFixedDouble<6> x_incrs;
-				x_incrs.setConstant(1e-8);
+				x_incrs.fill(1e-8);
 
 				Eigen::Matrix<double,3,6> num_dpl_del, num_dpr_der;
 				mrpt::math::estimateJacobian(x0, &eval_deps_D_p, x_incrs, pt_wrt_left , num_dpl_del );
@@ -1238,10 +1238,10 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			{
 				// Test jacob_dA_eps_D_p_deps:
 				CVectorFixedDouble<6> x0;
-				x0.setConstant(0);
+				x0.fill(0);
 
 				CVectorFixedDouble<6> x_incrs;
-				x_incrs.setConstant(1e-8);
+				x_incrs.fill(1e-8);
 
 				TEvalData_A_eps_D_p dat;
 				dat.A = lm_stat.right2left_pose;

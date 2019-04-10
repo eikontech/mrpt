@@ -7,19 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#define LEVMARQ_EXAMPLE_VERBOSE
-#include "LevMarqTest_impl.cpp"
+#include <gtest/gtest.h>
 
-int main()
+// Reuse code from example:
+#include "samples/math_optimize_lm_example/LevMarqTest_impl.cpp"
+
+TEST(LevMarq, optimizeTest)
 {
-	try
-	{
-		TestLevMarq();
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
+	TestLevMarq();
+	EXPECT_LT(levmarq_final_error, 1e-2);
 }

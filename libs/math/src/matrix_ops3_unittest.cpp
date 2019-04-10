@@ -55,7 +55,8 @@ TEST(Matrices, HCHt_scalar_1x2_2x2_2x1)
 
 	const double r = H.multiply_HCHt_scalar(C);
 
-	const double r2 = (H * C * H.transpose()).eval()(0, 0);
+	const double r2 =
+		(H.asEigen() * C.asEigen() * H.asEigen().transpose()).eval()(0, 0);
 	CHECK_AND_RET_ERROR(
 		fabs(r - r2) > 1e-4, "Error in HCHt_scalar: 1x2 * 2x2 * 2x1")
 }

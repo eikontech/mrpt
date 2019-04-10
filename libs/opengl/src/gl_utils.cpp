@@ -138,12 +138,12 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 }
 
 void gl_utils::TRenderInfo::projectPoint(
-    float x, float y, float z, float& proj_x, float& proj_y,
-    float& proj_z_depth) const
+	float x, float y, float z, float& proj_x, float& proj_y,
+	float& proj_z_depth) const
 {
 	const Eigen::Matrix<float, 4, 1, Eigen::ColMajor> proj =
-	    full_matrix.asEigen() *
-	    Eigen::Matrix<float, 4, 1, Eigen::ColMajor>(x, y, z, 1);
+		full_matrix.asEigen() *
+		Eigen::Matrix<float, 4, 1, Eigen::ColMajor>(x, y, z, 1);
 	proj_x = proj[3] ? proj[0] / proj[3] : 0;
 	proj_y = proj[3] ? proj[1] / proj[3] : 0;
 	proj_z_depth = proj[2];

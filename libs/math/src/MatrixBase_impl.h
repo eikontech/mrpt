@@ -201,4 +201,16 @@ Derived MatrixBase<Scalar, Derived>::inverse_LLt() const
 	return inv;
 }
 
+template <typename Scalar, class Derived>
+Scalar MatrixBase<Scalar, Derived>::maximumDiagonal() const
+{
+	return mbDerived().asEigen().diagonal().maxCoeff();
+}
+
+template <typename Scalar, class Derived>
+Scalar MatrixBase<Scalar, Derived>::minimumDiagonal() const
+{
+	return mbDerived().asEigen().diagonal().minCoeff();
+}
+
 }  // namespace mrpt::math

@@ -94,9 +94,9 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 	void updateEstimation(
 		/** Output increment of the current estimate. Caller must add this
 		   vector to current state vector to obtain the optimal estimation. */
-	    mrpt::math::CVectorDynamic<double>& solved_x_inc,
+		mrpt::math::CVectorDynamic<double>& solved_x_inc,
 		/** If !=nullptr, the variances of each estimate will be stored here. */
-	    mrpt::math::CVectorDynamic<double>* solved_variances = nullptr);
+		mrpt::math::CVectorDynamic<double>* solved_variances = nullptr);
 
 	bool isProfilerEnabled() const { return m_enable_profiler; }
 	void enableProfiler(bool enable = true) { m_enable_profiler = enable; }

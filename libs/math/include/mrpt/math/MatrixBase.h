@@ -177,6 +177,12 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	/** Read: eig() */
 	bool eig_symmetric(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
+
+	/** Returns the maximum value in the diagonal. */
+	Scalar maximumDiagonal() const;
+	/** Returns the minimum value in the diagonal. */
+	Scalar minimumDiagonal() const;
+
 	/** Removes columns of the matrix.
 	 * This "unsafe" version assumes indices sorted in ascending order. */
 	void unsafeRemoveColumns(const std::vector<std::size_t>& idxs);

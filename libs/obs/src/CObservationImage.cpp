@@ -65,7 +65,7 @@ void CObservationImage::serializeFrom(
 					cameraParams.dist.fill(0);
 
 				cameraParams.intrinsicParams = mrpt::math::CMatrixDouble33(
-				    intrinsicParams.block<3, 3>(0, 0).cast<double>());
+					intrinsicParams.block<3, 3>(0, 0).cast<double>());
 			}
 
 			in >> image;

@@ -81,9 +81,9 @@ bool ScalarFactorGraph::eraseConstraint(const FactorBase& c)
 void ScalarFactorGraph::updateEstimation(
 	/** Output increment of the current estimate. Caller must add this
 	   vector to current state vector to obtain the optimal estimation. */
-    mrpt::math::CVectorDynamic<double>& solved_x_inc,
+	mrpt::math::CVectorDynamic<double>& solved_x_inc,
 	/** If !=nullptr, the covariance of the estimate will be stored here. */
-    mrpt::math::CVectorDynamic<double>* solved_variances)
+	mrpt::math::CVectorDynamic<double>* solved_variances)
 {
 	ASSERTMSG_(m_numNodes > 0, "numNodes=0. Have you called initialize()?");
 

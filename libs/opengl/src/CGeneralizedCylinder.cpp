@@ -241,7 +241,7 @@ void CGeneralizedCylinder::getClosedSection(
 	if (index2 >= axis.size() - 1) throw std::logic_error("Out of range");
 	if (!meshUpToDate) updateMesh();
 	auto ROIpoints = CMatrixDynamic<TPoint3D>(
-	    pointsMesh.asEigen().block(index1, 0, index2 + 1, pointsMesh.cols()));
+		pointsMesh.asEigen().block(index1, 0, index2 + 1, pointsMesh.cols()));
 
 	// At this point, ROIpoints contains a matrix of TPoints in which the number
 	// of rows equals (index2-index1)+2 and there is a column
