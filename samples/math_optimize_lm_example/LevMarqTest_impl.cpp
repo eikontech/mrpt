@@ -9,8 +9,8 @@
 
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/system/CTicTac.h>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -54,7 +54,7 @@ void TestLevMarq()
 	levmarq_final_error = std::sqrt(info.final_sqr_err);
 
 #ifdef LEVMARQ_EXAMPLE_VERBOSE
-  const auto T = tictac.Tac() / N;
+	const auto T = tictac.Tac() / N;
 	cout << "Iterations: " << info.iterations_executed << endl;
 	cout << "Final sqr error: " << info.final_sqr_err << endl;
 

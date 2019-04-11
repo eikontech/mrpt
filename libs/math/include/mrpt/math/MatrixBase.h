@@ -215,7 +215,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	void multiply_AAt(const MAT_A& A)
 	{
 		using Index = typename Derived::Index;
-		const auto N = A.rows();
+		const auto N = A.rows(), Ninner = A.cols();
 		mbDerived().resize(N, N);
 		for (Index r = 0; r < N; r++)
 		{
@@ -223,7 +223,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 			for (Index c = r; c < N; c++)
 			{
 				typename Derived::Scalar s = 0;
-				for (Index i = 0; i < N; i++) s += A(r, i) * A(c, i);
+				for (Index i = 0; i < Ninner; i++) s += A(r, i) * A(c, i);
 				mbDerived()(r, c) = s;
 				mbDerived()(c, r) = s;
 			}
@@ -234,7 +234,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	void multiply_AtA(const MAT_A& A)
 	{
 		using Index = typename Derived::Index;
-		const auto N = A.cols();
+		const auto N = A.cols(), Ninner = A.rows();
+		;
 		mbDerived().resize(N, N);
 		for (Index r = 0; r < N; r++)
 		{
@@ -242,7 +243,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 			for (Index c = r; c < N; c++)
 			{
 				typename Derived::Scalar s = 0;
-				for (Index i = 0; i < N; i++) s += A(i, r) * A(i, c);
+				for (Index i = 0; i < Ninner; i++) s += A(i, r) * A(i, c);
 				mbDerived()(r, c) = s;
 				mbDerived()(c, r) = s;
 			}

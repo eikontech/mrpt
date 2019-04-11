@@ -236,6 +236,10 @@ class MatrixVectorBase
 	void operator-=(const Derived& m2);
 	Derived operator*(const Derived& m2) const;
 
+	/** dot product of `this \cdot v ` */
+	Scalar dot(const CVectorDynamic<Scalar>& v) const;
+	Scalar dot(const MatrixVectorBase<Scalar, Derived>& v) const;
+
 	/** this = A<sup>T</sup> * b , with `A` and `b` a dynamic matrix & vector */
 	void multiply_Ab(
 		const CMatrixDynamic<Scalar>& A, const CVectorDynamic<Scalar>& b);

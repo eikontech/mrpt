@@ -386,7 +386,7 @@ CMatrixDynamic<Scalar> MatrixVectorBase<Scalar, Derived>::operator*(
 template <typename Scalar, class Derived>
 Derived MatrixVectorBase<Scalar, Derived>::operator+(const Derived& m2) const
 {
-	Derived ret(mvbDerived().cols(), mvbDerived().rows());
+	Derived ret(mvbDerived().rows(), mvbDerived().cols());
 	ret.asEigen() = mvbDerived().asEigen() + m2.asEigen();
 	return ret;
 }
@@ -398,7 +398,7 @@ void MatrixVectorBase<Scalar, Derived>::operator+=(const Derived& m2)
 template <typename Scalar, class Derived>
 Derived MatrixVectorBase<Scalar, Derived>::operator-(const Derived& m2) const
 {
-	Derived ret(mvbDerived().cols(), mvbDerived().rows());
+	Derived ret(mvbDerived().rows(), mvbDerived().cols());
 	ret.asEigen() = mvbDerived().asEigen() - m2.asEigen();
 	return ret;
 }
@@ -414,7 +414,7 @@ Derived MatrixVectorBase<Scalar, Derived>::operator*(const Derived& m2) const
 		mvbDerived().cols() == mvbDerived().rows(),
 		"Operator* implemented only for square matrices. Use `A.asEigen() * "
 		"B.asEigen()` for general matrix products.");
-	Derived ret(mvbDerived().cols(), mvbDerived().rows());
+	Derived ret(mvbDerived().rows(), mvbDerived().rows());
 	if constexpr (Derived::RowsAtCompileTime == Derived::ColsAtCompileTime)
 	{
 		ret.asEigen() = mvbDerived().asEigen() * m2.asEigen();
@@ -446,6 +446,33 @@ template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::norm() const
 {
 	return mvbDerived().asEigen().norm();
+}
+
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::dot(
+	const CVectorDynamic<Scalar>& v) const
+{
+	if constexpr (Derived::ColsAtCompileTime == 1)
+	{
+		return mvbDerived().asEigen().dot(v.mvbDerived().asEigen());
+	}
+	else
+	{
+		ASSERTMSG_(false, "dot(): Implemented for column vectors only.");
+	}
+}
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::dot(
+	const MatrixVectorBase<Scalar, Derived>& v) const
+{
+	if constexpr (Derived::ColsAtCompileTime == 1)
+	{
+		return mvbDerived().asEigen().dot(v.mvbDerived().asEigen());
+	}
+	else
+	{
+		ASSERTMSG_(false, "dot(): Implemented for column vectors only.");
+	}
 }
 
 }  // namespace mrpt::math

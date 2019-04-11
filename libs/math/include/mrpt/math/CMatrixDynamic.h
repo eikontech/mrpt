@@ -94,7 +94,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		decltype(m_data) newData;
 		newData.resize(m_Rows * m_Cols);
 		// Copy old content:
-		for (size_t r = 0; r < old_rows; r++)
+		const auto nRowsToCopy = m_Rows >= old_rows ? old_rows : m_Rows;
+		for (size_t r = 0; r < nRowsToCopy; r++)
 		{
 			if constexpr (std::is_trivial_v<T>)
 				::memcpy(
@@ -421,32 +422,15 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	}
 
 	/** Subscript operator to get/set an individual element from a row or column
-	 * matrix.
+	 * matrix. For non-vectors (NxM matrices), it returns the i-th matrix
+	 * element, in RowMajor order.
 	 * \exception std::exception If the object is not a column or row matrix.
 	 */
 	inline const T& operator[](size_t ith) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-		ASSERT_(m_Rows == 1 || m_Cols == 1);
+		ASSERT_BELOW_(ith, m_Rows * m_Cols);
 #endif
-		if (m_Rows == 1)
-		{
-// A row matrix:
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-			if (ith >= m_Cols)
-				THROW_EXCEPTION_FMT(
-					"Index %u out of range!", static_cast<unsigned>(ith));
-#endif
-		}
-		else
-		{
-// A columns matrix:
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-			if (ith >= m_Rows)
-				THROW_EXCEPTION_FMT(
-					"Index %u out of range!", static_cast<unsigned>(ith));
-#endif
-		}
 		return m_data[ith];
 	}
 

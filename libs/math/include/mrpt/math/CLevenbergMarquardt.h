@@ -203,9 +203,8 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 				VECTORTYPE tmp(h_lm);
 				tmp *= lambda;
 				tmp -= g;
-				tmp = tmp * h_lm;
-				double denom = tmp.sum();
-				double l = (F_x - F_xnew) / denom;
+				const double denom = tmp.dot(h_lm);
+				const double l = (F_x - F_xnew) / denom;
 
 				if (l > 0)  // There is an improvement:
 				{

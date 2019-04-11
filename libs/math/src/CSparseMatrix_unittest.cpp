@@ -189,7 +189,10 @@ void op_sparse_multiply_AB(
 void op_dense_multiply_AB(
 	const CMatrixDouble& M1, const CMatrixDouble& M2, CMatrixDouble& res)
 {
-	res = M1 * M2;
+	if (M1.isSquare() && M2.isSquare())
+		res = M1 * M2;
+	else
+		res = M1.asEigen() * M2.asEigen();
 }
 
 TEST(SparseMatrix, Op_Multiply_AB)

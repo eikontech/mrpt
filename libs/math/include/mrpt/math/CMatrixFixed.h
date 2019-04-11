@@ -117,7 +117,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	/** Convenient ctor from size: in this class, it throws if size does not
 	 * match compile-time size. It is provided for the sake of offering a
 	 * uniform API with CMatrixDynamic. */
-	CMatrixFixed(const size_type cols, const size_type rows)
+	CMatrixFixed(const size_type rows, const size_type cols)
 	{
 		ASSERT_EQUAL_(cols, static_cast<size_type>(COLS));
 		ASSERT_EQUAL_(rows, static_cast<size_type>(ROWS));

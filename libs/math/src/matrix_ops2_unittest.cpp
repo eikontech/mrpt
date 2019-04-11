@@ -169,7 +169,7 @@ TEST(Matrices, multiply_A_skew3)
 
 		CMatrixDouble R;
 		mrpt::math::multiply_A_skew3(A, v, R);
-		EXPECT_EQ(R, A * S);
+		EXPECT_EQ(R.asEigen(), A.asEigen() * S.asEigen());
 	}
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
@@ -180,7 +180,7 @@ TEST(Matrices, multiply_A_skew3)
 
 		CMatrixFixed<double, 2, 3> R;
 		mrpt::math::multiply_A_skew3(A, v, R);
-		EXPECT_TRUE(R == A * S);
+		EXPECT_EQ(R.asEigen(), A.asEigen() * S.asEigen());
 	}
 }
 
@@ -194,7 +194,7 @@ TEST(Matrices, multiply_skew3_A)
 
 		CMatrixDouble R;
 		mrpt::math::multiply_skew3_A(v, A, R);
-		EXPECT_TRUE(R == S * A);
+		EXPECT_EQ(R.asEigen(), S.asEigen() * A.asEigen());
 	}
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
@@ -205,7 +205,7 @@ TEST(Matrices, multiply_skew3_A)
 
 		CMatrixFixed<double, 3, 2> R;
 		mrpt::math::multiply_skew3_A(v, A, R);
-		EXPECT_TRUE(R == S * A);
+		EXPECT_EQ(R.asEigen(), S.asEigen() * A.asEigen());
 	}
 }
 
