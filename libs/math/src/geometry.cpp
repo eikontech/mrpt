@@ -18,7 +18,7 @@
 //#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
-//#include <Eigen/Dense>
+#include <Eigen/Dense>
 //#include <Eigen/LU>
 
 using namespace mrpt;
@@ -2576,4 +2576,46 @@ bool math::traceRay(
 			dist = nDist;
 		}
 	return res;
+}
+
+CMatrixDouble33 mrpt::math::generateAxisBaseFromDirection(
+	double dx, double dy, double dz)
+{
+	MRPT_START
+
+	if (std::abs(dx) < 1e-10 && std::abs(dy) < 1e-10 && std::abs(dz) < 1e-10)
+		THROW_EXCEPTION("Invalid input: Direction vector is (0,0,0);");
+
+	CMatrixDouble33 P;
+
+	// 1st vector:
+	double n_xy = square(dx) + square(dy);
+	double n = sqrt(n_xy + square(dz));
+	n_xy = sqrt(n_xy);
+	P(0, 0) = dx / n;
+	P(1, 0) = dy / n;
+	P(2, 0) = dz / n;
+
+	// 2nd perpendicular vector:
+	if (fabs(dx) > 1e-4 || fabs(dy) > 1e-4)
+	{
+		P(0, 1) = -dy / n_xy;
+		P(1, 1) = dx / n_xy;
+		P(2, 1) = 0;
+	}
+	else
+	{
+		// Any vector in the XY plane will work:
+		P(0, 1) = 1;
+		P(1, 1) = 0;
+		P(2, 1) = 0;
+	}
+
+	// 3rd perpendicular vector: cross product of the two last vectors:
+	Eigen::Vector3d c2;
+	crossProduct3D(P.col(0), P.col(1), c2);
+	P.col(2) = c2;
+
+	return P;
+	MRPT_END
 }

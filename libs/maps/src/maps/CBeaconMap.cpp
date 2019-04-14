@@ -18,15 +18,15 @@
 #include <mrpt/math/data_utils.h>  // averageLogLikelihood()
 #include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/random.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/string_utils.h>
-
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -653,8 +653,9 @@ bool CBeaconMap::internal_insertObservation(
 									beac->m_locationGauss.cov);
 								varZ += varR;
 
-								CMatrixDouble31 K;
-								K.multiply_ABt(beac->m_locationGauss.cov, H);
+								CMatrixDouble31 K =
+									beac->m_locationGauss.cov.asEigen() *
+									H.transpose();
 								K *= 1.0 / varZ;
 
 								// Update stage of the EKF:
@@ -664,7 +665,7 @@ bool CBeaconMap::internal_insertObservation(
 
 								beac->m_locationGauss.cov =
 									(Eigen::Matrix<double, 3, 3>::Identity() -
-									 K * H) *
+									 (K * H).asEigen()) *
 									beac->m_locationGauss.cov;
 								// beac->m_locationGauss.cov.force_symmetry();
 							}

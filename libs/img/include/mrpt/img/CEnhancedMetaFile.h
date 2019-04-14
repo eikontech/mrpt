@@ -10,6 +10,7 @@
 
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CCanvas.h>
+#include <mrpt/math/math_frwds.h>
 
 namespace mrpt::img
 {
@@ -168,7 +169,7 @@ class CEnhancedMetaFile : public CCanvas
 	 */
 	template <class T>
 	void ellipseGaussian(
-		math::CMatrixDynamic<T>* cov2D, T mean_x, T mean_y,
+		mrpt::math::CMatrixDynamic<T>* cov2D, T mean_x, T mean_y,
 		float confIntervalStds = 2,
 		const mrpt::img::TColor& color = mrpt::img::TColor(255, 255, 255),
 		unsigned int width = 1, int nEllipsePoints = 20)

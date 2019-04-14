@@ -676,7 +676,7 @@ void CLandmarksMap::loadSiftFeaturesFromImageObservation(
 		D(2, 2) = square(width);
 
 		// Finally, compute the covariance!
-		landmark3DPositionPDF.cov = CMatrixDouble33(P * D * P.transpose());
+		P.multiply_HCHt(D, landmark3DPositionPDF.cov);
 
 		// Save into the landmarks vector:
 		// --------------------------------------------

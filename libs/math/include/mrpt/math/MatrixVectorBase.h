@@ -72,6 +72,13 @@ class MatrixVectorBase
 		std::fill(mvbDerived().begin(), mvbDerived().end(), val);
 	}
 
+	inline void setZero() { fill(0); }
+	inline void setZero(size_t nrows, size_t ncols)
+	{
+		mvbDerived().resize(nrows, ncols);
+		fill(0);
+	}
+
 	static Derived Zero()
 	{
 		ASSERTMSG_(
@@ -82,13 +89,13 @@ class MatrixVectorBase
 		m.setZero();
 		return m;
 	}
-
-	inline void setZero() { fill(0); }
-	inline void setZero(size_t nrows, size_t ncols)
+	static Derived Zero(size_t nrows, size_t ncols)
 	{
-		mvbDerived().resize(nrows, ncols);
-		fill(0);
+		Derived m;
+		m.setZero(nrows, ncols);
+		return m;
 	}
+
 	inline void assign(const std::size_t N, const Scalar value)
 	{
 		mvbDerived().resize(N);

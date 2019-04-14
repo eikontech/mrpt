@@ -10,8 +10,8 @@
 #pragma once
 
 #include <mrpt/math/CMatrixFixed.h>
-//#include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/poses/CPose3D.h>
+#include <Eigen/Dense>
 //#include <unsupported/Eigen/MatrixFunctions>
 
 namespace mrpt::vision

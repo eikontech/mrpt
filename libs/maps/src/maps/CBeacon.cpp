@@ -11,15 +11,15 @@
 
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
-#include <mrpt/obs/CObservation.h>
-#include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/math/geometry.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CText.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -560,15 +560,14 @@ void CBeacon::generateRingSOG(
 
 				// Compute the covariance:
 				dir = dir - sensorPnt;
-				CMatrixDouble33 H =
-					CMatrixDouble33(math::generateAxisBaseFromDirection(
-						dir.x(), dir.y(),
-						dir.z()));  // 3 perpendicular & normalized vectors.
+				// 3 perpendicular & normalized vectors.
+				CMatrixDouble33 H = math::generateAxisBaseFromDirection(
+					dir.x(), dir.y(), dir.z());
 
 				H.multiply_HCHt(
 					S,
 					outPDF.get(modeIdx).val.cov);  // out = H * S * ~H;
-				if (minEl == maxEl)
+				if (std::abs(minEl - maxEl) < 1e-6)
 				{  // We are in 2D:
 					// 3rd column/row = 0
 					CMatrixDouble33& C33 = outPDF.get(modeIdx).val.cov;
