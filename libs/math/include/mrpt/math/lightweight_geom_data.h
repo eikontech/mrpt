@@ -2280,11 +2280,19 @@ struct TTwist3D
 				throw std::out_of_range("index out of range");
 		}
 	}
-	/** Transformation into vector */
-	void getAsVector(std::vector<double>& v) const
+	/** Transformation into vector [vx vy vz wx wy wz] */
+	template <typename VECTORLIKE>
+	void getAsVector(VECTORLIKE& v) const
 	{
 		v.resize(6);
 		for (int i = 0; i < 6; i++) v[i] = (*this)[i];
+	}
+	/** Sets from a vector [vx vy vz wx wy wz] */
+	template <typename VECTORLIKE>
+	void setFromVector(VECTORLIKE& v)
+	{
+		ASSERT_EQUAL_(v.size(), static_cast<decltype(v.size())>(6));
+		for (int i = 0; i < 6; i++) (*this)[i] = v[i];
 	}
 	bool operator==(const TTwist3D& o) const;
 	bool operator!=(const TTwist3D& o) const;

@@ -284,7 +284,7 @@ TEST(Matrices, fromMatlabStringFormat)
 			GTEST_FAIL() << "Matrix<double,1,3>:" << mat13;
 	}
 	{
-		CVectorDynamic<double> m;
+		CVectorDouble m;
 		bool ok = m.fromMatlabStringFormat(mat31);
 		const auto len = m.size();
 		EXPECT_EQ(m.rows(), 3) << "Matrix<double,1,Dynamic>:" << mat31;

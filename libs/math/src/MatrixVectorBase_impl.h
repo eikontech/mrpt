@@ -358,6 +358,57 @@ Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff() const
 }
 
 template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::minCoeff(std::size_t& outIdx) const
+{
+	if constexpr (Derived::ColsAtCompileTime == 1)
+	{
+		typename Derived::Index idx;
+		auto r = mvbDerived().asEigen().minCoeff(&idx);
+		outIdx = static_cast<std::size_t>(idx);
+		return r;
+	}
+	else
+		throw std::runtime_error(
+			"minCoeff(idx): Signature only valid for column vectors");
+}
+
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff(std::size_t& outIdx) const
+{
+	if constexpr (Derived::ColsAtCompileTime == 1)
+	{
+		typename Derived::Index idx;
+		auto r = mvbDerived().asEigen().maxCoeff(&idx);
+		outIdx = static_cast<std::size_t>(idx);
+		return r;
+	}
+	else
+		throw std::runtime_error(
+			"minCoeff(idx): Signature only valid for column vectors");
+}
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::minCoeff(
+	std::size_t& rowIdx, std::size_t& colIdx) const
+{
+	typename Derived::Index row, col;
+	auto r = mvbDerived().asEigen().minCoeff(&row, &col);
+	rowIdx = static_cast<std::size_t>(row);
+	colIdx = static_cast<std::size_t>(col);
+	return r;
+}
+
+template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::maxCoeff(
+	std::size_t& rowIdx, std::size_t& colIdx) const
+{
+	typename Derived::Index row, col;
+	auto r = mvbDerived().asEigen().maxCoeff(&row, &col);
+	rowIdx = static_cast<std::size_t>(row);
+	colIdx = static_cast<std::size_t>(col);
+	return r;
+}
+
+template <typename Scalar, class Derived>
 void MatrixVectorBase<Scalar, Derived>::operator+=(Scalar s)
 {
 	mvbDerived().asEigen().array() += s;

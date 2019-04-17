@@ -690,7 +690,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 	}  // end for delta
 
 	size_t minDistIdx;
-	minDist = distances.minimum(&minDistIdx);
+	minDist = distances.minCoeff(minDistIdx);
 
 	double dist_mean, dist_std;
 	mrpt::math::meanAndStd(distances, dist_mean, dist_std);

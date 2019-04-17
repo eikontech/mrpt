@@ -13,6 +13,7 @@
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CDifodo.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -60,18 +61,18 @@ CDifodo::CDifodo()
 		depth[i].resize(rows_i, cols_i);
 		depth_inter[i].resize(rows_i, cols_i);
 		depth_old[i].resize(rows_i, cols_i);
-		depth[i].assign(0.0f);
-		depth_old[i].assign(0.0f);
+		depth[i].fill(0.0f);
+		depth_old[i].fill(0.0f);
 		xx[i].resize(rows_i, cols_i);
 		xx_inter[i].resize(rows_i, cols_i);
 		xx_old[i].resize(rows_i, cols_i);
-		xx[i].assign(0.0f);
-		xx_old[i].assign(0.0f);
+		xx[i].fill(0.0f);
+		xx_old[i].fill(0.0f);
 		yy[i].resize(rows_i, cols_i);
 		yy_inter[i].resize(rows_i, cols_i);
 		yy_old[i].resize(rows_i, cols_i);
-		yy[i].assign(0.0f);
-		yy_old[i].assign(0.0f);
+		yy[i].fill(0.0f);
+		yy_old[i].fill(0.0f);
 		transformations[i].resize(4, 4);
 
 		if (cols_i <= cols)
@@ -88,7 +89,7 @@ CDifodo::CDifodo()
 
 	previous_speed_const_weight = 0.05f;
 	previous_speed_eig_weight = 0.5f;
-	kai_loc_old.assign(0.f);
+	kai_loc_old = TTwist3D();
 	num_valid_points = 0;
 
 	// Compute gaussian mask
@@ -340,7 +341,7 @@ void CDifodo::buildCoordinatesPyramidFast()
 								if (abs_dif < max_depth_dif)
 								{
 									const float aux_w =
-										f_mask(k) * (max_depth_dif - abs_dif);
+										f_mask[k] * (max_depth_dif - abs_dif);
 									weight += aux_w;
 									sum += aux_w * d_block(k);
 								}
@@ -355,7 +356,7 @@ void CDifodo::buildCoordinatesPyramidFast()
 					else
 					{
 						const Matrix2f d_block = depth[i_1].block<2, 2>(v2, u2);
-						const float new_d = 0.25f * d_block.sumAll();
+						const float new_d = 0.25f * d_block.array().sum();
 						if (new_d < 0.4f)
 							depth[i](v, u) = 0.f;
 						else
@@ -398,8 +399,8 @@ void CDifodo::performWarping()
 		acu_trans = transformations[i - 1] * acu_trans;
 
 	MatrixXf wacu(rows_i, cols_i);
-	wacu.assign(0.f);
-	depth_warped[image_level].assign(0.f);
+	wacu.fill(0.f);
+	depth_warped[image_level].fill(0.f);
 
 	const auto cols_lim = float(cols_i - 1);
 	const auto rows_lim = float(rows_i - 1);
@@ -504,7 +505,7 @@ void CDifodo::performWarping()
 void CDifodo::calculateCoord()
 {
 	null.resize(rows_i, cols_i);
-	null.assign(false);
+	null.fill(false);
 	num_valid_points = 0;
 
 	for (unsigned int u = 0; u < cols_i; u++)
@@ -539,17 +540,17 @@ void CDifodo::calculateCoord()
 void CDifodo::calculateDepthDerivatives()
 {
 	dt.resize(rows_i, cols_i);
-	dt.assign(0.f);
+	dt.fill(0.f);
 	du.resize(rows_i, cols_i);
-	du.assign(0.f);
+	du.fill(0.f);
 	dv.resize(rows_i, cols_i);
-	dv.assign(0.f);
+	dv.fill(0.f);
 
 	// Compute connectivity
 	MatrixXf rx_ninv(rows_i, cols_i);
 	MatrixXf ry_ninv(rows_i, cols_i);
-	rx_ninv.assign(1.f);
-	ry_ninv.assign(1.f);
+	rx_ninv.fill(1.f);
+	ry_ninv.fill(1.f);
 
 	for (unsigned int u = 0; u < cols_i - 1; u++)
 		for (unsigned int v = 0; v < rows_i; v++)
@@ -619,7 +620,7 @@ void CDifodo::calculateDepthDerivatives()
 void CDifodo::computeWeights()
 {
 	weights.resize(rows_i, cols_i);
-	weights.assign(0.f);
+	weights.fill(0.f);
 
 	// Obtain the velocity associated to the rigid transformation estimated up
 	// to the present level
@@ -798,9 +799,8 @@ void CDifodo::solveOneLevel()
 			}
 
 	// Solve the linear system of equations using weighted least squares
-	MatrixXf AtA, AtB;
-	AtA.multiply_AtA(A);
-	AtB.multiply_AtB(A, B);
+	const MatrixXf AtA = A.transpose() * A;
+	const MatrixXf AtB = A.transpose() * B;
 	MatrixXf Var = AtA.ldlt().solve(AtB);
 
 	// Covariance matrix calculation
@@ -811,7 +811,8 @@ void CDifodo::solveOneLevel()
 		(1.f / float(num_valid_points - 6)) * AtA.inverse() * res.squaredNorm();
 
 	// Update last velocity in local coordinates
-	kai_loc_level = Var;
+	// (vx, vy, vz, wx, wy, wz)
+	kai_loc_level.setFromVector(Var);
 }
 
 void CDifodo::odometryCalculation()

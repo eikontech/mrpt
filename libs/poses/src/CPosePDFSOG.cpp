@@ -559,7 +559,8 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 				const double Wj = exp(m_modes[j].log_w) / sumW;
 				const double Wij_ = 1.0 / (Wi + Wj);
 
-				auto Pij = CMatrixDouble33(m_modes[i].cov * (Wi * Wij_));
+				auto Pij =
+					CMatrixDouble33(m_modes[i].cov.asEigen() * Wi * Wij_);
 				Pij.asEigen() += m_modes[j].cov.asEigen() * Wj * Wij_;
 
 				auto MUij = CMatrixDouble31(m_modes[j].mean);

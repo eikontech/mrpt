@@ -128,7 +128,7 @@ inline Eigen::Matrix<
 	MATRIX::ColsAtCompileTime, 0, MATRIX::ColsAtCompileTime, 1>
 	cov(const MATRIX& v)
 {
-	CVectorDynamic<double> m;
+	CVectorDouble m;
 	Eigen::Matrix<
 		typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
 		MATRIX::ColsAtCompileTime, 1, MATRIX::ColsAtCompileTime,

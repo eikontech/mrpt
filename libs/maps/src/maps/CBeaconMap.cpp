@@ -653,7 +653,7 @@ bool CBeaconMap::internal_insertObservation(
 									beac->m_locationGauss.cov);
 								varZ += varR;
 
-								CMatrixDouble31 K =
+								Eigen::Vector3d K =
 									beac->m_locationGauss.cov.asEigen() *
 									H.transpose();
 								K *= 1.0 / varZ;
@@ -664,10 +664,10 @@ bool CBeaconMap::internal_insertObservation(
 								beac->m_locationGauss.mean.z_incr(K(2, 0) * y);
 
 								beac->m_locationGauss.cov =
-									(Eigen::Matrix<double, 3, 3>::Identity() -
-									 (K * H).asEigen()) *
-									beac->m_locationGauss.cov;
-								// beac->m_locationGauss.cov.force_symmetry();
+									((Eigen::Matrix<double, 3, 3>::Identity() -
+									  K * H.asEigen()) *
+									 beac->m_locationGauss.cov.asEigen())
+										.eval();
 							}
 						}
 						break;
@@ -704,8 +704,8 @@ bool CBeaconMap::internal_insertObservation(
 								H *= 1.0 / expectedRange;
 								varZ = H.multiply_HCHt_scalar(mode.val.cov);
 								varZ += varR;
-								CMatrixDouble31 K;
-								K.matProductOf(mode.val.cov, H.transpose());
+								Eigen::Vector3d K =
+									mode.val.cov.asEigen() * H.transpose();
 								K *= 1.0 / varZ;
 
 								// Update stage of the EKF:
@@ -713,9 +713,9 @@ bool CBeaconMap::internal_insertObservation(
 								mode.val.mean.y_incr(K(1, 0) * y);
 								mode.val.mean.z_incr(K(2, 0) * y);
 
-								mode.val.cov =
-									(Eigen::Matrix3d::Identity() - K * H) *
-									mode.val.cov;
+								mode.val.cov = (Eigen::Matrix3d::Identity() -
+												K * H.asEigen()) *
+											   mode.val.cov.asEigen();
 
 								// Update the weight of this mode:
 								// ----------------------------------

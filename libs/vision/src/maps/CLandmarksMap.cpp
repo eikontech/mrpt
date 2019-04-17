@@ -21,13 +21,13 @@
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/random.h>
-#include <mrpt/system/os.h>
-
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/random.h>
+#include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -1520,7 +1520,7 @@ bool CLandmarksMap::saveToMATLABScript2D(
 	std::vector<float> X, Y, COS, SIN;
 	std::vector<float>::iterator x, y, Cos, Sin;
 	double ang;
-	CMatrixD cov(2, 2), eigVal, eigVec, M;
+	CMatrixDouble22 cov, eigVal, eigVec, M;
 
 	X.resize(ELLIPSE_POINTS);
 	Y.resize(ELLIPSE_POINTS);
@@ -1558,9 +1558,12 @@ bool CLandmarksMap::saveToMATLABScript2D(
 		cov(1, 1) = landmark.pose_cov_22;
 		cov(0, 1) = cov(1, 0) = landmark.pose_cov_12;
 
-		cov.eigenVectors(eigVec, eigVal);
+		std::vector<double> eigvals;
+		cov.eig_symmetric(eigVec, eigvals);
+		eigVal.setZero();
+		eigVal.setDiagonal(eigvals);
 		eigVal = eigVal.array().sqrt().matrix();
-		M = eigVal * eigVec.transpose();
+		M = eigVal.asEigen() * eigVec.transpose();
 
 		// Compute the points of the ellipsoid:
 		// ----------------------------------------------

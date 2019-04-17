@@ -234,8 +234,8 @@ void project3DPointsFromDepthImageInto(
 					t_inv);
 
 				T_inv(3, 3) = 1;
-				T_inv.block<3, 3>(0, 0) = R_inv.cast_float();
-				T_inv.block<3, 1>(0, 3) = t_inv.cast_float();
+				T_inv.insertMatrix(0, 0, R_inv.cast_float());
+				T_inv.insertMatrix(0, 3, t_inv.cast_float());
 			}
 
 			CVectorFixedFloat<4> pt_wrt_color, pt_wrt_depth;

@@ -210,9 +210,13 @@ class MatrixVectorBase
 
 	/** Minimum value in the matrix/vector */
 	Scalar minCoeff() const;
+	Scalar minCoeff(std::size_t& outIndexOfMin) const;
+	Scalar minCoeff(std::size_t& rowIdx, std::size_t& colIdx) const;
 
 	/** Maximum value in the matrix/vector */
 	Scalar maxCoeff() const;
+	Scalar maxCoeff(std::size_t& outIndexOfMax) const;
+	Scalar maxCoeff(std::size_t& rowIdx, std::size_t& colIdx) const;
 
 	/** returns true if matrix is NxN */
 	bool isSquare() const { return mvbDerived().cols() == mvbDerived().rows(); }
