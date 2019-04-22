@@ -456,7 +456,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			// Save mean pose:
 			if (!(step % SAVE_LOG_FREQUENCY))
 			{
-				const CVectorDouble p = robotPose.mean.getAsVectorVal();
+				const CVectorDouble p = robotPose.mean.asVectorVal();
 				p.saveToTextFile(
 					OUT_DIR +
 					format("/robot_pose_%05u.txt", (unsigned int)step));

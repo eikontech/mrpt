@@ -79,7 +79,8 @@ class CPose3DQuat;
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
  */
-class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
+class CPose3D : public CPose<CPose3D, 6>,
+				public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3D)
 	DEFINE_SCHEMA_SERIALIZABLE()
@@ -529,10 +530,8 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 		return m_roll;
 	}
 
-	/** Returns a 1x6 vector with [x y z yaw pitch roll] */
-	void getAsVector(mrpt::math::CVectorDouble& v) const;
-	/// \overload
-	void getAsVector(mrpt::math::CVectorFixedDouble<6>& v) const;
+	/** Returns a 6x1 vector with [x y z yaw pitch roll]' */
+	void asVector(vector_t& v) const;
 
 	/** Returns the quaternion associated to the rotation of this object (NOTE:
 	 * XYZ translation is ignored)

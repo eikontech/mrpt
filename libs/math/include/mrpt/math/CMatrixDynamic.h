@@ -500,7 +500,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	/** Returns a vector containing the matrix's values.
 	 */
 	template <typename VECTOR>
-	void getAsVector(VECTOR& out) const
+	void asVector(VECTOR& out) const
 	{
 		out.clear();
 		out.reserve(m_Rows * m_Cols);

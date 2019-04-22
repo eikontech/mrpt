@@ -50,7 +50,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_c_p2.getAsVectorVal() - p_q1_c_q2.getAsVectorVal())
+			(p1_c_p2.asVectorVal() - p_q1_c_q2.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -60,7 +60,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_i_p2.getAsVectorVal() - p_q1_i_q2.getAsVectorVal())
+			(p1_i_p2.asVectorVal() - p_q1_i_q2.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -74,10 +74,7 @@ class Pose3DQuatTests : public ::testing::Test
 			CPose3DQuat A = C + q2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					.array()
-					.abs()
-					.sum(),
+				(A.asVectorVal() - q1_c_q2.asVectorVal()).array().abs().sum(),
 				1e-6);
 		}
 		// Test + operator: trg same var
@@ -86,10 +83,7 @@ class Pose3DQuatTests : public ::testing::Test
 			A = A + q2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					.array()
-					.abs()
-					.sum(),
+				(A.asVectorVal() - q1_c_q2.asVectorVal()).array().abs().sum(),
 				1e-6);
 		}
 		// Test =+ operator
@@ -98,10 +92,7 @@ class Pose3DQuatTests : public ::testing::Test
 			A += q2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					.array()
-					.abs()
-					.sum(),
+				(A.asVectorVal() - q1_c_q2.asVectorVal()).array().abs().sum(),
 				1e-6);
 		}
 	}
@@ -119,7 +110,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_plus_p.getAsVectorVal() - q1_plus_p.getAsVectorVal())
+			(p1_plus_p.asVectorVal() - q1_plus_p.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -225,7 +216,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p_minus_p1.getAsVectorVal() - p_minus_q1.getAsVectorVal())
+			(p_minus_p1.asVectorVal() - p_minus_q1.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -234,8 +225,7 @@ class Pose3DQuatTests : public ::testing::Test
 			<< "p_minus_q1: " << p_minus_q1 << endl;
 
 		EXPECT_NEAR(
-			0,
-			(p_rec.getAsVectorVal() - p.getAsVectorVal()).array().abs().sum(),
+			0, (p_rec.asVectorVal() - p.asVectorVal()).array().abs().sum(),
 			1e-5)
 			<< "p_rec: " << p_rec << endl
 			<< "p: " << p << endl;
@@ -372,8 +362,7 @@ class Pose3DQuatTests : public ::testing::Test
 			<< q1.getHomogeneousMatrixVal<CMatrixDouble44>() << endl;
 
 		EXPECT_NEAR(
-			0, (p1.getAsVectorVal() - p1r.getAsVectorVal()).array().abs().sum(),
-			1e-5)
+			0, (p1.asVectorVal() - p1r.asVectorVal()).array().abs().sum(), 1e-5)
 			<< "p1: " << p1 << endl
 			<< "q1: " << q1 << endl
 			<< "p1r: " << p1r << endl;

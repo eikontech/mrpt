@@ -253,7 +253,7 @@ void CGeneralizedCylinder::getClosedSection(
 		ROIpoints.appendCol(vec);
 	}
 	vector<TPoint3D> vertices;
-	ROIpoints.getAsVector(vertices);
+	ROIpoints.asVector(vertices);
 	size_t nr = ROIpoints.rows() - 1;
 	size_t nc = ROIpoints.cols() - 1;
 	vector<vector<uint32_t>> faces;

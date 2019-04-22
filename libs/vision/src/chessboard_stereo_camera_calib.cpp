@@ -688,7 +688,7 @@ void jacob_deps_D_p_deps(
 	// Jacobian 10.3.4 in technical report "A tutorial on SE(3) transformation
 	// parameterizations and on-manifold optimization"
 	dpl_del.block<3, 3>(0, 0).setIdentity();
-	dpl_del.block<3, 3>(0, 3) = mrpt::math::skew_symmetric3_neg(p_D);
+	dpl_del.block<3, 3>(0, 3) = mrpt::math::skew_symmetric3_neg(p_D).asEigen();
 }
 
 void jacob_dA_eps_D_p_deps(
@@ -710,9 +710,9 @@ void jacob_dA_eps_D_p_deps(
 
 	Eigen::Matrix<double, 3, 6> H;
 	H.block<3, 3>(0, 0).setIdentity();
-	H.block<3, 3>(0, 3) = mrpt::math::skew_symmetric3_neg(v);
+	H.block<3, 3>(0, 3) = mrpt::math::skew_symmetric3_neg(v).asEigen();
 
-	dp_deps.noalias() = A.getRotationMatrix() * H;
+	dp_deps.noalias() = A.getRotationMatrix().asEigen() * H;
 }
 
 void project_point(

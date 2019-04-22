@@ -29,7 +29,7 @@ class CPose2D;
  * \sa CPoseOrPoint,CPose, CPoint
  * \ingroup poses_grp
  */
-class CPoint2D : public CPoint<CPoint2D>,
+class CPoint2D : public CPoint<CPoint2D, 2>,
 				 public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint2D)
@@ -47,8 +47,8 @@ class CPoint2D : public CPoint<CPoint2D>,
 	}
 
 	/** Constructor from x/y coordinates given from other pose. */
-	template <class OTHERCLASS>
-	inline explicit CPoint2D(const CPoseOrPoint<OTHERCLASS>& b)
+	template <class OTHERCLASS, std::size_t DIM2>
+	inline explicit CPoint2D(const CPoseOrPoint<OTHERCLASS, DIM2>& b)
 	{
 		m_coords[0] = b.x();
 		m_coords[1] = b.y();
@@ -70,6 +70,9 @@ class CPoint2D : public CPoint<CPoint2D>,
 	}
 
 	mrpt::math::TPoint2D asTPoint() const;
+
+	/** Return the pose or point as a 2x1 vector [x, y]' */
+	void asVector(vector_t& v) const { v = m_coords; }
 
 	/** The operator D="this"-b is the pose inverse compounding operator,
 	 *   the resulting points "D" fulfils: "this" = b + D, so that: b == a +

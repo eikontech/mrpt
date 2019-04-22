@@ -243,7 +243,7 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 	COccupancyGridMap2D::TLaserSimulUncertaintyResult& out_results) const
 {
 	const mrpt::math::CVectorFixedDouble<3> robPoseMean =
-		in_params.robotPose.mean.getAsVectorVal();
+		in_params.robotPose.mean.asVectorVal();
 
 	TFunctorLaserSimulData simulData;
 	simulData.grid = this;

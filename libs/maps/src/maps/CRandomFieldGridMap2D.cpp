@@ -189,11 +189,11 @@ void CRandomFieldGridMap2D::internal_clear()
 			// Populate it with the initial cov. values:
 			// ------------------------------------------
 			signed Acx, Acy;
-			const double* ptr_first_row = m_stackedCov.get_unsafe_row(0);
+			const double* ptr_first_row = &m_stackedCov(0, 0);
 
 			for (size_t i = 0; i < N; i++)
 			{
-				double* ptr = m_stackedCov.get_unsafe_row(i);
+				double* ptr = &m_stackedCov(i, 0);
 
 				if (i == 0)
 				{
@@ -1149,7 +1149,7 @@ void CRandomFieldGridMap2D::resize(
 					// compressed covariance:
 					cell.kf_std = m_insertOptions_common->KF_initialCellStd;
 
-					double* new_row = m_stackedCov.get_unsafe_row(i);
+					double* new_row = &m_stackedCov(i, 0);
 					memcpy(new_row, &template_row[0], sizeof(double) * K);
 				}
 				else
@@ -1159,9 +1159,8 @@ void CRandomFieldGridMap2D::resize(
 					ASSERT_(int(old_idx_of_i) < m_stackedCov.rows());
 					if (old_idx_of_i != int(i))  // Copy row only if it's moved
 					{
-						const double* ptr_old =
-							m_stackedCov.get_unsafe_row(old_idx_of_i);
-						double* ptr_new = m_stackedCov.get_unsafe_row(i);
+						const double* ptr_old = &m_stackedCov(old_idx_of_i, 0);
+						double* ptr_new = &m_stackedCov(i, 0);
 						memcpy(ptr_new, ptr_old, sizeof(double) * K);
 					}
 				}
@@ -1240,7 +1239,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
 	double* oldCov_ptr = oldCov;
 	for (i = 0; i < N; i++)
 	{
-		memcpy(oldCov_ptr, m_cov.get_unsafe_row(i), sizeof(double) * N);
+		memcpy(oldCov_ptr, &m_cov(i, 0), sizeof(double) * N);
 		oldCov_ptr += N;
 	}
 
@@ -1386,8 +1385,8 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 			}
 
 			// And also as bitmap:
-			STDs.normalize();
-			CImage img_cov(STDs, true);
+			CImage img_cov;
+			img_cov.setFromMatrix(STDs, false /*it's not normalized*/);
 			img_cov.saveToFile(
 				filNamePrefix + std::string("_cells_std.png"),
 				true /* vertical flip */);
@@ -2537,7 +2536,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
-	Eigen::VectorXd x_incr, x_var;
+	mrpt::math::CVectorDouble x_incr, x_var;
 	m_gmrf.updateEstimation(
 		x_incr, m_insertOptions_common->GMRF_skip_variance ? nullptr : &x_var);
 

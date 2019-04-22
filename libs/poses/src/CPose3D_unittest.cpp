@@ -53,7 +53,7 @@ class Pose3DTests : public ::testing::Test
 		p1_inv_inv.inverse();
 
 		EXPECT_NEAR(
-			(p1.getAsVectorVal() - p1_inv_inv.getAsVectorVal())
+			(p1.asVectorVal() - p1_inv_inv.asVectorVal())
 				.asEigen()
 				.array()
 				.abs()
@@ -78,7 +78,7 @@ class Pose3DTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_c_p2_i_p2.getAsVectorVal() - p2.getAsVectorVal())
+			(p1_c_p2_i_p2.asVectorVal() - p2.asVectorVal())
 				.asEigen()
 				.array()
 				.abs()
@@ -89,7 +89,7 @@ class Pose3DTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p2_c_p1_i_p2.getAsVectorVal() - p1.getAsVectorVal())
+			(p2_c_p1_i_p2.asVectorVal() - p1.asVectorVal())
 				.asEigen()
 				.array()
 				.abs()
@@ -110,7 +110,7 @@ class Pose3DTests : public ::testing::Test
 			CPose3D A = C + p2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
+				(A.asVectorVal() - p1_c_p2.asVectorVal())
 					.asEigen()
 					.array()
 					.abs()
@@ -123,7 +123,7 @@ class Pose3DTests : public ::testing::Test
 			A = A + p2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
+				(A.asVectorVal() - p1_c_p2.asVectorVal())
 					.asEigen()
 					.array()
 					.abs()
@@ -136,7 +136,7 @@ class Pose3DTests : public ::testing::Test
 			A += p2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - p1_c_p2.getAsVectorVal())
+				(A.asVectorVal() - p1_c_p2.asVectorVal())
 					.asEigen()
 					.array()
 					.abs()
@@ -169,7 +169,7 @@ class Pose3DTests : public ::testing::Test
 
 			EXPECT_NEAR(
 				0,
-				(p1_plus_p2bis.getAsVectorVal() - p1_plus_p2.getAsVectorVal())
+				(p1_plus_p2bis.asVectorVal() - p1_plus_p2.asVectorVal())
 					.asEigen()
 					.array()
 					.abs()
@@ -187,7 +187,7 @@ class Pose3DTests : public ::testing::Test
 
 			EXPECT_NEAR(
 				0,
-				(p1_plus_p2bis.getAsVectorVal() - p1_plus_p2.getAsVectorVal())
+				(p1_plus_p2bis.asVectorVal() - p1_plus_p2.asVectorVal())
 					.asEigen()
 					.array()
 					.abs()
@@ -205,7 +205,7 @@ class Pose3DTests : public ::testing::Test
 
 			EXPECT_NEAR(
 				0,
-				(p1_plus_p2bis.getAsVectorVal() - p1_plus_p2.getAsVectorVal())
+				(p1_plus_p2bis.asVectorVal() - p1_plus_p2.asVectorVal())
 					.asEigen()
 					.array()
 					.abs()
@@ -230,7 +230,7 @@ class Pose3DTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_plus_p2.getAsVectorVal() - p1_plus_p.getAsVectorVal())
+			(p1_plus_p2.asVectorVal() - p1_plus_p.asVectorVal())
 				.asEigen()
 				.array()
 				.abs()
@@ -260,7 +260,7 @@ class Pose3DTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p_recov2.getAsVectorVal() - p_recov.getAsVectorVal())
+			(p_recov2.asVectorVal() - p_recov.asVectorVal())
 				.asEigen()
 				.array()
 				.abs()
@@ -269,7 +269,7 @@ class Pose3DTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p.getAsVectorVal() - p_recov.getAsVectorVal())
+			(p.asVectorVal() - p_recov.asVectorVal())
 				.asEigen()
 				.array()
 				.abs()
@@ -370,8 +370,7 @@ class Pose3DTests : public ::testing::Test
 	{
 		const CPose3D p2 = Lie::SE<3>::exp(Lie::SE<3>::log(p1));
 		EXPECT_NEAR(
-			(p1.getAsVectorVal() - p2.getAsVectorVal()).array().abs().sum(), 0,
-			1e-5)
+			(p1.asVectorVal() - p2.asVectorVal()).array().abs().sum(), 0, 1e-5)
 			<< "p1: " << p1 << endl;
 	}
 

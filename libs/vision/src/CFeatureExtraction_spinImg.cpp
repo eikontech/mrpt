@@ -9,7 +9,9 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/vision/CFeatureExtraction.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -173,8 +175,8 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 			}  // end py
 		}  // end px
 
-		// Normalize:
-		hist2d.normalize(0, 1);  // [0,1]
+		// Normalize [0,1]
+		mrpt::math::normalize(hist2d, 0, 1);
 
 		// Save the histogram as a vector:
 		unsigned idx = 0;

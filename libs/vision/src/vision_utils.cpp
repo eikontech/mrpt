@@ -283,38 +283,6 @@ void vision::rowChecking(
 
 }  // end rowChecking
 
-/*------------------------------------------------------------
-					getDispersion
--------------------------------------------------------------*/
-void vision::getDispersion(
-	const CFeatureList& list, CVectorFloat& std, CVectorFloat& mean)
-{
-	std.assign(2, 0);
-	mean.assign(2, 0);
-
-	CFeatureList::const_iterator it;
-	double varx = 0, vary = 0;
-
-	for (it = list.begin(); it != list.end(); it++)
-	{
-		mean[0] += (*it)->x;
-		mean[1] += (*it)->y;
-	}
-	mean[0] /= list.size();
-	mean[1] /= list.size();
-
-	for (it = list.begin(); it != list.end(); it++)
-	{
-		varx += square((*it)->x - mean[0]);
-		vary += square((*it)->y - mean[1]);
-	}
-	varx /= list.size();
-	vary /= list.size();
-
-	std[0] = sqrt(varx);
-	std[1] = sqrt(vary);
-}  // end getDispersion
-
 /*-------------------------------------------------------------
 						computeMsd
 -------------------------------------------------------------*/

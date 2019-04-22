@@ -355,18 +355,7 @@ void CPose2D::inverse()
 	m_cossin_uptodate = false;
 }
 
-/*---------------------------------------------------------------
-		getAsVector
----------------------------------------------------------------*/
-void CPose2D::getAsVector(CVectorDouble& v) const
-{
-	v.resize(3);
-	v[0] = m_coords[0];
-	v[1] = m_coords[1];
-	v[2] = m_phi;
-}
-
-void CPose2D::getAsVector(mrpt::math::CVectorFixedDouble<3>& v) const
+void CPose2D::asVector(vector_t& v) const
 {
 	v[0] = m_coords[0];
 	v[1] = m_coords[1];

@@ -96,6 +96,13 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 		(*this) = m;
 	}
 
+	/** Ctor from a fixed-size vector */
+	template <std::size_t ROWS>
+	explicit CVectorDynamic(const CMatrixFixed<T, ROWS, 1>& v)
+	{
+		(*this) = v;
+	}
+
 	/** Constructor from a given size and a C array. The array length must match
 	 *cols x row.
 	 * \code
@@ -145,12 +152,12 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	}
 
 	template <class MAT>
-	void setFromMatrixLike(const MAT& m)
+	void fromVectorLike(const MAT& m)
 	{
 		MRPT_START
-		setSize(m.rows(), m.cols());
-		for (Index r = 0; r < rows(); r++)
-			for (Index c = 0; c < cols(); c++) (*this)(r, c) = m(r, c);
+		ASSERT_EQUAL_(m.cols(), 1U);
+		setSize(m.rows(), 1);
+		for (Index r = 0; r < rows(); r++) (*this)[r] = m(r, 0);
 		MRPT_END
 	}
 
@@ -160,7 +167,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	CVectorDynamic& operator=(const CMatrixDynamic<U>& m)
 	{
 		MRPT_START
-		setFromMatrixLike(m);
+		fromVectorLike(m);
 		return *this;
 		MRPT_END
 	}
@@ -170,7 +177,17 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	CVectorDynamic& operator=(const Eigen::MatrixBase<Derived>& m)
 	{
 		MRPT_START
-		setFromMatrixLike(m);
+		fromVectorLike(m);
+		return *this;
+		MRPT_END
+	}
+
+	/** Assignment from a fixed-size vector */
+	template <std::size_t ROWS>
+	CVectorDynamic& operator=(const CMatrixFixed<T, ROWS, 1>& v)
+	{
+		MRPT_START
+		fromVectorLike(v);
 		return *this;
 		MRPT_END
 	}

@@ -567,11 +567,11 @@ double TSegment3D::distance(const TSegment3D& segment) const
 {
 	Eigen::Vector3d u, v, w;
 	TPoint3D diff_vect = point2 - point1;
-	diff_vect.getAsVector(u);
+	diff_vect.asVector(u);
 	diff_vect = segment.point2 - segment.point1;
-	diff_vect.getAsVector(v);
+	diff_vect.asVector(v);
 	diff_vect = point1 - segment.point1;
-	diff_vect.getAsVector(w);
+	diff_vect.asVector(w);
 	double a = u.dot(u);  // always >= 0
 	double b = u.dot(v);
 	double c = v.dot(v);  // always >= 0

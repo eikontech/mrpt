@@ -38,8 +38,8 @@ class QuaternionTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			std::abs((CPose3D(q1, 0, 0, 0).getAsVectorVal() -
-					  CPose3D(q1r, 0, 0, 0).getAsVectorVal())
+			std::abs((CPose3D(q1, 0, 0, 0).asVectorVal() -
+					  CPose3D(q1r, 0, 0, 0).asVectorVal())
 						 .sum()),
 			1e-6);
 	}
@@ -134,8 +134,7 @@ TEST_F(QuaternionTests, crossProduct)
 
 	EXPECT_NEAR(
 		0,
-		std::abs((p3.getAsVectorVal() - CPose3D(q3, 0, 0, 0).getAsVectorVal())
-					 .sum()),
+		std::abs((p3.asVectorVal() - CPose3D(q3, 0, 0, 0).asVectorVal()).sum()),
 		1e-6)
 		<< "q1 = " << q1 << endl
 		<< "q1 as CPose3D = " << CPose3D(q1, 0, 0, 0) << endl

@@ -148,7 +148,7 @@ class CProbabilityDensityFunction
 		for (size_t i = 0; i < N; i++)
 		{
 			this->drawSingleSample(pnt);
-			pnt.getAsVector(outSamples[i]);
+			outSamples[i] = mrpt::math::CVectorDouble(pnt.asVectorVal());
 		}
 	}
 

@@ -56,7 +56,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		// cout << "p6pdf_recov: " << p6pdf_recov  << endl;
 
 		const double val_mean_error =
-			(p6pdf_recov.mean.getAsVectorVal() - p6pdf.mean.getAsVectorVal())
+			(p6pdf_recov.mean.asVectorVal() - p6pdf.mean.asVectorVal())
 				.array()
 				.abs()
 				.mean();
@@ -126,8 +126,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		}
 		// Compare mean:
 		EXPECT_NEAR(
-			0, (y_mean - p6_comp.mean.getAsVectorVal()).array().abs().sum(),
-			1e-2)
+			0, (y_mean - p6_comp.mean.asVectorVal()).array().abs().sum(), 1e-2)
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
@@ -142,8 +141,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 
 		// Compare mean:
 		EXPECT_NEAR(
-			0, (y_mean - p6_comp.mean.getAsVectorVal()).array().abs().sum(),
-			1e-2)
+			0, (y_mean - p6_comp.mean.asVectorVal()).array().abs().sum(), 1e-2)
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
@@ -248,8 +246,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		}
 		// Compare mean:
 		EXPECT_NEAR(
-			0, (y_mean - p6_comp.mean.getAsVectorVal()).array().abs().sum(),
-			1e-2)
+			0, (y_mean - p6_comp.mean.asVectorVal()).array().abs().sum(), 1e-2)
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
@@ -264,8 +261,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 
 		// Compare mean:
 		EXPECT_NEAR(
-			0, (y_mean - p6_comp.mean.getAsVectorVal()).array().abs().sum(),
-			1e-2)
+			0, (y_mean - p6_comp.mean.asVectorVal()).array().abs().sum(), 1e-2)
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
@@ -294,7 +290,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		// Compare mean:
 		EXPECT_NEAR(
 			0,
-			(p6_inv.mean.getAsVectorVal() - p6_comp.mean.getAsVectorVal())
+			(p6_inv.mean.asVectorVal() - p6_comp.mean.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -312,7 +308,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		// Compare mean:
 		EXPECT_NEAR(
 			0,
-			(p6_inv2.mean.getAsVectorVal() - p6_comp.mean.getAsVectorVal())
+			(p6_inv2.mean.asVectorVal() - p6_comp.mean.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -368,8 +364,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 			<< "new_base: " << new_base << endl;
 		EXPECT_NEAR(
 			0,
-			(p6_new_base_pdf.mean.getAsVectorVal() -
-			 p6pdf1.mean.getAsVectorVal())
+			(p6_new_base_pdf.mean.asVectorVal() - p6pdf1.mean.asVectorVal())
 				.array()
 				.abs()
 				.mean(),

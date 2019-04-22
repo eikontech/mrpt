@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CFileOutputStream.h>
-//#include <mrpt/math/types_math.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/vision/CCamModel.h>
 #include <mrpt/vision/pinhole.h>
 
@@ -317,7 +317,7 @@ void CCamModel::loadFromConfigFile(
 
 	cam.setIntrinsicParamsFromValues(fx, fy, cx, cy);
 
-	CVectorDouble DD;
+	mrpt::math::CVectorDouble DD;
 	source.read_vector(section, "dist_params", CVectorDouble(), DD, true);
 	ASSERT_(DD.size() == 4 || DD.size() == 5);
 

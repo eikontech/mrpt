@@ -28,7 +28,7 @@ namespace mrpt::poses
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPose, CPoint
  */
-class CPoint3D : public CPoint<CPoint3D>,
+class CPoint3D : public CPoint<CPoint3D, 3>,
 				 public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint3D)
@@ -81,6 +81,9 @@ class CPoint3D : public CPoint<CPoint3D>,
 
 	/** Returns this point plus pose "b", i.e. result = this + b  */
 	CPose3D operator+(const CPose3D& b) const;
+
+	/** Return the pose or point as a 3x1 vector [x y z]' */
+	void asVector(vector_t& v) const { v = m_coords; }
 
 	enum
 	{

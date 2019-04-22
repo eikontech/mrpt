@@ -14,6 +14,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CDifodo.h>
 #include <Eigen/Dense>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -396,7 +397,7 @@ void CDifodo::performWarping()
 	Matrix4f acu_trans;
 	acu_trans.setIdentity();
 	for (unsigned int i = 1; i <= level; i++)
-		acu_trans = transformations[i - 1] * acu_trans;
+		acu_trans = transformations[i - 1].asEigen() * acu_trans;
 
 	MatrixXf wacu(rows_i, cols_i);
 	wacu.fill(0.f);
@@ -624,20 +625,21 @@ void CDifodo::computeWeights()
 
 	// Obtain the velocity associated to the rigid transformation estimated up
 	// to the present level
-	Matrix<float, 6, 1> kai_level = kai_loc_old;
+	CVectorFixedDouble<6> kai_level;
+	kai_level.setFromMatrixLike(kai_loc_old);
 
 	Matrix4f acu_trans;
 	acu_trans.setIdentity();
 	for (unsigned int i = 0; i < level; i++)
-		acu_trans = transformations[i] * acu_trans;
+		acu_trans = transformations[i].asEigen() * acu_trans;
 
 	// Alternative way to compute the log
-	CMatrixDouble44 mat_aux = acu_trans.cast_double();
+	auto mat_aux = CMatrixDouble44(acu_trans.cast<double>().eval());
 
-	const CVectorFixedDouble<6> kai_level_acu(
+	const auto kai_level_acu = CVectorFixedDouble<6>(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
 
-	kai_level -= kai_level_acu.cast<float>();
+	kai_level -= kai_level_acu.cast_float();
 
 	// Parameters for the measurement error
 	const float f_inv = float(cols_i) / (2.f * tan(0.5f * fovh));
@@ -754,7 +756,7 @@ void CDifodo::computeWeights()
 
 	// Normalize weights in the range [0,1]
 	const float inv_max = 1.f / weights.maxCoeff();
-	weights = inv_max * weights;
+	weights *= inv_max;
 }
 
 void CDifodo::solveOneLevel()
@@ -812,7 +814,7 @@ void CDifodo::solveOneLevel()
 
 	// Update last velocity in local coordinates
 	// (vx, vy, vz, wx, wy, wz)
-	kai_loc_level.setFromVector(Var);
+	kai_loc_level.fromVector(Var);
 }
 
 void CDifodo::odometryCalculation()
@@ -877,38 +879,39 @@ void CDifodo::filterLevelSolution()
 {
 	//		Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------
-	SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
-	if (eigensolver.info() != Success)
+	CMatrixFloat66 Bii;
+	std::vector<float> eigenVals;
+
+	if (est_cov.eig_symmetric(Bii, eigenVals))
 	{
-		printf("\n Eigensolver couldn't find a solution. Pose is not updated");
+		std::cerr
+			<< "\n Eigensolver couldn't find a solution. Pose is not updated\n";
 		return;
 	}
 
 	// First, we have to describe both the new linear and angular velocities in
 	// the "eigenvector" basis
 	//-------------------------------------------------------------------------------------------------
-	Matrix<float, 6, 6> Bii;
-	Matrix<float, 6, 1> kai_b;
-	Bii = eigensolver.eigenvectors();
-	kai_b = Bii.colPivHouseholderQr().solve(kai_loc_level);
+	auto kai_b = CVectorFixedFloat<6>(Bii.asEigen().colPivHouseholderQr().solve(
+		kai_loc_level.asVector<Matrix<float, 6, 1>>()));
 
 	// Second, we have to describe both the old linear and angular velocities in
 	// the "eigenvector" basis
 	//-------------------------------------------------------------------------------------------------
-	Matrix<float, 6, 1> kai_loc_sub = kai_loc_old;
+	auto kai_loc_sub = kai_loc_old.asVector<Eigen::Matrix<float, 6, 1>>();
 
 	// Important: we have to substract the previous levels' solutions from the
 	// old velocity.
 	Matrix4f acu_trans;
 	acu_trans.setIdentity();
 	for (unsigned int i = 0; i < level; i++)
-		acu_trans = transformations[i] * acu_trans;
+		acu_trans = transformations[i].asEigen() * acu_trans;
 
-	CMatrixDouble44 mat_aux = acu_trans.cast_double();
-	const CVectorFixedDouble<6> kai_level_acu(
+	auto mat_aux = CMatrixDouble44(acu_trans.cast<double>());
+	const auto kai_level_acu = CVectorFixedDouble<6>(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
 
-	kai_loc_sub -= kai_level_acu.cast<float>();
+	kai_loc_sub -= kai_level_acu.asEigen().cast<float>();
 
 	// Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
 	// kai_loc_sub(0) -= log_trans(0,3); kai_loc_sub(1) -= log_trans(1,3);
@@ -917,8 +920,8 @@ void CDifodo::filterLevelSolution()
 	// kai_loc_sub(5) += log_trans(0,1);
 
 	// Transform that local representation to the "eigenvector" basis
-	Matrix<float, 6, 1> kai_b_old;
-	kai_b_old = Bii.colPivHouseholderQr().solve(kai_loc_sub);
+	const Matrix<float, 6, 1> kai_b_old =
+		Bii.asEigen().colPivHouseholderQr().solve(kai_loc_sub);
 
 	//									Filter velocity
 	//--------------------------------------------------------------------------------
@@ -926,21 +929,22 @@ void CDifodo::filterLevelSolution()
 				df = previous_speed_const_weight * expf(-int(level));
 	Matrix<float, 6, 1> kai_b_fil;
 	for (unsigned int i = 0; i < 6; i++)
-		kai_b_fil(i) = (kai_b(i) + (cf * eigensolver.eigenvalues()(i, 0) + df) *
-									   kai_b_old(i)) /
-					   (1.f + cf * eigensolver.eigenvalues()(i) + df);
+		kai_b_fil(i) =
+			(kai_b.asEigen()(i) + (cf * eigenVals[i] + df) * kai_b_old(i)) /
+			(1.f + cf * eigenVals[i] + df);
 
 	// Transform filtered velocity to the local reference frame
 	Matrix<float, 6, 1> kai_loc_fil =
-		Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
+		Bii.asEigen().inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	// Compute the rigid transformation
-	mrpt::math::CVectorFixedDouble<6> aux_vel(kai_loc_fil.cast_double() / fps);
+	auto aux_vel =
+		mrpt::math::CVectorFixedDouble<6>(kai_loc_fil.cast<double>() / fps);
 	const poses::CPose3D aux2 = mrpt::poses::Lie::SE<3>::exp(aux_vel);
 
 	CMatrixDouble44 trans;
 	aux2.getHomogeneousMatrix(trans);
-	transformations[level] = trans.cast<float>();
+	transformations[level] = trans.cast_float();
 }
 
 void CDifodo::poseUpdate()
@@ -950,15 +954,15 @@ void CDifodo::poseUpdate()
 	Matrix4f acu_trans;
 	acu_trans.setIdentity();
 	for (unsigned int i = 1; i <= ctf_levels; i++)
-		acu_trans = transformations[i - 1] * acu_trans;
+		acu_trans = transformations[i - 1].asEigen() * acu_trans;
 
 	// Compute the new estimates in the local and absolutes reference frames
 	//---------------------------------------------------------------------
-	CMatrixDouble44 mat_aux = acu_trans.cast_double();
+	auto mat_aux = CMatrixDouble44(acu_trans.cast<double>().eval());
 
 	const CVectorFixedDouble<6> kai_level_acu(
 		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
-	kai_loc = kai_level_acu.cast<float>();
+	kai_loc.fromVector(kai_level_acu.cast_float());
 
 	//---------------------------------------------------------------------------------------------
 	// Directly from Eigen:

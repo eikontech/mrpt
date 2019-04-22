@@ -42,7 +42,7 @@ namespace mrpt::poses
  * version of this class,  mrpt::math::CQuaternion, CPoseOrPoint
  * \ingroup poses_grp
  */
-class CPose3DQuat : public CPose<CPose3DQuat>,
+class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 					public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DQuat)
@@ -121,19 +121,8 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	 * \sa getInverseHomogeneousMatrix
 	 */
 	void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
-	/** Returns a 1x7 vector with [x y z qr qx qy qz] */
-	void getAsVector(mrpt::math::CVectorDouble& v) const;
-	/// \overload
-	void getAsVector(mrpt::math::CVectorFixedDouble<7>& v) const
-	{
-		v[0] = m_coords[0];
-		v[1] = m_coords[1];
-		v[2] = m_coords[2];
-		v[3] = m_quat[0];
-		v[4] = m_quat[1];
-		v[5] = m_quat[2];
-		v[6] = m_quat[3];
-	}
+	/** Returns a 7x1 vector with [x y z qr qx qy qz]' */
+	void asVector(vector_t& v) const;
 
 	/**  Makes \f$ this = A \oplus B \f$  this method is slightly more efficient
 	 * than "this= A + B;" since it avoids the temporary object.

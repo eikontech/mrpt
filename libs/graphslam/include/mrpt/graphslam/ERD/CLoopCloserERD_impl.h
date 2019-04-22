@@ -1177,7 +1177,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 
 	// get the vector of the corresponding transformation - [x, y, phi] form
 	dynamic_vector<double> T;
-	res_transform.getMeanVal().getAsVector(T);
+	res_transform.getMeanVal().asVector(T);
 
 	// information matrix
 	CMatrixDouble33 cov_mat;
@@ -1641,7 +1641,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
 	pose_t initial_estim =
 		this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
 	dynamic_vector<double> mean_diff;
-	(rel_edge.getMeanVal() - initial_estim).getAsVector(mean_diff);
+	(rel_edge.getMeanVal() - initial_estim).asVector(mean_diff);
 
 	// covariance matrix
 	CMatrixDouble33 cov_mat;

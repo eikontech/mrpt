@@ -84,7 +84,7 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	//   0 1 2
 	//   3 4 5
 	//   6 7 8
-	CVectorDouble proj_matrix(9);
+	std::vector<double> proj_matrix(9);
 	proj_matrix[0] = intrinsicParams(0, 0);
 	proj_matrix[4] = intrinsicParams(1, 1);
 	proj_matrix[2] = intrinsicParams(0, 2);

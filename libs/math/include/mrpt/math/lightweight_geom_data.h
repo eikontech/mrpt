@@ -101,7 +101,7 @@ struct TPoint2D : public TPoseOrPoint
 	/**
 	 * Transformation into vector.
 	 */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(2);
 		v[0] = x;
@@ -250,7 +250,7 @@ struct TPose2D : public TPoseOrPoint
 	/**
 	 * Transformation into vector.
 	 */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(3);
 		v[0] = x;
@@ -461,7 +461,7 @@ struct TPoint3D : public TPoseOrPoint
 	 * Transformation into vector.
 	 */
 	template <class VECTORLIKE>
-	void getAsVector(VECTORLIKE& v) const
+	void asVector(VECTORLIKE& v) const
 	{
 		v.resize(3);
 		v[0] = x;
@@ -688,7 +688,7 @@ struct TPose3D : public TPoseOrPoint
 	/**
 	 * Gets the pose as a vector of doubles.
 	 */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(6);
 		v[0] = x;
@@ -827,7 +827,7 @@ struct TPose3DQuat : public TPoseOrPoint
 	/** Pose's spatial coordinates norm. */
 	double norm() const { return sqrt(square(x) + square(y) + square(z)); }
 	/** Gets the pose as a vector of doubles. */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(7);
 		for (size_t i = 0; i < 7; i++) v[i] = (*this)[i];
@@ -2180,7 +2180,7 @@ struct TTwist2D
 		}
 	}
 	/** Transformation into vector */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(3);
 		v[0] = vx;
@@ -2282,14 +2282,22 @@ struct TTwist3D
 	}
 	/** Transformation into vector [vx vy vz wx wy wz] */
 	template <typename VECTORLIKE>
-	void getAsVector(VECTORLIKE& v) const
+	void asVector(VECTORLIKE& v) const
 	{
 		v.resize(6);
 		for (int i = 0; i < 6; i++) v[i] = (*this)[i];
 	}
+	template <typename VECTORLIKE>
+	VECTORLIKE asVector() const
+	{
+		VECTORLIKE v;
+		asVector(v);
+		return v;
+	}
+
 	/** Sets from a vector [vx vy vz wx wy wz] */
 	template <typename VECTORLIKE>
-	void setFromVector(VECTORLIKE& v)
+	void fromVector(const VECTORLIKE& v)
 	{
 		ASSERT_EQUAL_(v.size(), static_cast<decltype(v.size())>(6));
 		for (int i = 0; i < 6; i++) (*this)[i] = v[i];

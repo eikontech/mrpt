@@ -98,8 +98,8 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 				EXPECT_EQ(it1->first, it2->first);
 				EXPECT_NEAR(
 					0,
-					(it1->second.getPoseMean().getAsVectorVal() -
-					 it2->second.getPoseMean().getAsVectorVal())
+					(it1->second.getPoseMean().asVectorVal() -
+					 it2->second.getPoseMean().asVectorVal())
 						.array()
 						.abs()
 						.maxCoeff(),
@@ -115,8 +115,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 				EXPECT_EQ(itn1->first, itn2->first);
 				EXPECT_NEAR(
 					0,
-					(itn1->second.getAsVectorVal() -
-					 itn2->second.getAsVectorVal())
+					(itn1->second.asVectorVal() - itn2->second.asVectorVal())
 						.array()
 						.abs()
 						.maxCoeff(),

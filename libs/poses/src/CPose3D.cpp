@@ -464,22 +464,7 @@ _mm_shuffle_ps(in,in,_MM_SHUFFLE(2,2,2,2)));
 }*/
 #endif  // SSE2
 
-/*---------------------------------------------------------------
-		getAsVector
----------------------------------------------------------------*/
-void CPose3D::getAsVector(CVectorDouble& r) const
-{
-	updateYawPitchRoll();
-	r.resize(6);
-	r[0] = m_coords[0];
-	r[1] = m_coords[1];
-	r[2] = m_coords[2];
-	r[3] = m_yaw;
-	r[4] = m_pitch;
-	r[5] = m_roll;
-}
-
-void CPose3D::getAsVector(mrpt::math::CVectorFixedDouble<6>& r) const
+void CPose3D::asVector(vector_t& r) const
 {
 	updateYawPitchRoll();
 	r[0] = m_coords[0];

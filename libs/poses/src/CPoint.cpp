@@ -16,8 +16,8 @@
 
 using namespace mrpt::poses;
 
-template <class DERIVEDCLASS>
-void CPoint<DERIVEDCLASS>::fromString(const std::string& s)
+template <class DERIVEDCLASS, std::size_t DIM>
+void CPoint<DERIVEDCLASS, DIM>::fromString(const std::string& s)
 {
 	mrpt::math::CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
@@ -28,8 +28,8 @@ void CPoint<DERIVEDCLASS>::fromString(const std::string& s)
 		derived().m_coords[i] = m(0, i);
 }
 
-template <class DERIVEDCLASS>
-void CPoint<DERIVEDCLASS>::asString(std::string& s) const
+template <class DERIVEDCLASS, std::size_t DIM>
+void CPoint<DERIVEDCLASS, DIM>::asString(std::string& s) const
 {
 	s = (!DERIVEDCLASS::is3DPoseOrPoint())
 			? mrpt::format(
@@ -42,5 +42,5 @@ void CPoint<DERIVEDCLASS>::asString(std::string& s) const
 }
 
 // Explicit instantiations:
-template class CPoint<CPoint2D>;
-template class CPoint<CPoint3D>;
+template class CPoint<CPoint2D, 2>;
+template class CPoint<CPoint3D, 3>;

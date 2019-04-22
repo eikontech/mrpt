@@ -312,8 +312,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			<< "new_base: " << new_base << endl;
 		EXPECT_NEAR(
 			0,
-			(p7_new_base_pdf.mean.getAsVectorVal() -
-			 p7pdf1.mean.getAsVectorVal())
+			(p7_new_base_pdf.mean.asVectorVal() - p7pdf1.mean.asVectorVal())
 				.array()
 				.abs()
 				.mean(),

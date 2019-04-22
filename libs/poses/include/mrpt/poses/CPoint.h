@@ -20,8 +20,8 @@ namespace mrpt::poses
  * \sa CPoseOrPoint, CPose
  * \ingroup poses_grp
  */
-template <class DERIVEDCLASS>
-class CPoint : public CPoseOrPoint<DERIVEDCLASS>
+template <class DERIVEDCLASS, std::size_t DIM>
+class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>
 {
 	DERIVEDCLASS& derived() { return *static_cast<DERIVEDCLASS*>(this); }
 	const DERIVEDCLASS& derived() const
@@ -53,21 +53,6 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	{
 		for (int i = 0; i < DERIVEDCLASS::static_size; i++)
 			derived().m_coords[i] *= s;
-	}
-
-	/** Return the pose or point as a 1x2 or 1x3 vector [x y] or [x y z] */
-	inline void getAsVector(mrpt::math::CVectorDouble& v) const
-	{
-		v.resize(DERIVEDCLASS::static_size);
-		for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-			v[i] = static_cast<const DERIVEDCLASS*>(this)->m_coords[i];
-	}
-	//! \overload
-	inline mrpt::math::CVectorDouble getAsVector() const
-	{
-		mrpt::math::CVectorDouble v;
-		getAsVector(v);
-		return v;
 	}
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
@@ -113,8 +98,9 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 };  // End of class def.
 
 /** Used by STL algorithms */
-template <class DERIVEDCLASS>
-bool operator<(const CPoint<DERIVEDCLASS>& a, const CPoint<DERIVEDCLASS>& b)
+template <class DERIVEDCLASS, std::size_t DIM>
+bool operator<(
+	const CPoint<DERIVEDCLASS, DIM>& a, const CPoint<DERIVEDCLASS, DIM>& b)
 {
 	if (a.x() < b.x())
 		return true;
@@ -129,16 +115,18 @@ bool operator<(const CPoint<DERIVEDCLASS>& a, const CPoint<DERIVEDCLASS>& b)
 	}
 }
 
-template <class DERIVEDCLASS>
-bool operator==(const CPoint<DERIVEDCLASS>& p1, const CPoint<DERIVEDCLASS>& p2)
+template <class DERIVEDCLASS, std::size_t DIM>
+bool operator==(
+	const CPoint<DERIVEDCLASS, DIM>& p1, const CPoint<DERIVEDCLASS, DIM>& p2)
 {
 	for (int i = 0; i < DERIVEDCLASS::static_size; i++)
 		if (p1[i] != p2[i]) return false;  //-V550
 	return true;
 }
 
-template <class DERIVEDCLASS>
-bool operator!=(const CPoint<DERIVEDCLASS>& p1, const CPoint<DERIVEDCLASS>& p2)
+template <class DERIVEDCLASS, std::size_t DIM>
+bool operator!=(
+	const CPoint<DERIVEDCLASS, DIM>& p1, const CPoint<DERIVEDCLASS, DIM>& p2)
 {
 	for (int i = 0; i < DERIVEDCLASS::static_size; i++)
 		if (p1[i] != p2[i]) return true;  //-V550

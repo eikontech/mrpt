@@ -106,8 +106,8 @@ double joint_pdf_metric(
 	for (auto it = info.currentAssociation.begin();
 		 it != info.currentAssociation.end(); ++it)
 	{
-		const T* pred_i_mean = Y_predictions_mean.get_unsafe_row(it->second);
-		const T* obs_i_mean = Z_observations_mean.get_unsafe_row(it->first);
+		const T* pred_i_mean = &Y_predictions_mean(it->second, 0);
+		const T* obs_i_mean = &Z_observations_mean(it->first, 0);
 
 		for (unsigned int k = 0; k < info.length_O; k++)
 			*dst_ptr++ = pred_i_mean[k] - obs_i_mean[k];
@@ -363,7 +363,7 @@ void mrpt::slam::data_association_full_covariance(
 	results.indiv_distances.fill(
 		metric == metricMaha ? 1000 /*A very large Sq. Maha. Dist. */
 							 : -1000 /*A very small log-likelihoo   */);
-	results.indiv_compatibility.fillAll(false);
+	results.indiv_compatibility.fill(false);
 
 	CMatrixDouble pred_i_cov(length_O, length_O);
 

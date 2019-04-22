@@ -12,6 +12,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
+#include <Eigen/Dense>
 
 namespace mrpt::vision
 {
