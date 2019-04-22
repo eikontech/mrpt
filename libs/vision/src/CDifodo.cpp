@@ -636,8 +636,9 @@ void CDifodo::computeWeights()
 	// Alternative way to compute the log
 	auto mat_aux = CMatrixDouble44(acu_trans.cast<double>().eval());
 
-	const auto kai_level_acu = CVectorFixedDouble<6>(
-		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
+	auto trans_vec = poses::Lie::SE<3>::log(poses::CPose3D(mat_aux));
+	trans_vec *= fps;
+	const auto kai_level_acu = CVectorFixedDouble<6>(trans_vec);
 
 	kai_level -= kai_level_acu.cast_float();
 
@@ -908,8 +909,9 @@ void CDifodo::filterLevelSolution()
 		acu_trans = transformations[i].asEigen() * acu_trans;
 
 	auto mat_aux = CMatrixDouble44(acu_trans.cast<double>());
-	const auto kai_level_acu = CVectorFixedDouble<6>(
-		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
+	auto acu_trans_vec = poses::Lie::SE<3>::log(poses::CPose3D(mat_aux));
+	acu_trans_vec *= fps;
+	const auto kai_level_acu = CVectorFixedDouble<6>(acu_trans_vec);
 
 	kai_loc_sub -= kai_level_acu.asEigen().cast<float>();
 
@@ -959,9 +961,9 @@ void CDifodo::poseUpdate()
 	// Compute the new estimates in the local and absolutes reference frames
 	//---------------------------------------------------------------------
 	auto mat_aux = CMatrixDouble44(acu_trans.cast<double>().eval());
-
-	const CVectorFixedDouble<6> kai_level_acu(
-		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
+	auto acu_trans_vec = poses::Lie::SE<3>::log(poses::CPose3D(mat_aux));
+	acu_trans_vec *= fps;
+	const CVectorFixedDouble<6> kai_level_acu(acu_trans_vec);
 	kai_loc.fromVector(kai_level_acu.cast_float());
 
 	//---------------------------------------------------------------------------------------------

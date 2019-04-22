@@ -137,12 +137,12 @@ inline typename CONTAINER::Scalar norm(const CONTAINER& v)
 template <class CONTAINER, int = CONTAINER::is_mrpt_type>
 inline typename CONTAINER::Scalar maximum(const CONTAINER& v)
 {
-	return v.asEigen().maxCoeff();
+	return v.maxCoeff();
 }
 template <class CONTAINER, int = CONTAINER::is_mrpt_type>
 inline typename CONTAINER::Scalar minimum(const CONTAINER& v)
 {
-	return v.asEigen().minCoeff();
+	return v.minCoeff();
 }
 
 template <class Derived>
