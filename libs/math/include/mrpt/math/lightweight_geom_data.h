@@ -2225,6 +2225,10 @@ struct TTwist3D
 	{
 		static_size = 6
 	};
+
+	constexpr std::size_t rows() const { return 6; }
+	constexpr std::size_t cols() const { return 1; }
+
 	/** Velocity components: X,Y (m/s) */
 	double vx{.0}, vy{.0}, vz{.0};
 	/** Angular velocity (rad/s) */
@@ -2238,7 +2242,7 @@ struct TTwist3D
 	}
 	/** Default fast constructor. Initializes to zeros  */
 	TTwist3D() = default;
-	/** Coordinate access using operator[]. Order: vx,vy,vphi */
+	/** Coordinate access using operator[]. Order: vx,vy,vz, wx, wy, wz */
 	double& operator[](size_t i)
 	{
 		switch (i)
@@ -2259,7 +2263,7 @@ struct TTwist3D
 				throw std::out_of_range("index out of range");
 		}
 	}
-	/** Coordinate access using operator[]. Order: vx,vy,vphi */
+	/// \overload
 	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
@@ -2280,6 +2284,21 @@ struct TTwist3D
 				throw std::out_of_range("index out of range");
 		}
 	}
+
+	/** (i,0) access operator (provided for API compatibility with matrices).
+	 * \sa operator[] */
+	double& operator()(int row, int col)
+	{
+		ASSERT_EQUAL_(col, 0);
+		return (*this)[row];
+	}
+	/// \overload
+	constexpr const double& operator()(int row, int col) const
+	{
+		ASSERT_EQUAL_(col, 0);
+		return (*this)[row];
+	}
+
 	/** Transformation into vector [vx vy vz wx wy wz] */
 	template <typename VECTORLIKE>
 	void asVector(VECTORLIKE& v) const
@@ -2299,7 +2318,7 @@ struct TTwist3D
 	template <typename VECTORLIKE>
 	void fromVector(const VECTORLIKE& v)
 	{
-		ASSERT_EQUAL_(v.size(), static_cast<decltype(v.size())>(6));
+		ASSERT_EQUAL_(v.size(), 6);
 		for (int i = 0; i < 6; i++) (*this)[i] = v[i];
 	}
 	bool operator==(const TTwist3D& o) const;

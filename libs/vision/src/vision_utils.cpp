@@ -9,25 +9,24 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/CFeature.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/utils.h>
-
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
-
-// Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/vision/CFeature.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/vision/pinhole.h>
+#include <mrpt/vision/utils.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -376,14 +375,14 @@ void vision::normalizeImage(const CImage& image, CImage& nimage)
 	image.getAsMatrix(im);
 
 	double m, s;
-	im.meanAndStdAll(m, s);
+	mrpt::math::meanAndStd(im, m, s);
 
 	for (int k1 = 0; k1 < (int)nim.cols(); ++k1)
 		for (int k2 = 0; k2 < (int)nim.rows(); ++k2)
-			nim(k2, k1, (im(k2) = k1) - m) / s;
+			nim(k2, k1) = (im(k2, k1) - m) / s;
 
 	nimage.setFromMatrix(nim);
-}  // end normalizeImage
+}
 
 /*-------------------------------------------------------------
 						matchFeatures
@@ -1148,17 +1147,15 @@ void vision::projectMatchedFeatures(
 							// Form the Ai value
 							if (i <= Na)
 							{
-								L.extractRowAsCol(
-									i - 1, vAux);  // Extract the proper row
+								// Extract the proper row
+								vAux.asEigen() = L.asEigen().row(i - 1);
 								myPoint[0] = meanA[0] + vAux[0];
 								myPoint[1] = meanA[1] + vAux[1];
 								myPoint[2] = meanA[2] + vAux[2];
 							}
 							else
 							{
-								L.extractRowAsCol(
-									(i - Na) - 1,
-									vAux);  // Extract the proper row
+								vAux.asEigen() = L.asEigen().row((i - Na) - 1);
 								myPoint[0] = meanA[0] - vAux[0];
 								myPoint[1] = meanA[1] - vAux[1];
 								myPoint[2] = meanA[2] - vAux[2];
@@ -1197,7 +1194,8 @@ void vision::projectMatchedFeatures(
 							v(1, 0) = B[i].y - meanB.y;
 							v(2, 0) = B[i].z - meanB.z;
 
-							Pb = Pb + weight * (v * v.transpose());
+							Pb.asEigen() +=
+								(weight * (v.asEigen() * v.transpose())).eval();
 						}  // end for 'i'
 
 						// Store it in the landmark
@@ -1269,8 +1267,8 @@ void vision::projectMatchedFeatures(
 							// Form the Ai value
 							if (i <= Na)
 							{
-								L.extractRowAsCol(
-									i - 1, vAux);  // Extract the proper row
+								// Extract the proper row
+								vAux.asEigen() = L.row(i - 1);
 								myPoint = meanA + vAux;
 								// myPoint[0] = meanA[0] + vAux[0];
 								// myPoint[1] = meanA[1] + vAux[1];
@@ -1278,9 +1276,7 @@ void vision::projectMatchedFeatures(
 							}
 							else
 							{
-								L.extractRowAsCol(
-									(i - Na) - 1,
-									vAux);  // Extract the proper row
+								vAux = L.row((i - Na) - 1);
 								myPoint = meanA - vAux;
 								// myPoint[0] = meanA[0] - vAux[0];
 								// myPoint[1] = meanA[1] - vAux[1];
@@ -1320,7 +1316,8 @@ void vision::projectMatchedFeatures(
 							v(1, 0) = B[i].y - meanB.y;
 							v(2, 0) = B[i].z - meanB.z;
 
-							Pb = Pb + weight * (v * v.transpose());
+							Pb.asEigen() +=
+								(weight * (v.asEigen() * v.transpose())).eval();
 						}  // end for 'i'
 
 						// Store it in the landmark
@@ -1497,17 +1494,14 @@ void vision::projectMatchedFeatures(
 							// Form the Ai value
 							if (i <= Na)
 							{
-								L.extractRowAsCol(
-									i - 1, vAux);  // Extract the proper row
+								vAux.asEigen() = L.col(i - 1);
 								myPoint[0] = meanA[0] + vAux[0];
 								myPoint[1] = meanA[1] + vAux[1];
 								myPoint[2] = meanA[2] + vAux[2];
 							}
 							else
 							{
-								L.extractRowAsCol(
-									(i - Na) - 1,
-									vAux);  // Extract the proper row
+								vAux = L.col((i - Na) - 1);
 								myPoint[0] = meanA[0] - vAux[0];
 								myPoint[1] = meanA[1] - vAux[1];
 								myPoint[2] = meanA[2] - vAux[2];
@@ -1546,7 +1540,8 @@ void vision::projectMatchedFeatures(
 							v(1, 0) = B[i].y - meanB.y;
 							v(2, 0) = B[i].z - meanB.z;
 
-							Pb = Pb + weight * (v * v.transpose());
+							Pb.asEigen() +=
+								(weight * (v.asEigen() * v.transpose())).eval();
 						}  // end for 'i'
 
 						// Store it in the landmark
@@ -1618,22 +1613,13 @@ void vision::projectMatchedFeatures(
 							// Form the Ai value
 							if (i <= Na)
 							{
-								L.extractRowAsCol(
-									i - 1, vAux);  // Extract the proper row
+								vAux = L.row(i - 1);
 								myPoint = meanA + vAux;
-								// myPoint[0] = meanA[0] + vAux[0];
-								// myPoint[1] = meanA[1] + vAux[1];
-								// myPoint[2] = meanA[2] + vAux[2];
 							}
 							else
 							{
-								L.extractRowAsCol(
-									(i - Na) - 1,
-									vAux);  // Extract the proper row
+								vAux = L.col((i - Na) - 1);
 								myPoint = meanA - vAux;
-								// myPoint[0] = meanA[0] - vAux[0];
-								// myPoint[1] = meanA[1] - vAux[1];
-								// myPoint[2] = meanA[2] - vAux[2];
 							}
 
 							// Pass the Ai through the functions:
@@ -1669,7 +1655,8 @@ void vision::projectMatchedFeatures(
 							v(1, 0) = B[i].y - meanB.y;
 							v(2, 0) = B[i].z - meanB.z;
 
-							Pb = Pb + weight * (v * v.transpose());
+							Pb.asEigen() +=
+								(weight * (v.asEigen() * v.transpose())).eval();
 						}  // end for 'i'
 
 						// Store it in the landmark
@@ -1771,10 +1758,8 @@ void vision::StereoObs2BRObs(
 		JG(1, 1) = X / (square(X) + square(Y));
 		JG(1, 2) = 0;
 
-		JG.set_unsafe(
-			2, 0, Z * X / (square(m.range) * sqrt(square(X) + square(Y))));
-		JG.set_unsafe(
-			2, 1, Z * Y / (square(m.range) * sqrt(square(X) + square(Y))));
+		JG(2, 0) = Z * X / (square(m.range) * sqrt(square(X) + square(Y)));
+		JG(2, 1) = Z * Y / (square(m.range) * sqrt(square(X) + square(Y)));
 		JG(2, 2) = -sqrt(square(X) + square(Y)) / square(m.range);
 
 		// JF.multiply_HCHt( diag, aux );
@@ -1909,18 +1894,9 @@ void vision::StereoObs2BRObs(
 		JG(1, 1) = X / (square(X) + square(Y));
 		JG(1, 2) = 0;
 
-		JG.set_unsafe(
-			2, 0, Z * X / (square(m.range) * sqrt(square(X) + square(Y))));
-		JG.set_unsafe(
-			2, 1, Z * Y / (square(m.range) * sqrt(square(X) + square(Y))));
+		JG(2, 0) = Z * X / (square(m.range) * sqrt(square(X) + square(Y)));
+		JG(2, 1) = Z * Y / (square(m.range) * sqrt(square(X) + square(Y)));
 		JG(2, 2) = -sqrt(square(X) + square(Y)) / square(m.range);
-
-		// CMatrixDouble33 aux;
-		// CMatrixDouble33 diag;
-		// diag.setZero();
-		// diag.set_unsafe(0,0) = square( sg_r );
-		// diag.set_unsafe(1,1) = square( sg_c );
-		// diag.set_unsafe(2,2) = square( sg_d );
 
 		// JF.multiply_HCHt( diag, aux );
 		JG.multiply_HCHt(aux, m.covariance);

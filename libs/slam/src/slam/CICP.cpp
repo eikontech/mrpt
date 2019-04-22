@@ -22,6 +22,7 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/tfest.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;
@@ -336,8 +337,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 				// ----------------------------------------------
 				case icpCovFiniteDifferences:
 				{
-					Eigen::Matrix<double, 3, Eigen::Dynamic> D(
-						3, nCorrespondences);
+					CMatrixDouble D(3, nCorrespondences);
 
 					const TPose2D transf = gaussPdf->mean.asTPose();
 
@@ -427,14 +427,15 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 					}  // end for each corresp.
 
 					// COV = ( D*D^T + lamba*I )^-1
-					CMatrixDouble33 DDt = D * D.transpose();
+					CMatrixDouble33 DDt;
+					DDt.multiply_AAt(D);
 
 					for (i = 0; i < 3; i++)
 						DDt(i, i) += 1e-6;  // Just to make sure the matrix is
 					// not singular, while not changing
 					// its covariance significantly.
 
-					DDt.inverse_LLt(gaussPdf->cov);
+					gaussPdf->cov = DDt.inverse_LLt();
 				}
 				break;
 				default:
@@ -778,7 +779,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 				CMatrixFloat H_(3, 3);
 				H_.multiply_AAt(dJ_dq);
 
-				auto H = CMatrixFixed<float, 3, 3>(H_);
+				CMatrixFixed<float, 3, 3> H;
+				H = H_;
 
 				bool keepIteratingLM = true;
 
@@ -805,9 +807,9 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					C_inv = C.inverse_LLt();
 
 					// LM_delta = C_inv * dJ_dq * sq_errors
-					Eigen::VectorXf dJsq, LM_delta;
+					mrpt::math::CVectorDynamic<float> dJsq, LM_delta;
 					dJ_dq.multiply_Ab(
-						Eigen::Map<Eigen::VectorXf>(
+						Eigen::Map<Eigen::MatrixXf>(
 							&sq_errors[0], sq_errors.size()),
 						dJsq);
 					C_inv.multiply_Ab(dJsq, LM_delta);

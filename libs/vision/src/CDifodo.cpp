@@ -625,7 +625,7 @@ void CDifodo::computeWeights()
 
 	// Obtain the velocity associated to the rigid transformation estimated up
 	// to the present level
-	CVectorFixedDouble<6> kai_level;
+	CVectorFixedFloat<6> kai_level;
 	kai_level.setFromMatrixLike(kai_loc_old);
 
 	Matrix4f acu_trans;
@@ -803,7 +803,7 @@ void CDifodo::solveOneLevel()
 	// Solve the linear system of equations using weighted least squares
 	const MatrixXf AtA = A.transpose() * A;
 	const MatrixXf AtB = A.transpose() * B;
-	MatrixXf Var = AtA.ldlt().solve(AtB);
+	VectorXf Var = AtA.ldlt().solve(AtB);
 
 	// Covariance matrix calculation
 	MatrixXf res = -B;
@@ -978,29 +978,50 @@ void CDifodo::poseUpdate()
 	//---------------------------------------------------------------------------------------------
 
 	CMatrixDouble33 inv_trans;
-	CMatrixFloat31 v_abs, w_abs;
 
 	cam_pose.getRotationMatrix(inv_trans);
-	v_abs = inv_trans.cast<float>() * kai_loc.topRows(3);
-	w_abs = inv_trans.cast<float>() * kai_loc.bottomRows(3);
-	kai_abs.topRows<3>() = v_abs;
-	kai_abs.bottomRows<3>() = w_abs;
+	const auto v_abs =
+		(inv_trans.asEigen() *
+		 (kai_loc.asVector<Eigen::Matrix<double, 6, 1>>().topRows(3)))
+			.eval();
+	const auto w_abs =
+		(inv_trans.asEigen() *
+		 (kai_loc.asVector<Eigen::Matrix<double, 6, 1>>().bottomRows(3)))
+			.eval();
+	kai_abs.vx = v_abs.x();
+	kai_abs.vy = v_abs.y();
+	kai_abs.vz = v_abs.z();
+
+	kai_abs.wx = w_abs.x();
+	kai_abs.wy = w_abs.y();
+	kai_abs.wz = w_abs.z();
 
 	//						Update poses
 	//-------------------------------------------------------
 	cam_oldpose = cam_pose;
-	CMatrixDouble44 aux_acu = acu_trans;
-	poses::CPose3D pose_aux(aux_acu);
+	const auto pose_aux = poses::CPose3D(CMatrixDouble44(acu_trans));
 	cam_pose = cam_pose + pose_aux;
 
 	// Compute the velocity estimate in the new ref frame (to be used by the
 	// filter in the next iteration)
 	//---------------------------------------------------------------------------------------------------
 	cam_pose.getRotationMatrix(inv_trans);
-	kai_loc_old.topRows<3>() =
-		inv_trans.inverse().cast<float>() * kai_abs.topRows(3);
-	kai_loc_old.bottomRows<3>() =
-		inv_trans.inverse().cast<float>() * kai_abs.bottomRows(3);
+	const auto old_vtrans =
+		(inv_trans.asEigen().inverse() *
+		 (kai_abs.asVector<Eigen::Matrix<double, 6, 1>>().topRows(3)))
+			.eval();
+	const auto old_w =
+		(inv_trans.asEigen().inverse() *
+		 (kai_abs.asVector<Eigen::Matrix<double, 6, 1>>().bottomRows(3)))
+			.eval();
+
+	kai_loc_old.vx = old_vtrans.x();
+	kai_loc_old.vy = old_vtrans.y();
+	kai_loc_old.vz = old_vtrans.z();
+
+	kai_loc_old.wx = old_w.x();
+	kai_loc_old.wy = old_w.y();
+	kai_loc_old.wz = old_w.z();
 }
 
 void CDifodo::setFOV(float new_fovh, float new_fovv)
@@ -1009,7 +1030,7 @@ void CDifodo::setFOV(float new_fovh, float new_fovv)
 	fovv = M_PI * new_fovv / 180.0;
 }
 
-void CDifodo::getPointsCoord(MatrixXf& x, MatrixXf& y, MatrixXf& z)
+void CDifodo::getPointsCoord(CMatrixFloat& x, CMatrixFloat& y, CMatrixFloat& z)
 {
 	x.resize(rows, cols);
 	y.resize(rows, cols);
@@ -1021,7 +1042,7 @@ void CDifodo::getPointsCoord(MatrixXf& x, MatrixXf& y, MatrixXf& z)
 }
 
 void CDifodo::getDepthDerivatives(
-	MatrixXf& cur_du, MatrixXf& cur_dv, MatrixXf& cur_dt)
+	CMatrixFloat& cur_du, CMatrixFloat& cur_dv, CMatrixFloat& cur_dt)
 {
 	cur_du.resize(rows, cols);
 	cur_dv.resize(rows, cols);
@@ -1032,7 +1053,7 @@ void CDifodo::getDepthDerivatives(
 	cur_dt = dt;
 }
 
-void CDifodo::getWeights(MatrixXf& w)
+void CDifodo::getWeights(CMatrixFloat& w)
 {
 	w.resize(rows, cols);
 	w = weights;
