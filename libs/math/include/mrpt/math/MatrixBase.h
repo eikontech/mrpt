@@ -210,6 +210,20 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 				mbDerived()(r + row_start, c + col_start) = submat(r, c);
 	}
 
+	template <int BLOCK_ROWS, int BLOCK_COLS>
+	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> extractMatrix(
+	    const int start_row = 0, const int start_col = 0) const
+	{
+		ASSERT_BELOW_(start_row + BLOCK_ROWS, mbDerived().rows());
+		ASSERT_BELOW_(start_col + BLOCK_COLS, mbDerived().cols());
+
+		CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> ret;
+		for (int r = 0; r < BLOCK_ROWS; r++)
+			for (int c = 0; c < BLOCK_ROWS; c++)
+				ret(r, c) = mbDerived()(r + start_row, c + start_col);
+		return ret;
+	}
+
 	/** this = A * A<sup>T</sup> */
 	template <typename MAT_A>
 	void multiply_AAt(const MAT_A& A)

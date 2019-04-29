@@ -13,7 +13,6 @@
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorFixed.h>
@@ -237,7 +236,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>;
 
 	// ---------- Many useful typedefs to short the notation a bit... --------
-	using KFVector = Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1>;
+	using KFVector = mrpt::math::CVectorDynamic<KFTYPE>;
 	using KFMatrix = mrpt::math::CMatrixDynamic<KFTYPE>;
 
 	using KFMatrix_VxV = mrpt::math::CMatrixFixed<KFTYPE, VEH_SIZE, VEH_SIZE>;

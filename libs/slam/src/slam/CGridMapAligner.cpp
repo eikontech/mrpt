@@ -268,7 +268,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					->features[0]
 					->getFirstDescriptorAsMatrix(descriptor1);
 
-				im1 = CImage(descriptor1, true);
+				im1.setFromMatrix(descriptor1, true /*normalized*/);
 
 				const size_t FEAT_W = im1.getWidth();
 				const size_t FEAT_H = im1.getHeight();
@@ -294,7 +294,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					lm2->landmarks.get(*it_j)
 						->features[0]
 						->getFirstDescriptorAsMatrix(descriptor2);
-					im2 = CImage(descriptor2, true);
+					im2.setFromMatrix(descriptor2, true);
 					img_compose.drawImage(
 						10 + FEAT_W, 5 + j * (FEAT_H + 5), im2);
 				}
@@ -1103,8 +1103,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 		delete tictac;
 	}
 
-	bestCrossCorr.normalize(0, 1);
-	CImage aux(bestCrossCorr, true);
+	CImage aux;
+	aux.setFromMatrix(bestCrossCorr, false /* do normalization [0,1]*/);
 	aux.saveToFile("_debug_best_corr.png");
 
 #ifdef CORRELATION_SHOW_DEBUG
@@ -1113,8 +1113,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 #endif
 
 	// Transform the best corr matrix peak into coordinates:
-	CMatrixF::Index uMax, vMax;
-	currentMaxCorr = bestCrossCorr.maxCoeff(&uMax, &vMax);
+	std::size_t uMax, vMax;
+	currentMaxCorr = bestCrossCorr.maxCoeff(uMax, vMax);
 
 	PDF->mean.x(m1->idx2x(uMax));
 	PDF->mean.y(m1->idx2y(vMax));

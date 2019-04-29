@@ -328,7 +328,7 @@ void CRangeBearingKFSLAM::OnTransitionModel(
 	robotPose += odoIncrement;
 
 	// Output:
-	for (size_t i = 0; i < xv.static_size; i++) xv[i] = robotPose[i];
+	for (size_t i = 0; i < xv.SizeAtCompileTime; i++) xv[i] = robotPose[i];
 
 	MRPT_END
 }

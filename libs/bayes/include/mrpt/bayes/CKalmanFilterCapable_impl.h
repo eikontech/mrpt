@@ -13,6 +13,8 @@
 #endif
 
 #include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/math/ops_matrices.h>  // extractSubmatrixSymmetrical()
+#include <Eigen/Dense>
 
 namespace mrpt
 {
@@ -1058,7 +1060,7 @@ void addNewLandmarks(
 			// Fill the Pxyn term:
 			// --------------------
 			typename KF::KFMatrix_VxV Pxx =
-				obj.internal_getPkk().block<VEH_SIZE, VEH_SIZE>(0, 0);
+			    obj.internal_getPkk().template block<VEH_SIZE, VEH_SIZE>(0, 0);
 			typename KF::KFMatrix_FxV Pxyn;  // Pxyn = dyn_dxv * Pxx
 			Pxyn.matProductOf(dyn_dxv, Pxx);
 
@@ -1072,7 +1074,7 @@ void addNewLandmarks(
 			for (q = 0; q < nLMs; q++)
 			{
 				typename KF::KFMatrix_VxF P_x_yq =
-					obj.internal_getPkk().block<VEH_SIZE, FEAT_SIZE>(
+				    obj.internal_getPkk().template block<VEH_SIZE, FEAT_SIZE>(
 						0, VEH_SIZE + q * FEAT_SIZE);
 
 				typename KF::KFMatrix_FxF P_cross(

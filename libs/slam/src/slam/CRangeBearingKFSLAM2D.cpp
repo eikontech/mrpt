@@ -657,8 +657,8 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		}
 
 		// Vehicle uncertainty
-		KFMatrix_VxV Pxx =
-			m_pkk.block<get_vehicle_size(), get_vehicle_size()>(0, 0);
+		const KFMatrix_VxV Pxx =
+		    m_pkk.extractMatrix<get_vehicle_size(), get_vehicle_size()>(0, 0);
 
 		// Build predictions:
 		// ---------------------------
@@ -684,7 +684,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		// ---------------------------
 		if (nPredictions)
 		{
-			CMatrixDouble Z_obs_cov = CMatrixDouble(R);
+			// CMatrixDouble Z_obs_cov = CMatrixDouble(R);
 
 			mrpt::slam::data_association_full_covariance(
 				Z_obs_means,  // Z_obs_cov,

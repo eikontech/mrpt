@@ -807,10 +807,11 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					C_inv = C.inverse_LLt();
 
 					// LM_delta = C_inv * dJ_dq * sq_errors
-					const auto LM_delta = (C_inv.asEigen() * dJ_dq.asEigen() *
-					                       Eigen::Map<Eigen::MatrixXf>(
-					                           &sq_errors[0], sq_errors.size()))
-					                          .eval();
+					const Eigen::Vector3f LM_delta =
+					    (C_inv.asEigen() * dJ_dq.asEigen() *
+					     Eigen::Map<Eigen::VectorXf>(
+					         &sq_errors[0], sq_errors.size()))
+					        .eval();
 
 					q_new.x(q.x() - LM_delta[0]);
 					q_new.y(q.y() - LM_delta[1]);
