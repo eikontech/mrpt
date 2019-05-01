@@ -88,6 +88,9 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		this->loadFromArray(vals);
 	}
 
+	/** Initializes from a plain buffer with RowMajor values */
+	explicit CMatrixFixed(const T* data) { this->loadFromRawPointer(data); }
+
 	/** Convert from Eigen matrix */
 	template <class Derived>
 	explicit CMatrixFixed(const Eigen::MatrixBase<Derived>& m)
@@ -173,6 +176,14 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		for (size_t r = 0, i = 0; r < ROWS; r++)
 			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i++];
 		MRPT_END
+	}
+
+	/** Initializes from a plain buffer with RowMajor values. Unsafe, prefer
+	 * loadFromArray() wherever possible, to ensure buffer length checks. */
+	void loadFromRawPointer(const T* data)
+	{
+		for (size_t r = 0, i = 0; r < ROWS; r++)
+			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = data[i++];
 	}
 
 	/** Throws if size does not match with the fixed matrix size */

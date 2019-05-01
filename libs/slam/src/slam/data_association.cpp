@@ -90,7 +90,7 @@ double joint_pdf_metric(
 	// Extract submatrix of the covariances involved here:
 	//  COV = PREDICTIONS_COV(INDX,INDX) + OBSERVATIONS_COV(INDX2,INDX2)
 	// ----------------------------------------------------------------------
-	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> COV;
+	CMatrixDynamic<T> COV;
 	mrpt::math::extractSubmatrixSymmetricalBlocksDyn(
 		Y_predictions_cov,
 		info.length_O,  // dims of cov. submatrices
@@ -114,8 +114,7 @@ double joint_pdf_metric(
 	}
 
 	// Compute mahalanobis distance squared:
-	CMatrixDynamic<T> COV_inv;
-	COV.inverse_LLt(COV_inv);
+	const CMatrixDynamic<T> COV_inv = COV.inverse_LLt();
 
 	const double d2 = mrpt::math::multiply_HCHt_scalar(innovations, COV_inv);
 

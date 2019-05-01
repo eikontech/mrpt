@@ -213,8 +213,7 @@ void mahalanobisDistance2AndLogPDF(
 	MRPT_START
 	ASSERTDEB_(cov.isSquare());
 	ASSERTDEB_(size_t(cov.cols()) == size_t(diff_mean.size()));
-	MATRIXLIKE C_inv;
-	cov.inverse_LLt(C_inv);
+	const MATRIXLIKE C_inv = cov.inverse_LLt();
 	maha2_out = multiply_HCHt_scalar(diff_mean, C_inv);
 	log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
 				  (maha2_out +

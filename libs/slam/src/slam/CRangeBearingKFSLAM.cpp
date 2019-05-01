@@ -291,7 +291,9 @@ void CRangeBearingKFSLAM::OnGetAction(KFArray_ACT& u) const
 	// Get odometry estimation:
 	const CPose3DQuat theIncr = getIncrementFromOdometry();
 
-	for (KFArray_ACT::Index i = 0; i < u.size(); i++) u[i] = theIncr[i];
+	for (KFArray_ACT::Index i = 0;
+	     i < static_cast<KFArray_ACT::Index>(u.size()); i++)
+		u[i] = theIncr[i];
 }
 
 /** This virtual function musts implement the prediction model of the Kalman
@@ -655,7 +657,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		}
 
 		// Vehicle uncertainty
-		KFMatrix_VxV Pxx = m_pkk.extractMatrix<7, 7>(0, 0);
+		// KFMatrix_VxV Pxx = m_pkk.extractMatrix<7, 7>(0, 0);
 
 		// Build predictions:
 		// ---------------------------
