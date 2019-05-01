@@ -190,6 +190,9 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	/** Returns the minimum value in the diagonal. */
 	Scalar minimumDiagonal() const;
 
+	/** Returns the trace of the matrix (not necessarily square). */
+	Scalar trace() const;
+
 	/** Removes columns of the matrix.
 	 * This "unsafe" version assumes indices sorted in ascending order. */
 	void unsafeRemoveColumns(const std::vector<std::size_t>& idxs);
@@ -219,7 +222,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> extractMatrix(
-	    const int start_row = 0, const int start_col = 0) const
+		const int start_row = 0, const int start_col = 0) const
 	{
 		ASSERT_BELOW_(start_row + BLOCK_ROWS, mbDerived().rows());
 		ASSERT_BELOW_(start_col + BLOCK_COLS, mbDerived().cols());
@@ -232,8 +235,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	}
 
 	CMatrixDynamic<Scalar> extractMatrix(
-	    const int BLOCK_ROWS, const int BLOCK_COLS, const int start_row,
-	    const int start_col) const
+		const int BLOCK_ROWS, const int BLOCK_COLS, const int start_row,
+		const int start_col) const
 	{
 		ASSERT_BELOW_(start_row + BLOCK_ROWS, mbDerived().rows());
 		ASSERT_BELOW_(start_col + BLOCK_COLS, mbDerived().cols());

@@ -11,13 +11,11 @@
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/math/CMatrixDynamic.h>
-
 #include <mrpt/containers/bimap.h>
 #include <mrpt/core/safe_pointers.h>
-
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationBearingRange.h>

@@ -483,7 +483,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						beacMap->get(0).m_locationSOG.clear();
 						beacMap->get(0).m_locationGauss.mean = fixedBeacon;
 						beacMap->get(0).m_locationGauss.cov.setDiagonal(
-						    3, 1e-6);
+							3, 1e-6);
 					}
 				}
 			}  // end if there is no odometry

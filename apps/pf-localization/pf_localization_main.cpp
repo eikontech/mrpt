@@ -16,8 +16,6 @@
 	 https://www.mrpt.org/list-of-mrpt-apps/application-pf-localization
   ---------------------------------------------------------------*/
 
-#include <mrpt/slam/CMonteCarloLocalization2D.h>
-
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -46,10 +44,12 @@
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/vector_loadsave.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -903,15 +903,19 @@ void do_pf_localization(
 								win.plot(ranges_obs, "r-", "obs");
 
 								Eigen::VectorXd ci1 =
-									ssu_out.scanWithUncert.rangesMean +
+								    ssu_out.scanWithUncert.rangesMean
+								        .asEigen() +
 									3 * ssu_out.scanWithUncert.rangesCovar
+											.asEigen()
 											.diagonal()
 											.array()
 											.sqrt()
 											.matrix();
 								Eigen::VectorXd ci2 =
-									ssu_out.scanWithUncert.rangesMean -
+								    ssu_out.scanWithUncert.rangesMean
+								        .asEigen() -
 									3 * ssu_out.scanWithUncert.rangesCovar
+											.asEigen()
 											.diagonal()
 											.array()
 											.sqrt()

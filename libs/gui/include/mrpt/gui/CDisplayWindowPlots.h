@@ -12,6 +12,7 @@
 #include <mrpt/gui/gui_frwds.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt::gui

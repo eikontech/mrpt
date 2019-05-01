@@ -226,7 +226,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 	EXPECT_NEAR(
 		0,
 		(mean.asVectorVal() - SCAN2_POSE_ERROR.asVectorVal())
-	        .array()
+			.array()
 			.abs()
 			.mean(),
 		0.02)

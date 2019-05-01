@@ -135,8 +135,10 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 	{
 		const auto KLT_half_win =
 			options.FASTOptions.KLT_response_half_win_size;
-		const auto max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
-		const auto max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
+		const auto max_x =
+			static_cast<int>(inImg_gray.getWidth() - 1 - KLT_half_win);
+		const auto max_y =
+			static_cast<int>(inImg_gray.getHeight() - 1 - KLT_half_win);
 
 		for (size_t i = 0; i < N; i++)
 		{

@@ -125,14 +125,14 @@ class MatrixVectorBase
 	{
 		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template block(
-		    start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
+			start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
 	}
 	auto block(
-	    int start_row, int start_col, int BLOCK_ROWS, int BLOCK_COLS) const
+		int start_row, int start_col, int BLOCK_ROWS, int BLOCK_COLS) const
 	{
 		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template block(
-		    start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
+			start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
 	}
 
 	auto transpose()

@@ -213,4 +213,10 @@ Scalar MatrixBase<Scalar, Derived>::minimumDiagonal() const
 	return mbDerived().asEigen().diagonal().minCoeff();
 }
 
+template <typename Scalar, class Derived>
+Scalar MatrixBase<Scalar, Derived>::trace() const
+{
+	return mbDerived().asEigen().trace();
+}
+
 }  // namespace mrpt::math

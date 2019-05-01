@@ -136,9 +136,9 @@ void CKalmanFilterCapable<
 		// ====================================
 		// Replace old covariance:
 		m_pkk.template block<VEH_SIZE, VEH_SIZE>(0, 0) =
-		    Q.asEigen() + dfv_dxv.asEigen() *
-		                      m_pkk.template block<VEH_SIZE, VEH_SIZE>(0, 0) *
-		                      dfv_dxv.asEigen().transpose();
+			Q.asEigen() + dfv_dxv.asEigen() *
+							  m_pkk.template block<VEH_SIZE, VEH_SIZE>(0, 0) *
+							  dfv_dxv.asEigen().transpose();
 
 		// ====================================
 		//  3.2:  All Pxy_i
@@ -148,12 +148,12 @@ void CKalmanFilterCapable<
 		for (size_t i = 0; i < N_map; i++)
 		{
 			aux = dfv_dxv.asEigen() * m_pkk.template block<VEH_SIZE, FEAT_SIZE>(
-			                              0, VEH_SIZE + i * FEAT_SIZE);
+										  0, VEH_SIZE + i * FEAT_SIZE);
 
 			m_pkk.template block<VEH_SIZE, FEAT_SIZE>(
-			    0, VEH_SIZE + i * FEAT_SIZE) = aux.asEigen();
+				0, VEH_SIZE + i * FEAT_SIZE) = aux.asEigen();
 			m_pkk.template block<FEAT_SIZE, VEH_SIZE>(
-			    VEH_SIZE + i * FEAT_SIZE, 0) = aux.asEigen().transpose();
+				VEH_SIZE + i * FEAT_SIZE, 0) = aux.asEigen().transpose();
 		}
 
 		// =============================================================
@@ -324,20 +324,20 @@ void CKalmanFilterCapable<
 					KFMatrix_OxV Hx_gt(mrpt::math::UNINITIALIZED_MATRIX);
 					KFMatrix_OxF Hy_gt(mrpt::math::UNINITIALIZED_MATRIX);
 					OnObservationJacobians(lm_idx, Hx_gt, Hy_gt);
-					if ((Hx - Hx_gt).asEigen().array().abs().sum() >
+					if ((Hx.asEigen() - Hx_gt.asEigen()).array().abs().sum() >
 						KF_options.debug_verify_analytic_jacobians_threshold)
 					{
 						std::cerr << "[KalmanFilter] ERROR: User analytical "
 									 "observation Hx Jacobians are wrong: \n"
 								  << " Real Hx: \n"
-						          << Hx.asStr() << "\n Analytical Hx:\n"
-						          << Hx_gt.asStr() << "Diff:\n"
-						          << (Hx - Hx_gt).asStr() << "\n";
+								  << Hx.asEigen() << "\n Analytical Hx:\n"
+								  << Hx_gt.asEigen() << "Diff:\n"
+								  << (Hx.asEigen() - Hx_gt.asEigen()) << "\n";
 						THROW_EXCEPTION(
 							"ERROR: User analytical observation Hx Jacobians "
 							"are wrong (More details dumped to cerr)");
 					}
-					if ((Hy - Hy_gt).asEigen().array().abs().sum() >
+					if ((Hy.asEigen() - Hy_gt.asEigen()).array().abs().sum() >
 						KF_options.debug_verify_analytic_jacobians_threshold)
 					{
 						std::cerr << "[KalmanFilter] ERROR: User analytical "
@@ -345,7 +345,7 @@ void CKalmanFilterCapable<
 								  << " Real Hy: \n"
 								  << Hy << "\n Analytical Hx:\n"
 								  << Hy_gt << "Diff:\n"
-								  << Hy - Hy_gt << "\n";
+								  << Hy.asEigen() - Hy_gt.asEigen() << "\n";
 						THROW_EXCEPTION(
 							"ERROR: User analytical observation Hy Jacobians "
 							"are wrong (More details dumped to cerr)");
@@ -374,7 +374,7 @@ void CKalmanFilterCapable<
 				const size_t lm_idx_i = m_predictLMidxs[i];
 				// Pxyi^t
 				const auto Pxyi_t = m_pkk.template block<FEAT_SIZE, VEH_SIZE>(
-				    VEH_SIZE + lm_idx_i * FEAT_SIZE, 0);
+					VEH_SIZE + lm_idx_i * FEAT_SIZE, 0);
 
 				// Only do j>=i (upper triangle), since m_S is symmetric:
 				for (size_t j = i; j < N_pred; ++j)
@@ -382,34 +382,34 @@ void CKalmanFilterCapable<
 					const size_t lm_idx_j = m_predictLMidxs[j];
 					// Sij block:
 					auto Sij = m_S.template block<OBS_SIZE, OBS_SIZE>(
-					    OBS_SIZE * i, OBS_SIZE * j);
+						OBS_SIZE * i, OBS_SIZE * j);
 
 					const auto Pxyj = m_pkk.template block<VEH_SIZE, FEAT_SIZE>(
-					    0, VEH_SIZE + lm_idx_j * FEAT_SIZE);
+						0, VEH_SIZE + lm_idx_j * FEAT_SIZE);
 					const auto Pyiyj =
-					    m_pkk.template block<FEAT_SIZE, FEAT_SIZE>(
-					        VEH_SIZE + lm_idx_i * FEAT_SIZE,
-					        VEH_SIZE + lm_idx_j * FEAT_SIZE);
+						m_pkk.template block<FEAT_SIZE, FEAT_SIZE>(
+							VEH_SIZE + lm_idx_i * FEAT_SIZE,
+							VEH_SIZE + lm_idx_j * FEAT_SIZE);
 
 					Sij = m_Hxs[i].asEigen() * Px *
-					          m_Hxs[j].asEigen().transpose() +
-					      m_Hys[i].asEigen() * Pxyi_t *
-					          m_Hxs[j].asEigen().transpose() +
-					      m_Hxs[i].asEigen() * Pxyj *
-					          m_Hys[j].asEigen().transpose() +
-					      m_Hys[i].asEigen() * Pyiyj *
-					          m_Hys[j].asEigen().transpose();
+							  m_Hxs[j].asEigen().transpose() +
+						  m_Hys[i].asEigen() * Pxyi_t *
+							  m_Hxs[j].asEigen().transpose() +
+						  m_Hxs[i].asEigen() * Pxyj *
+							  m_Hys[j].asEigen().transpose() +
+						  m_Hys[i].asEigen() * Pyiyj *
+							  m_Hys[j].asEigen().transpose();
 
 					// Copy transposed to the symmetric lower-triangular part:
 					if (i != j)
 						m_S.template block<OBS_SIZE, OBS_SIZE>(
-						    OBS_SIZE * j, OBS_SIZE * i) = Sij.transpose();
+							OBS_SIZE * j, OBS_SIZE * i) = Sij.transpose();
 				}
 
 				// Sum the "R" term to the diagonal blocks:
 				const size_t obs_idx_off = i * OBS_SIZE;
 				m_S.template block<OBS_SIZE, OBS_SIZE>(
-				    obs_idx_off, obs_idx_off) += R.asEigen();
+					obs_idx_off, obs_idx_off) += R.asEigen();
 			}
 		}
 		else
@@ -418,8 +418,8 @@ void CKalmanFilterCapable<
 			ASSERTDEB_(m_S.cols() == OBS_SIZE);
 
 			m_S = m_Hxs[0].asEigen() * m_pkk.asEigen() *
-			          m_Hxs[0].asEigen().transpose() +
-			      R.asEigen();
+					  m_Hxs[0].asEigen().transpose() +
+				  R.asEigen();
 		}
 
 		m_timLogger.leave("KF:6.build m_S");
@@ -559,15 +559,15 @@ void CKalmanFilterCapable<
 								// row_len);
 
 								m_dh_dx_full_obs
-								    .template block<OBS_SIZE, VEH_SIZE>(
-								        S_idxs.size(), 0) =
-								    m_Hxs[assoc_idx_in_pred].asEigen();
+									.template block<OBS_SIZE, VEH_SIZE>(
+										S_idxs.size(), 0) =
+									m_Hxs[assoc_idx_in_pred].asEigen();
 								m_dh_dx_full_obs
-								    .template block<OBS_SIZE, FEAT_SIZE>(
-								        S_idxs.size(),
-								        VEH_SIZE +
-								            assoc_idx_in_map * FEAT_SIZE) =
-								    m_Hys[assoc_idx_in_pred].asEigen();
+									.template block<OBS_SIZE, FEAT_SIZE>(
+										S_idxs.size(),
+										VEH_SIZE +
+											assoc_idx_in_map * FEAT_SIZE) =
+									m_Hys[assoc_idx_in_pred].asEigen();
 
 								// S_idxs.size() is used as counter for
 								// "m_dh_dx_full_obs".
@@ -617,7 +617,7 @@ void CKalmanFilterCapable<
 
 						// K = m_pkk * (~dh_dx) * m_S.inverse_LLt() );
 						m_K.asEigen() = m_pkk.asEigen() *
-						                m_dh_dx_full_obs.asEigen().transpose();
+										m_dh_dx_full_obs.asEigen().transpose();
 
 						// Inverse of S_observed -> m_S_1
 						m_S_1 = S_observed.inverse_LLt();
@@ -640,7 +640,7 @@ void CKalmanFilterCapable<
 								"KF:8.update stage:2.FULLKF:iter.update xkk");
 
 							auto HAx_column =
-							    KFVector(m_dh_dx_full_obs * (m_xkk - xkk_0));
+								KFVector(m_dh_dx_full_obs * (m_xkk - xkk_0));
 
 							m_xkk = xkk_0;
 							m_xkk.asEigen() += m_K * (ytilde - HAx_column);
@@ -1056,7 +1056,7 @@ void addNewLandmarks(
 			// Fill the Pxyn term:
 			// --------------------
 			auto Pxx = typename KF::KFMatrix_VxV(
-			    obj.internal_getPkk().template block<VEH_SIZE, VEH_SIZE>(0, 0));
+				obj.internal_getPkk().template block<VEH_SIZE, VEH_SIZE>(0, 0));
 			auto Pxyn = typename KF::KFMatrix_FxV(dyn_dxv * Pxx);
 
 			obj.internal_getPkk().insertMatrix(idx, 0, Pxyn);
@@ -1069,15 +1069,15 @@ void addNewLandmarks(
 			for (q = 0; q < nLMs; q++)
 			{
 				auto P_x_yq = typename KF::KFMatrix_VxF(
-				    obj.internal_getPkk().template block<VEH_SIZE, FEAT_SIZE>(
-				        0, VEH_SIZE + q * FEAT_SIZE));
+					obj.internal_getPkk().template block<VEH_SIZE, FEAT_SIZE>(
+						0, VEH_SIZE + q * FEAT_SIZE));
 
 				auto P_cross = typename KF::KFMatrix_FxF(dyn_dxv * P_x_yq);
 
 				obj.internal_getPkk().insertMatrix(
 					idx, VEH_SIZE + q * FEAT_SIZE, P_cross);
 				obj.internal_getPkk().insertMatrix(
-				    VEH_SIZE + q * FEAT_SIZE, idx, P_cross.transpose());
+					VEH_SIZE + q * FEAT_SIZE, idx, P_cross.transpose());
 			}  // end each previous LM(q)
 
 			// Fill the Pynyn term:

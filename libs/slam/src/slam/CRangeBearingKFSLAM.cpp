@@ -292,7 +292,7 @@ void CRangeBearingKFSLAM::OnGetAction(KFArray_ACT& u) const
 	const CPose3DQuat theIncr = getIncrementFromOdometry();
 
 	for (KFArray_ACT::Index i = 0;
-	     i < static_cast<KFArray_ACT::Index>(u.size()); i++)
+		 i < static_cast<KFArray_ACT::Index>(u.size()); i++)
 		u[i] = theIncr[i];
 }
 
@@ -1205,10 +1205,10 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 	}
 
 	return sumOffBlocks / H.asEigen()
-	                          .block(
-	                              get_vehicle_size(), get_vehicle_size(),
-	                              H.rows() - get_vehicle_size(),
-	                              H.cols() - get_vehicle_size())
+							  .block(
+								  get_vehicle_size(), get_vehicle_size(),
+								  H.rows() - get_vehicle_size(),
+								  H.cols() - get_vehicle_size())
 							  .sum();  // Starting (7,7)-end
 	MRPT_END
 }

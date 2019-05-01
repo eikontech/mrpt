@@ -249,7 +249,8 @@ double CBeaconMap::internal_computeObservationLikelihood(
 						H(0, 2) = Az;
 						float expectedRange =
 							sensor3D.distanceTo(beac->m_locationGauss.mean);
-						H *= 1.0 / expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
+						H.asEigen() *=
+							1.0 / expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
 
 						varZ =
 							H.multiply_HCHt_scalar(beac->m_locationGauss.cov);
@@ -294,8 +295,9 @@ double CBeaconMap::internal_computeObservationLikelihood(
 							H(0, 2) = Az;
 							double expectedRange =
 								sensor3D.distanceTo(it->val.mean);
-							H *= 1.0 /
-								 expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
+							H.asEigen() *=
+								1.0 /
+								expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
 
 							varZ = H.multiply_HCHt_scalar(it->val.cov);
 							varZ += varR;
@@ -647,8 +649,9 @@ bool CBeaconMap::internal_insertObservation(
 								H(0, 0) = Ax;
 								H(0, 1) = Ay;
 								H(0, 2) = Az;
-								H *= 1.0 /
-									 expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
+								H.asEigen() *=
+									1.0 /
+									expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
 								varZ = H.multiply_HCHt_scalar(
 									beac->m_locationGauss.cov);
 								varZ += varR;
@@ -701,7 +704,7 @@ bool CBeaconMap::internal_insertObservation(
 								H(0, 0) = Ax;
 								H(0, 1) = Ay;
 								H(0, 2) = Az;
-								H *= 1.0 / expectedRange;
+								H.asEigen() *= 1.0 / expectedRange;
 								varZ = H.multiply_HCHt_scalar(mode.val.cov);
 								varZ += varR;
 								Eigen::Vector3d K =
