@@ -10,21 +10,20 @@
 #include "slam-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CFileStream.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/random.h>
-#include <mrpt/system/CTicTac.h>
-
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
@@ -483,7 +482,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						beacMap->get(0).m_typePDF = CBeacon::pdfGauss;
 						beacMap->get(0).m_locationSOG.clear();
 						beacMap->get(0).m_locationGauss.mean = fixedBeacon;
-						beacMap->get(0).m_locationGauss.cov.unit(3, 1e-6);
+						beacMap->get(0).m_locationGauss.cov.setDiagonal(
+						    3, 1e-6);
 					}
 				}
 			}  // end if there is no odometry

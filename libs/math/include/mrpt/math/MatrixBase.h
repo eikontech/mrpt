@@ -29,6 +29,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		return static_cast<const Derived&>(*this);
 	}
 
+	/** Resize to NxN, set all entries to zero, except the main diagonal which
+	 * is set to `value` */
 	void setDiagonal(const std::size_t N, const Scalar value)
 	{
 		mbDerived().resize(N, N);
@@ -36,11 +38,16 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 			for (typename Derived::Index c = 0; c < mbDerived().cols(); c++)
 				mbDerived()(r, c) = (r == c) ? value : 0;
 	}
+	/** Set all entries to zero, except the main diagonal which is set to
+	 * `value` */
 	void setDiagonal(const Scalar value)
 	{
 		ASSERT_EQUAL_(mbDerived().cols(), mbDerived().rows());
 		setDiagonal(mbDerived().cols(), value);
 	}
+	/** Resizes to NxN, with N the length of the input vector, set all entries
+	 * to zero, except the main diagonal which is set to values in the vector.
+	 */
 	void setDiagonal(const std::vector<Scalar>& diags)
 	{
 		const std::size_t N = diags.size();
@@ -218,6 +225,20 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		ASSERT_BELOW_(start_col + BLOCK_COLS, mbDerived().cols());
 
 		CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> ret;
+		for (int r = 0; r < BLOCK_ROWS; r++)
+			for (int c = 0; c < BLOCK_ROWS; c++)
+				ret(r, c) = mbDerived()(r + start_row, c + start_col);
+		return ret;
+	}
+
+	CMatrixDynamic<Scalar> extractMatrix(
+	    const int BLOCK_ROWS, const int BLOCK_COLS, const int start_row,
+	    const int start_col) const
+	{
+		ASSERT_BELOW_(start_row + BLOCK_ROWS, mbDerived().rows());
+		ASSERT_BELOW_(start_col + BLOCK_COLS, mbDerived().cols());
+
+		CMatrixDynamic<Scalar> ret(BLOCK_ROWS, BLOCK_COLS);
 		for (int r = 0; r < BLOCK_ROWS; r++)
 			for (int c = 0; c < BLOCK_ROWS; c++)
 				ret(r, c) = mbDerived()(r + start_row, c + start_col);

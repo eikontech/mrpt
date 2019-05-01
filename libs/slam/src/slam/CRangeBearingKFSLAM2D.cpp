@@ -657,8 +657,8 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		}
 
 		// Vehicle uncertainty
-		const KFMatrix_VxV Pxx =
-		    m_pkk.extractMatrix<get_vehicle_size(), get_vehicle_size()>(0, 0);
+		/*const KFMatrix_VxV Pxx = m_pkk.extractMatrix<get_vehicle_size(),
+		 * get_vehicle_size()>(0, 0);*/
 
 		// Build predictions:
 		// ---------------------------

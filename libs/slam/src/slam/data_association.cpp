@@ -609,8 +609,8 @@ void mrpt::slam::data_association_independent_predictions(
 	for (size_t i = 0; i < nPredictions; i++)
 	{
 		const size_t idx = i * length_O;
-		Y_predictions_cov_stacked.extractSubmatrix(
-			idx, idx + length_O - 1, 0, length_O - 1, COV_i);
+		COV_i =
+		    Y_predictions_cov_stacked.extractMatrix(length_O, length_O, idx, 0);
 		Y_predictions_cov_full.insertMatrix(idx, idx, COV_i);
 	}
 

@@ -19,16 +19,16 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::slam;
 using namespace mrpt::obs;
@@ -536,7 +536,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 		&Hy, &Hx_sensor);
 
 	// Chain rule: Hx = d sensorpose / d vehiclepose   * Hx_sensor
-	Hx.matProductOf(Hx_sensor, H_senpose_vehpose);
+	Hx = Hx_sensor * H_senpose_vehpose;
 
 	MRPT_END
 }
@@ -655,7 +655,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		}
 
 		// Vehicle uncertainty
-		KFMatrix_VxV Pxx = m_pkk.block<7, 7>(0, 0);
+		KFMatrix_VxV Pxx = m_pkk.extractMatrix<7, 7>(0, 0);
 
 		// Build predictions:
 		// ---------------------------
@@ -1197,15 +1197,16 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 			{
 				size_t col = get_vehicle_size() + i * get_feature_size();
 				size_t row = get_vehicle_size() + j * get_feature_size();
-				sumOffBlocks += 2 * H.block(row, col, 2, 2).sum();
+				sumOffBlocks += 2 * H.block<2, 2>(row, col).sum();
 			}
 		}
 	}
 
-	return sumOffBlocks / H.block(
-							   get_vehicle_size(), get_vehicle_size(),
-							   H.rows() - get_vehicle_size(),
-							   H.cols() - get_vehicle_size())
+	return sumOffBlocks / H.asEigen()
+	                          .block(
+	                              get_vehicle_size(), get_vehicle_size(),
+	                              H.rows() - get_vehicle_size(),
+	                              H.cols() - get_vehicle_size())
 							  .sum();  // Starting (7,7)-end
 	MRPT_END
 }

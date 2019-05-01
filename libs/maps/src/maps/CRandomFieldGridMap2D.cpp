@@ -420,14 +420,15 @@ void CRandomFieldGridMap2D::internal_clear()
 							cxi = cx + 1;
 							cyi = cy;
 						}
-
-						if (neighbor == 1)
+						else if (neighbor == 1)
 						{
 							if (cy >= (m_size_y - 1)) continue;
 							i = j + m_size_x;
 							cxi = cx;
 							cyi = cy + 1;
 						}
+						else
+							throw std::runtime_error("Shouldn't reach here!");
 
 						// Get cell_i indx-limits in Occuppancy gridmap
 						cxoi_min = floor(cxi * res_coef);
