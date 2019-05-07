@@ -61,8 +61,7 @@ class Pose3DTests : public ::testing::Test
 			0, 1e-3)
 			<< "p1: " << p1 << "p1_inv_inv: " << p1_inv_inv << endl;
 
-		EXPECT_NEAR(
-			(HMi_from_p1_inv - HMi).asEigen().array().abs().sum(), 0, 1e-4)
+		EXPECT_NEAR((HMi_from_p1_inv - HMi).sum_abs(), 0, 1e-4)
 			<< "HMi_from_p1_inv:\n"
 			<< HMi_from_p1_inv << "HMi:\n"
 			<< HMi << endl;
@@ -341,8 +340,7 @@ class Pose3DTests : public ::testing::Test
 
 		const double max_error = use_aprox ? 0.1 : 3e-3;
 
-		EXPECT_NEAR(
-			0, (df_dpoint - num_df_dpoint).array().abs().sum(), max_error)
+		EXPECT_NEAR(0, (df_dpoint - num_df_dpoint).sum_abs(), max_error)
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl
@@ -369,8 +367,7 @@ class Pose3DTests : public ::testing::Test
 	void test_ExpLnEqual(const CPose3D& p1)
 	{
 		const CPose3D p2 = Lie::SE<3>::exp(Lie::SE<3>::log(p1));
-		EXPECT_NEAR(
-			(p1.asVectorVal() - p2.asVectorVal()).array().abs().sum(), 0, 1e-5)
+		EXPECT_NEAR((p1.asVectorVal() - p2.asVectorVal()).sum_abs(), 0, 1e-5)
 			<< "p1: " << p1 << endl;
 	}
 

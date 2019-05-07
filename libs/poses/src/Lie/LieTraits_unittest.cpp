@@ -131,7 +131,7 @@ class SE_traits_tests : public ::testing::Test
 
 		const double max_eror = 1e-3;
 
-		EXPECT_NEAR(0, (num_J1 - J1).array().abs().sum(), max_eror)
+		EXPECT_NEAR(0, (num_J1 - J1).sum_abs(), max_eror)
 			<< std::setprecision(3) << "p1: " << P1 << endl
 			<< "d: " << Pd << endl
 			<< "p2: " << P2 << endl
@@ -142,7 +142,7 @@ class SE_traits_tests : public ::testing::Test
 			<< "Error:\n"
 			<< J1 - num_J1 << endl;
 
-		EXPECT_NEAR(0, (num_J2 - J2).array().abs().sum(), max_eror)
+		EXPECT_NEAR(0, (num_J2 - J2).sum_abs(), max_eror)
 			<< "p1: " << P1 << endl
 			<< "d: " << Pd << endl
 			<< "p2: " << P2 << endl
@@ -233,7 +233,7 @@ class SE_traits_tests : public ::testing::Test
 
 		const double max_eror = 1e-3;
 
-		EXPECT_NEAR(0, (num_dAB_A - dAB_A).array().abs().sum(), max_eror)
+		EXPECT_NEAR(0, (num_dAB_A - dAB_A).sum_abs(), max_eror)
 			<< std::setprecision(3) << "A: " << A << endl
 			<< "B: " << B << endl
 			<< "Numeric dAB_A:\n"
@@ -243,7 +243,7 @@ class SE_traits_tests : public ::testing::Test
 			<< "Error:\n"
 			<< dAB_A - num_dAB_A << endl;
 
-		EXPECT_NEAR(0, (num_dAB_B - dAB_B).array().abs().sum(), max_eror)
+		EXPECT_NEAR(0, (num_dAB_B - dAB_B).sum_abs(), max_eror)
 			<< std::setprecision(3) << "A: " << A << endl
 			<< "B: " << B << endl
 			<< "Numeric dAB_B:\n"

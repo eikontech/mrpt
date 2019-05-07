@@ -32,7 +32,7 @@ CMatrixFixed<double, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_double()
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
 CMatrixFixed<T, ROWS, 1> CMatrixFixed<T, ROWS, COLS>::llt_solve(
-    const CMatrixFixed<T, ROWS, 1>& b) const
+	const CMatrixFixed<T, ROWS, 1>& b) const
 {
 	if constexpr (ROWS == COLS)
 	{
@@ -42,12 +42,12 @@ CMatrixFixed<T, ROWS, 1> CMatrixFixed<T, ROWS, COLS>::llt_solve(
 	else
 	{
 		throw std::invalid_argument(
-		    "llt_solve(): only available for square matrices.");
+			"llt_solve(): only available for square matrices.");
 	}
 }
 template <typename T, std::size_t ROWS, std::size_t COLS>
 CMatrixFixed<T, ROWS, 1> CMatrixFixed<T, ROWS, COLS>::lu_solve(
-    const CMatrixFixed<T, ROWS, 1>& b) const
+	const CMatrixFixed<T, ROWS, 1>& b) const
 {
 	if constexpr (ROWS == COLS)
 	{
@@ -57,7 +57,7 @@ CMatrixFixed<T, ROWS, 1> CMatrixFixed<T, ROWS, COLS>::lu_solve(
 	else
 	{
 		throw std::invalid_argument(
-		    "lu_solve(): only available for square matrices.");
+			"lu_solve(): only available for square matrices.");
 	}
 }
 

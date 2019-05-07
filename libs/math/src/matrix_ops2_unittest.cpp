@@ -45,8 +45,7 @@ TEST(Matrices, inv_4x4_fix)
 		-0.025568212209135, 0.068123300450057, -0.297834184749986,
 		0.158964059763645};
 	CMatrixDouble44 AInv(dat_AInv);
-	CHECK_AND_RET_ERROR(
-		(AInv - C).array().abs().sum() > 1e-4, "Error in inv, 4x4 fix")
+	CHECK_AND_RET_ERROR((AInv - C).sum_abs() > 1e-4, "Error in inv, 4x4 fix")
 }
 
 TEST(Matrices, inv_LLt_4x4_fix)
@@ -70,8 +69,7 @@ TEST(Matrices, inv_LLt_4x4_fix)
 		// clang-format on
 	};
 	CMatrixDouble44 AInv(dat_AInv);
-	CHECK_AND_RET_ERROR(
-		(AInv - C).array().abs().sum() > 1e-4, "Error in inv, 4x4 fix")
+	CHECK_AND_RET_ERROR((AInv - C).sum_abs() > 1e-4, "Error in inv, 4x4 fix")
 }
 
 TEST(Matrices, inv_6x6_fix)
@@ -107,7 +105,7 @@ TEST(Matrices, inv_6x6_fix)
 	CMatrixDouble66 AInv(dat_AInv);
 	CHECK_AND_RET_ERROR(
 		std::isnan(C(0, 0)) || !std::isfinite(C(0, 0)) ||
-			(AInv - C).array().abs().sum() > 1e-4,
+			(AInv - C).sum_abs() > 1e-4,
 		"Error in inv, 6x6 fix")
 }
 
@@ -144,7 +142,7 @@ TEST(Matrices, inv_6x6_dyn)
 	CMatrixDouble AInv(6, 6, dat_AInv);
 	CHECK_AND_RET_ERROR(
 		std::isnan(C(0, 0)) || !std::isfinite(C(0, 0)) ||
-			(AInv - C).array().abs().sum() > 1e-4,
+			(AInv - C).sum_abs() > 1e-4,
 		"Error in inv, 6x6 dyn")
 }
 
@@ -249,7 +247,7 @@ TEST(Matrices, fromMatlabStringFormat)
 	{
 		CMatrixDouble M2b;
 		if (!M2b.fromMatlabStringFormat(mat2) ||
-			(CMatrixFixed<double, 3, 2>(vals2) - M2b).array().abs().sum() >
+			(CMatrixDouble(CMatrixFixed<double, 3, 2>(vals2)) - M2b).sum_abs() >
 				1e-4)
 			GTEST_FAIL() << mat2;
 	}

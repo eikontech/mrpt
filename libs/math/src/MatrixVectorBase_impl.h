@@ -346,6 +346,12 @@ Scalar MatrixVectorBase<Scalar, Derived>::sum() const
 }
 
 template <typename Scalar, class Derived>
+Scalar MatrixVectorBase<Scalar, Derived>::sum_abs() const
+{
+	return mvbDerived().asEigen().array().abs().sum();
+}
+
+template <typename Scalar, class Derived>
 Scalar MatrixVectorBase<Scalar, Derived>::minCoeff() const
 {
 	return mvbDerived().asEigen().minCoeff();

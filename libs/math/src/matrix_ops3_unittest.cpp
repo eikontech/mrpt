@@ -40,9 +40,9 @@ TEST(Matrices, HCHt_3x2_2x2_2x3)
 	CMatrixDouble R;
 	H.multiply_HCHt(C, R);
 
-	EXPECT_NEAR((R_REAL - R).array().abs().sum(), 0, 1e-4) << "R:\n"
-														   << R << "\nR_REAL:\n"
-														   << R_REAL << "\n";
+	EXPECT_NEAR((R_REAL - R).sum_abs(), 0, 1e-4) << "R:\n"
+												 << R << "\nR_REAL:\n"
+												 << R_REAL << "\n";
 }
 
 TEST(Matrices, HCHt_scalar_1x2_2x2_2x1)
@@ -175,7 +175,7 @@ TEST(Matrices, chol_2x2_dyn)
 							   0.6672308672};
 	CMatrixDouble CHOL(2, 2, dat_CHOL);
 	CHECK_AND_RET_ERROR(
-		(CHOL - C).array().abs().sum() > 1e-4, "Error in Choleski, 2x2 dyn")
+		(CHOL - C).sum_abs() > 1e-4, "Error in Choleski, 2x2 dyn")
 }
 
 TEST(Matrices, chol_2x2_fix)
@@ -189,7 +189,8 @@ TEST(Matrices, chol_2x2_fix)
 							   0.6672308672};
 	CMatrixDouble CHOL(2, 2, dat_CHOL);
 	CHECK_AND_RET_ERROR(
-		(CHOL - C).array().abs().sum() > 1e-4, "Error in Choleski, 2x2 fix")
+		(CHOL - CMatrixDouble(C)).sum_abs() > 1e-4,
+		"Error in Choleski, 2x2 fix")
 }
 
 TEST(Matrices, chol_3x3_dyn)
@@ -208,7 +209,7 @@ TEST(Matrices, chol_3x3_dyn)
 		0.000000000000000, 0.000000000000000, 0.044745311077990};
 	CMatrixDouble CHOL(3, 3, dat_CHOL);
 	CHECK_AND_RET_ERROR(
-		(CHOL - C).array().abs().sum() > 1e-4, "Error in Choleski, 3x3 dyn")
+		(CHOL - C).sum_abs() > 1e-4, "Error in Choleski, 3x3 dyn")
 }
 
 TEST(Matrices, chol_3x3_fix)
@@ -227,7 +228,7 @@ TEST(Matrices, chol_3x3_fix)
 		0.000000000000000, 0.000000000000000, 0.044745311077990};
 	CMatrixDouble33 CHOL(dat_CHOL);
 	CHECK_AND_RET_ERROR(
-		(CHOL - C).array().abs().sum() > 1e-4, "Error in Choleski, 3x3 fix")
+		(CHOL - C).sum_abs() > 1e-4, "Error in Choleski, 3x3 fix")
 }
 
 TEST(Matrices, chol_10x10_dyn)
@@ -285,5 +286,5 @@ TEST(Matrices, chol_10x10_dyn)
 		0.0000000000,  0.0000000000,  0.0000000000,  0.2838575216};
 	CMatrixDouble CHOL(10, 10, dat_CHOL);
 	CHECK_AND_RET_ERROR(
-		(CHOL - C).array().abs().sum() > 1e-4, "Error in Choleski, 10x10 dyn")
+		(CHOL - C).sum_abs() > 1e-4, "Error in Choleski, 10x10 dyn")
 }

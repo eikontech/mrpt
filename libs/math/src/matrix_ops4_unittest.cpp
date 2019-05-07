@@ -62,14 +62,14 @@ TEST(Matrices, meanAndStdColumns)
 	const double dat_good_M[] = {
 		2.246424086, 2.718547419, 1.899166596, 2.192679825, 2.073010093,
 		2.938742050, 1.648159507, 2.570463898, 1.909148862, 2.628699435};
-	const Eigen::Matrix<double, 10, 1> good_M(dat_good_M);
+	const CVectorDouble good_M(dat_good_M);
 	const double dat_good_S[] = {
 		0.428901371, 0.720352792, 0.468999497, 0.684910097, 0.546595053,
 		0.604303301, 0.328759015, 0.582584159, 0.382009344, 0.644788760};
-	const Eigen::Matrix<double, 10, 1> good_S(dat_good_S);
+	const CVectorDouble good_S(dat_good_S);
 
-	EXPECT_NEAR((result_mean.asEigen() - good_M).array().abs().sum(), 0, 1e-4);
-	EXPECT_NEAR((result_std.asEigen() - good_S).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((result_mean - good_M).sum_abs(), 0, 1e-4);
+	EXPECT_NEAR((result_std - good_S).sum_abs(), 0, 1e-4);
 }
 
 TEST(Matrices, meanAndStdAll)
@@ -130,7 +130,7 @@ TEST(Matrices, laplacian)
 		0, 0,  -1, 3, -1, -1, -1, -1, 0,  -1, 3,  0, 0, 0,  0, -1, 0, 1};
 	const CMatrixDouble GT_L(6, 6, real_laplacian_vals);
 
-	EXPECT_NEAR((GT_L - L).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((GT_L - L).sum_abs(), 0, 1e-4);
 }
 
 TEST(Matrices, loadFromTextFile)

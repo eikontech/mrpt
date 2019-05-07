@@ -110,7 +110,7 @@ void CKalmanFilterCapable<
 			{
 				KFMatrix_VxV dfv_dxv_gt(mrpt::math::UNINITIALIZED_MATRIX);
 				OnTransitionJacobian(dfv_dxv_gt);
-				if ((dfv_dxv - dfv_dxv_gt).array().abs().sum() >
+				if ((dfv_dxv - dfv_dxv_gt).sum_abs() >
 					KF_options.debug_verify_analytic_jacobians_threshold)
 				{
 					std::cerr << "[KalmanFilter] ERROR: User analytical "
@@ -324,7 +324,7 @@ void CKalmanFilterCapable<
 					KFMatrix_OxV Hx_gt(mrpt::math::UNINITIALIZED_MATRIX);
 					KFMatrix_OxF Hy_gt(mrpt::math::UNINITIALIZED_MATRIX);
 					OnObservationJacobians(lm_idx, Hx_gt, Hy_gt);
-					if ((Hx.asEigen() - Hx_gt.asEigen()).array().abs().sum() >
+					if ((Hx - Hx_gt).sum_abs() >
 						KF_options.debug_verify_analytic_jacobians_threshold)
 					{
 						std::cerr << "[KalmanFilter] ERROR: User analytical "
@@ -337,7 +337,7 @@ void CKalmanFilterCapable<
 							"ERROR: User analytical observation Hx Jacobians "
 							"are wrong (More details dumped to cerr)");
 					}
-					if ((Hy.asEigen() - Hy_gt.asEigen()).array().abs().sum() >
+					if ((Hy - Hy_gt).sum_abs() >
 						KF_options.debug_verify_analytic_jacobians_threshold)
 					{
 						std::cerr << "[KalmanFilter] ERROR: User analytical "

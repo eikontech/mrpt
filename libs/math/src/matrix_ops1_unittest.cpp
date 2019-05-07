@@ -108,7 +108,7 @@ TEST(Matrices, EigenVal2x2dyn)
 
 	CMatrixDouble C1_RR =
 		CMatrixDouble(C1_V.asEigen() * C1_D.asEigen() * C1_V.transpose());
-	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((C1_RR - C1).sum_abs(), 0, 1e-4);
 }
 
 TEST(Matrices, EigenVal3x3dyn)
@@ -125,7 +125,7 @@ TEST(Matrices, EigenVal3x3dyn)
 
 	CMatrixDouble C1_RR =
 		CMatrixDouble(C1_V.asEigen() * C1_D.asEigen() * C1_V.transpose());
-	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((C1_RR - C1).sum_abs(), 0, 1e-4);
 }
 
 TEST(Matrices, EigenVal2x2fix)
@@ -142,7 +142,7 @@ TEST(Matrices, EigenVal2x2fix)
 
 	CMatrixDouble22 C1_RR =
 		CMatrixDouble22(C1_V.asEigen() * C1_D.asEigen() * C1_V.transpose());
-	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((C1_RR - C1).sum_abs(), 0, 1e-4);
 }
 
 TEST(Matrices, EigenVal3x3fix)
@@ -159,5 +159,5 @@ TEST(Matrices, EigenVal3x3fix)
 
 	CMatrixDouble33 C1_RR =
 		CMatrixDouble33(C1_V.asEigen() * C1_D.asEigen() * C1_V.transpose());
-	EXPECT_NEAR((C1_RR - C1).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((C1_RR - C1).sum_abs(), 0, 1e-4);
 }

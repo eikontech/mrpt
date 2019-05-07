@@ -276,6 +276,9 @@ class MatrixVectorBase
 	/** Sum of all elements in matrix/vector. */
 	Scalar sum() const;
 
+	/** Sum of the absolute value of all elements in matrix/vector. */
+	Scalar sum_abs() const;
+
 	/** Returns a string representation of the vector/matrix, using Eigen's
 	 * default settings. */
 	std::string asStr() const;
