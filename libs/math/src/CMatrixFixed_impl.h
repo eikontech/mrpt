@@ -13,7 +13,6 @@
 
 namespace mrpt::math
 {
-
 template <typename T, std::size_t ROWS, std::size_t COLS>
 CMatrixFixed<float, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_float() const
 {
@@ -24,12 +23,11 @@ CMatrixFixed<float, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_float() const
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
 CMatrixFixed<double, ROWS, COLS> CMatrixFixed<T, ROWS, COLS>::cast_double()
-const
+	const
 {
 	CMatrixFixed<double, ROWS, COLS> r(rows(), cols());
 	r.asEigen() = asEigen().template cast<double>();
 	return r;
 }
-
 
 }  // namespace mrpt::math

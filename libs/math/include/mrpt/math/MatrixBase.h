@@ -224,8 +224,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> extractMatrix(
 		const int start_row = 0, const int start_col = 0) const
 	{
-		ASSERT_BELOW_(start_row + BLOCK_ROWS, mbDerived().rows());
-		ASSERT_BELOW_(start_col + BLOCK_COLS, mbDerived().cols());
+		ASSERT_BELOWEQ_(start_row + BLOCK_ROWS, mbDerived().rows());
+		ASSERT_BELOWEQ_(start_col + BLOCK_COLS, mbDerived().cols());
 
 		CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> ret;
 		for (int r = 0; r < BLOCK_ROWS; r++)
@@ -238,8 +238,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		const int BLOCK_ROWS, const int BLOCK_COLS, const int start_row,
 		const int start_col) const
 	{
-		ASSERT_BELOW_(start_row + BLOCK_ROWS, mbDerived().rows());
-		ASSERT_BELOW_(start_col + BLOCK_COLS, mbDerived().cols());
+		ASSERT_BELOWEQ_(start_row + BLOCK_ROWS, mbDerived().rows());
+		ASSERT_BELOWEQ_(start_col + BLOCK_COLS, mbDerived().cols());
 
 		CMatrixDynamic<Scalar> ret(BLOCK_ROWS, BLOCK_COLS);
 		for (int r = 0; r < BLOCK_ROWS; r++)

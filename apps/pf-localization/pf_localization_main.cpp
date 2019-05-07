@@ -903,8 +903,8 @@ void do_pf_localization(
 								win.plot(ranges_obs, "r-", "obs");
 
 								Eigen::VectorXd ci1 =
-								    ssu_out.scanWithUncert.rangesMean
-								        .asEigen() +
+									ssu_out.scanWithUncert.rangesMean
+										.asEigen() +
 									3 * ssu_out.scanWithUncert.rangesCovar
 											.asEigen()
 											.diagonal()
@@ -912,8 +912,8 @@ void do_pf_localization(
 											.sqrt()
 											.matrix();
 								Eigen::VectorXd ci2 =
-								    ssu_out.scanWithUncert.rangesMean
-								        .asEigen() -
+									ssu_out.scanWithUncert.rangesMean
+										.asEigen() -
 									3 * ssu_out.scanWithUncert.rangesCovar
 											.asEigen()
 											.diagonal()
