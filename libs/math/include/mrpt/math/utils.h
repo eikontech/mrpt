@@ -125,7 +125,8 @@ void normalize(const VEC1& v, VEC2& out_v)
 	total = std::sqrt(total);
 	if (total)
 	{
-		out_v = v * (1.0 / total);
+		out_v = v;
+		out_v *= (1.0 / total);
 	}
 	else
 		out_v.assign(v.size(), 0);

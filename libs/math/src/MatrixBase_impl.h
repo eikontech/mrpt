@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/MatrixBase.h>
 #include <Eigen/Eigenvalues>  // EigenSolver
 #include <cstdint>

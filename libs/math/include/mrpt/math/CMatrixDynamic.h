@@ -537,6 +537,14 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	CMatrixDynamic<float> cast_float() const;
 	CMatrixDynamic<double> cast_double() const;
 
+	/** Solves the linear system Ax=b, returns x, with A this **symmetric**
+	 * matrix. \sa lu_solve() */
+	CVectorDynamic<Scalar> llt_solve(const CVectorDynamic<Scalar>& b) const;
+
+	/** Solves the linear system Ax=b, returns x, with A this **asymmetric**
+	 * matrix. \sa llt_solve() */
+	CVectorDynamic<Scalar> lu_solve(const CVectorDynamic<Scalar>& b) const;
+
 };  // end of class CMatrixDynamic
 
 /** Declares a matrix of booleans (non serializable).

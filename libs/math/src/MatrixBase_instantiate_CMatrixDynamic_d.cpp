@@ -10,8 +10,8 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <Eigen/Dense>
-#include "MatrixBase_impl.h"
 
 // Template instantiation:
 #define DO_MATDYN_INSTANTIATION(T_) \

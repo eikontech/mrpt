@@ -217,7 +217,7 @@ class CConfigFileBase
 		else
 		{
 			// Parse the text into a vector:
-			if (!fromMatlabStringFormat(outMatrix, aux))
+			if (!outMatrix.fromMatlabStringFormat(aux))
 				THROW_EXCEPTION_FMT("Error parsing matrix: '%s'", aux.c_str());
 		}
 	}

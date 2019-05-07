@@ -44,7 +44,7 @@ typename MAT::Scalar mahalanobisDistance2(
 	const size_t N = X.size();
 	CVectorDynamic<typename MAT::Scalar> X_MU(N);
 	for (size_t i = 0; i < N; i++) X_MU[i] = X[i] - MU[i];
-	auto z = COV.llt().solve(X_MU);
+	auto z = COV.llt_solve(X_MU);
 	return z.dot(z);
 	MRPT_END
 }

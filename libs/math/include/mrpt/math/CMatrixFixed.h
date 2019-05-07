@@ -303,6 +303,14 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	CMatrixFixed<float, ROWS, COLS> cast_float() const;
 	CMatrixFixed<double, ROWS, COLS> cast_double() const;
 
+	/** Solves the linear system Ax=b, returns x, with A this **symmetric**
+	 * matrix. \sa lu_solve() */
+	CMatrixFixed<T, ROWS, 1> llt_solve(const CMatrixFixed<T, ROWS, 1>& b) const;
+
+	/** Solves the linear system Ax=b, returns x, with A this **asymmetric**
+	 * matrix. \sa llt_solve() */
+	CMatrixFixed<T, ROWS, 1> lu_solve(const CMatrixFixed<T, ROWS, 1>& b) const;
+
 	/** @} */
 };
 

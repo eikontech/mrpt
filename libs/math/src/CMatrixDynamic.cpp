@@ -10,6 +10,7 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <Eigen/Dense>
 
 using namespace mrpt::math;
@@ -27,6 +28,19 @@ CMatrixDynamic<double> CMatrixDynamic<T>::cast_double() const
 	CMatrixDynamic<double> r(rows(), cols());
 	r.asEigen() = asEigen().template cast<double>();
 	return r;
+}
+
+template <typename T>
+CVectorDynamic<T> CMatrixDynamic<T>::llt_solve(const CVectorDynamic<T>& b) const
+{
+	auto ret = CVectorDynamic<T>(asEigen().llt().solve(b.asEigen()));
+	return ret;
+}
+template <typename T>
+CVectorDynamic<T> CMatrixDynamic<T>::lu_solve(const CVectorDynamic<T>& b) const
+{
+	auto ret = CVectorDynamic<T>(asEigen().lu().solve(b.asEigen()));
+	return ret;
 }
 
 // Template instantiation:

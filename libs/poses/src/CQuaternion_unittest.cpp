@@ -10,6 +10,7 @@
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <Eigen/Dense>
