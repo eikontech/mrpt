@@ -8,13 +8,16 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-//#include <mrpt/math/types_math.h>
-
+#include <mrpt/math/CHistogram.h>
 #include <mrpt/math/lightweight_geom_data.h>  // forward declarations
-
+#include <mrpt/math/math_frwds.h>
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <numeric>
+#include <type_traits>
+
+#include "ops_vectors.h"
 
 /** \addtogroup container_ops_grp Vector and matrices mathematical operations
  * and other utilities
@@ -30,14 +33,6 @@
  *
  */
 
-#include <mrpt/math/CHistogram.h>  // Used in ::histogram()
-#include <mrpt/math/math_frwds.h>
-#include <algorithm>
-#include <functional>
-#include <numeric>
-
-#include "ops_vectors.h"
-
 namespace mrpt::math
 {
 /** ContainerType<T>::element_t exposes the value of any STL or Eigen container
@@ -50,6 +45,12 @@ template <typename Derived>
 struct ContainerType<Eigen::EigenBase<Derived>>
 {
 	using element_t = typename Derived::Scalar;
+};
+/** Specialization for MRPT containers */
+template <typename Scalar, typename Derived>
+struct ContainerType<mrpt::math::MatrixVectorBase<Scalar, Derived>>
+{
+	using element_t = Scalar;
 };
 
 /** Computes the normalized or normal histogram of a sequence of numbers given
@@ -96,11 +97,13 @@ void resizeLike(std::vector<T>& trg, const std::vector<T>& src)
  *  and even to store the cumsum of any matrix into any vector/array, but not
  * in opposite direction.
  * \sa sum */
-template <class CONTAINER1, class CONTAINER2, typename VALUE>
+template <class CONTAINER1, class CONTAINER2>
 inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
 	resizeLike(out_cumsum, in_data);
-	VALUE last = 0;
+	using T =
+		std::remove_const_t<std::remove_reference_t<decltype(in_data[0])>>;
+	T last = 0;
 	const size_t N = in_data.size();
 	for (size_t i = 0; i < N; i++) last = out_cumsum[i] = last + in_data[i];
 }
@@ -108,10 +111,7 @@ inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 template <class CONTAINER1, class CONTAINER2>
 inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
-	cumsum_tmpl<
-		CONTAINER1, CONTAINER2,
-		typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
-		in_data, out_cumsum);
+	cumsum_tmpl<CONTAINER1, CONTAINER2>(in_data, out_cumsum);
 }
 
 /** Computes the cumulative sum of all the elements

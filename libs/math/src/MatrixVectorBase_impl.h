@@ -441,26 +441,26 @@ CMatrixDynamic<Scalar> MatrixVectorBase<Scalar, Derived>::operator*(
 }
 
 template <typename Scalar, class Derived>
-Derived MatrixVectorBase<Scalar, Derived>::operator+(const Derived& m2) const
+Derived MatrixVectorBase<Scalar, Derived>::impl_op_add(const Derived& m2) const
 {
 	Derived ret(mvbDerived().rows(), mvbDerived().cols());
 	ret.asEigen() = mvbDerived().asEigen() + m2.asEigen();
 	return ret;
 }
 template <typename Scalar, class Derived>
-void MatrixVectorBase<Scalar, Derived>::operator+=(const Derived& m2)
+void MatrixVectorBase<Scalar, Derived>::impl_op_selfadd(const Derived& m2)
 {
 	mvbDerived().asEigen() += m2.asEigen();
 }
 template <typename Scalar, class Derived>
-Derived MatrixVectorBase<Scalar, Derived>::operator-(const Derived& m2) const
+Derived MatrixVectorBase<Scalar, Derived>::impl_op_subs(const Derived& m2) const
 {
 	Derived ret(mvbDerived().rows(), mvbDerived().cols());
 	ret.asEigen() = mvbDerived().asEigen() - m2.asEigen();
 	return ret;
 }
 template <typename Scalar, class Derived>
-void MatrixVectorBase<Scalar, Derived>::operator-=(const Derived& m2)
+void MatrixVectorBase<Scalar, Derived>::impl_op_selfsubs(const Derived& m2)
 {
 	mvbDerived().asEigen() -= m2.asEigen();
 }

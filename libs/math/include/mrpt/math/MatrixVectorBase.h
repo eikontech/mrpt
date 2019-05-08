@@ -255,12 +255,75 @@ class MatrixVectorBase
 
 	CMatrixDynamic<Scalar> operator*(const CMatrixDynamic<Scalar>& v);
 
-	Derived operator+(const Derived& m2) const;
-	void operator+=(const Derived& m2);
-	Derived operator-(const Derived& m2) const;
-	void operator-=(const Derived& m2);
+	Derived operator+(const Derived& m2) const
+	{
+		if constexpr (
+			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
+			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
+		{
+			return impl_op_add(m2);
+		}
+		else
+		{
+			throw std::runtime_error(
+				"Explicit instantiation not provided for this matrix size: use "
+				"asEigen()");
+		}
+	}
+	void operator+=(const Derived& m2)
+	{
+		if constexpr (
+			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
+			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
+		{
+			impl_op_selfadd(m2);
+		}
+		else
+		{
+			throw std::runtime_error(
+				"Explicit instantiation not provided for this matrix size: use "
+				"asEigen()");
+		}
+	}
+	Derived operator-(const Derived& m2) const
+	{
+		if constexpr (
+			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
+			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
+		{
+			return impl_op_subs(m2);
+		}
+		else
+		{
+			throw std::runtime_error(
+				"Explicit instantiation not provided for this matrix size: use "
+				"asEigen()");
+		}
+	}
+	void operator-=(const Derived& m2)
+	{
+		if constexpr (
+			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
+			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
+		{
+			impl_op_selfsubs(m2);
+		}
+		else
+		{
+			throw std::runtime_error(
+				"Explicit instantiation not provided for this matrix size: use "
+				"asEigen()");
+		}
+	}
 	Derived operator*(const Derived& m2) const;
 
+   private:
+	Derived impl_op_add(const Derived& m2) const;
+	void impl_op_selfadd(const Derived& m2);
+	Derived impl_op_subs(const Derived& m2) const;
+	void impl_op_selfsubs(const Derived& m2);
+
+   public:
 	/** dot product of `this \cdot v ` */
 	Scalar dot(const CVectorDynamic<Scalar>& v) const;
 	Scalar dot(const MatrixVectorBase<Scalar, Derived>& v) const;

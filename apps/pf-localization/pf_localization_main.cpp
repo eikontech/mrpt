@@ -1101,7 +1101,8 @@ void do_pf_localization(
 		double repetitionTime = tictacGlobal.Tac();
 
 		// Avr. error:
-		double covergenceErrorMean, covergenceErrorsMin, covergenceErrorsMax;
+		double covergenceErrorMean = 0, covergenceErrorsMin = 0,
+			   covergenceErrorsMax = 0;
 		if (!covergenceErrors.empty())
 			math::confidenceIntervals(
 				covergenceErrors, covergenceErrorMean, covergenceErrorsMin,

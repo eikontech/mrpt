@@ -212,27 +212,21 @@ std::pair<double, double> noncentralChi2PDF_CDF(
  * \param confidenceInterval A number in the range (0,1) such as the confidence
  * interval will be [100*confidenceInterval, 100*(1-confidenceInterval)].
  */
-template <typename CONTAINER>
+template <typename CONTAINER, typename T>
 void confidenceIntervals(
-	const CONTAINER& data,
-	typename mrpt::math::ContainerType<CONTAINER>::element_t& out_mean,
-	typename mrpt::math::ContainerType<CONTAINER>::element_t&
-		out_lower_conf_interval,
-	typename mrpt::math::ContainerType<CONTAINER>::element_t&
-		out_upper_conf_interval,
-	const double confidenceInterval = 0.1, const size_t histogramNumBins = 1000)
+	const CONTAINER& data, T& out_mean, T& out_lower_conf_interval,
+	T& out_upper_conf_interval, const double confidenceInterval = 0.1,
+	const size_t histogramNumBins = 1000)
 {
 	MRPT_START
-	ASSERT_(
-		data.size() != 0);  // don't use .empty() here to allow using matrices
+	// don't use .empty() here to allow using matrices
+	ASSERT_(data.size() != 0);
 	ASSERT_(confidenceInterval > 0 && confidenceInterval < 1);
 
 	out_mean = mean(data);
-	typename mrpt::math::ContainerType<CONTAINER>::element_t x_min, x_max;
-	minimum_maximum(data, x_min, x_max);
-
-	const typename mrpt::math::ContainerType<CONTAINER>::element_t binWidth =
-		(x_max - x_min) / histogramNumBins;
+	const auto x_min = data.minCoeff();
+	const auto x_max = data.maxCoeff();
+	const auto binWidth = (x_max - x_min) / histogramNumBins;
 
 	const std::vector<double> H =
 		mrpt::math::histogram(data, x_min, x_max, histogramNumBins);
