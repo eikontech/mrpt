@@ -52,3 +52,23 @@ TEST(CMatrixDynamic, CtorFromArray)
 		}
 	}
 }
+
+// Added to run with valgrind to error checking.
+TEST(CMatrixDynamic, Resizes)
+{
+	using mrpt::math::CMatrixDouble;
+	{
+		CMatrixDouble M(0, 0);
+		M.resize(0, 0);
+		M.resize(1, 1);
+		M.resize(10, 10);
+		M.resize(15, 10);
+		M.resize(15, 12);
+		M.resize(5, 12);
+		M.resize(3, 2);
+	}
+	{
+		CMatrixDouble M(40, 50);
+		M.resize(3, 3);
+	}
+}

@@ -40,7 +40,8 @@ class GraphSlamLevMarqTest
 			const auto N = my_graph_t::edge_t::state_length;
 			using InfMat = mrpt::math::CMatrixFixed<double, N, N>;
 			auto mat = getRandomGenerator()
-						   .drawDefinitePositiveMatrix<InfMat, Eigen::VectorXd>(
+						   .drawDefinitePositiveMatrix<
+							   InfMat, mrpt::math::CVectorFixed<double, N>>(
 							   N, 2.0 /*std*/, 1.0 /*diagonal offset*/);
 			graph.insertEdge(
 				from, to, typename my_graph_t::edge_t(RelativePose, mat));

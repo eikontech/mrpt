@@ -95,14 +95,15 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		newData.resize(m_Rows * m_Cols);
 		// Copy old content:
 		const auto nRowsToCopy = m_Rows >= old_rows ? old_rows : m_Rows;
+		const auto nColsToCopy = m_Cols >= old_cols ? old_cols : m_Cols;
 		for (size_t r = 0; r < nRowsToCopy; r++)
 		{
 			if constexpr (std::is_trivial_v<T>)
 				::memcpy(
 					&newData[r * m_Cols], &m_data[r * old_cols],
-					sizeof(T) * old_cols);
+					sizeof(T) * nColsToCopy);
 			else
-				for (size_t c = 0; c < old_cols; c++)
+				for (size_t c = 0; c < nColsToCopy; c++)
 					newData[r * m_Cols + c] = m_data[r * old_cols + c];
 		}
 		// New rows to zero?

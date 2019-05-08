@@ -265,11 +265,11 @@ class MatrixVectorBase
 	Scalar dot(const CVectorDynamic<Scalar>& v) const;
 	Scalar dot(const MatrixVectorBase<Scalar, Derived>& v) const;
 
-	/** this = A<sup>T</sup> * b , with `A` and `b` a dynamic matrix & vector */
+	/** this = A * b , with `A` and `b` a dynamic matrix & vector */
 	void multiply_Ab(
 		const CMatrixDynamic<Scalar>& A, const CVectorDynamic<Scalar>& b);
 
-	/** this = A * b , with `A` and `b` a dynamic matrix & vector */
+	/** this = A<sup>T</sup> * b , with `A` and `b` a dynamic matrix & vector */
 	void multiply_Atb(
 		const CMatrixDynamic<Scalar>& A, const CVectorDynamic<Scalar>& b);
 

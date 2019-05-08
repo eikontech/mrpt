@@ -311,6 +311,21 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	 * matrix. \sa llt_solve() */
 	CMatrixFixed<T, ROWS, 1> lu_solve(const CMatrixFixed<T, ROWS, 1>& b) const;
 
+	/** this += A<sup>T</sup> */
+	void sum_At(const CMatrixFixed<Scalar, ROWS, COLS>& A)
+	{
+		if constexpr (ROWS == COLS)
+		{
+			for (Index r = 0; r < static_cast<Index>(ROWS); r++)
+				for (Index c = 0; c < static_cast<Index>(COLS); c++)
+					(*this)(r, c) += A(c, r);
+		}
+		else
+		{
+			throw std::runtime_error("sum_At(): matrix must be square.");
+		}
+	}
+
 	/** @} */
 };
 

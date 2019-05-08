@@ -100,9 +100,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 					0,
 					(it1->second.getPoseMean().asVectorVal() -
 					 it2->second.getPoseMean().asVectorVal())
-						.array()
-						.abs()
-						.maxCoeff(),
+						.sum_abs(),
 					eps_edges);
 			}
 		}
@@ -116,9 +114,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 				EXPECT_NEAR(
 					0,
 					(itn1->second.asVectorVal() - itn2->second.asVectorVal())
-						.array()
-						.abs()
-						.maxCoeff(),
+						.sum_abs(),
 					eps_node_pos)
 					<< "Poses of keyframe #" << itn1->first
 					<< " do not match:" << std::endl

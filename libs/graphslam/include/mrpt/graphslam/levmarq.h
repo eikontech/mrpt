@@ -414,7 +414,7 @@ void optimize_graph_spa_levmarq(
 						if (Hij_upper_triang)  // H_map[col][row]
 							H_map[idx_j][idx_i] += JtJ;
 						else
-							H_map[idx_i][idx_j] += JtJ.transpose();
+							H_map[idx_i][idx_j].sum_At(JtJ);
 					}
 				}
 			}

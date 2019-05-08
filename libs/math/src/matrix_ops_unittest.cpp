@@ -37,27 +37,27 @@ TEST(Matrices, setSize)
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(6, 5);
+		M.setSize(6, 5, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(10, 5);
+		M.setSize(10, 5, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(5, 6);
+		M.setSize(5, 6, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(6, 6);
+		M.setSize(6, 6, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(10, 10);
+		M.setSize(10, 10, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 }

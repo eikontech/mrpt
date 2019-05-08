@@ -149,7 +149,7 @@ struct graph_ops
 	{
 		CPosePDFGaussianInf p;
 		p.mean = edge;
-		p.cov_inv.unit(3, 1.0);
+		p.cov_inv.setIdentity();
 		write_EDGE_line(edgeIDs, p, f);
 	}
 	static void write_EDGE_line(
@@ -158,7 +158,7 @@ struct graph_ops
 	{
 		CPose3DPDFGaussianInf p;
 		p.mean = edge;
-		p.cov_inv.unit(6, 1.0);
+		p.cov_inv.setIdentity();
 		write_EDGE_line(edgeIDs, p, f);
 	}
 
@@ -549,7 +549,7 @@ struct graph_ops
 						  Ap_cov_inv(3, 3)))
 					{
 						// Cov may be omitted in the file:
-						Ap_cov_inv.unit(6, 1.0);
+						Ap_cov_inv.setIdentity();
 
 						if (alreadyWarnedUnknowns.find("MISSING_3D") ==
 							alreadyWarnedUnknowns.end())
@@ -631,7 +631,7 @@ struct graph_ops
 						  Ap_cov_inv(3, 3)))
 					{
 						// Cov may be omitted in the file:
-						Ap_cov_inv.unit(6, 1.0);
+						Ap_cov_inv.setIdentity();
 
 						if (alreadyWarnedUnknowns.find("MISSING_3D") ==
 							alreadyWarnedUnknowns.end())
@@ -894,10 +894,8 @@ struct graph_ops
 	static inline double auxMaha2Dist(VEC& err, const CPosePDFGaussian& p)
 	{
 		math::wrapToPiInPlace(err[2]);
-		mrpt::math::CMatrixDouble33 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
-		p.cov.inverse_LLt(COV_INV);
-		return mrpt::math::multiply_HCHt_scalar(
-			err, COV_INV);  // err^t*cov_inv*err
+		// err^t*cov_inv*err
+		return mrpt::math::multiply_HCHt_scalar(err, p.cov.inverse_LLt());
 	}
 	template <class VEC>
 	static inline double auxMaha2Dist(VEC& err, const CPose3DPDFGaussian& p)
@@ -905,10 +903,8 @@ struct graph_ops
 		math::wrapToPiInPlace(err[3]);
 		math::wrapToPiInPlace(err[4]);
 		math::wrapToPiInPlace(err[5]);
-		mrpt::math::CMatrixDouble66 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
-		p.cov.inverse_LLt(COV_INV);
-		return mrpt::math::multiply_HCHt_scalar(
-			err, COV_INV);  // err^t*cov_inv*err
+		// err^t*cov_inv*err
+		return mrpt::math::multiply_HCHt_scalar(err, p.cov.inverse_LLt());
 	}
 	// These two are for simulating maha2 distances for non-PDF types: fallback
 	// to squared-norm:

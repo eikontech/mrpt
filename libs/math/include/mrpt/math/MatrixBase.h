@@ -273,7 +273,6 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	{
 		using Index = typename Derived::Index;
 		const auto N = A.cols(), Ninner = A.rows();
-		;
 		mbDerived().resize(N, N);
 		for (Index r = 0; r < N; r++)
 		{
