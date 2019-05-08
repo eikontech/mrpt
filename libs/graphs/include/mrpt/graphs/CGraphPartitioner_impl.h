@@ -28,7 +28,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 {
 	size_t nodeCount;  // Nodes count
 	GRAPH_MATRIX Adj, eigenVectors;
-	std::vector<double> eigenValues;
+	std::vector<float> eigenValues;
 
 	// Check matrix is square:
 	if (in_A.cols() != int(nodeCount = in_A.rows()))

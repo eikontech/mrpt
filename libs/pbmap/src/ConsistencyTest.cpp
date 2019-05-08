@@ -523,13 +523,8 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel(
 
 		Eigen::Matrix<float, 6, 1> updatedSE3 =
 			(m6Hessian.inverse() * v6Error).transpose();
-		mrpt::math::CVectorFixed<double, 6> _updatedSE3;
-		_updatedSE3(0) = updatedSE3(0);
-		_updatedSE3(1) = updatedSE3(1);
-		_updatedSE3(2) = updatedSE3(2);
-		_updatedSE3(3) = updatedSE3(3);
-		_updatedSE3(4) = updatedSE3(4);
-		_updatedSE3(5) = updatedSE3(5);
+		const auto _updatedSE3 =
+			mrpt::math::CVectorFixed<double, 6>(updatedSE3);
 		mrpt::math::CMatrixDouble44 CMatUpdate;
 		mrpt::poses::Lie::SE<3>::exp(_updatedSE3)
 			.getHomogeneousMatrix(CMatUpdate);
