@@ -29,6 +29,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <fstream>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -184,8 +185,8 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			// Replace by absolute values:
 			H = H.array().abs().matrix();
 			CMatrixF H2(H);
-			H2.normalize(0, 1);
-			CImage imgF(H2, true);
+			CImage imgF;
+			imgF.setFromMatrix(H2, false /*it's not normalized*/);
 			imgF.saveToFile(OUT_DIR + string("/information_matrix_final.png"));
 
 			// ----------------------------------------
@@ -456,7 +457,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			// Save mean pose:
 			if (!(step % SAVE_LOG_FREQUENCY))
 			{
-				const CVectorDouble p = robotPose.mean.asVectorVal();
+				const auto p = robotPose.mean.asVectorVal();
 				p.saveToTextFile(
 					OUT_DIR +
 					format("/robot_pose_%05u.txt", (unsigned int)step));
