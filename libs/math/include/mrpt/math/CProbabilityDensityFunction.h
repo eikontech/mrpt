@@ -42,20 +42,28 @@ class CProbabilityDensityFunction
 	 * distribution (PDF).
 	 * \sa getCovarianceAndMean, getInformationMatrix
 	 */
-	virtual void getMean(TDATA& mean_point) const = 0;
+	virtual void getMean(type_value& mean_point) const = 0;
 
 	/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN
 	 * cov matrix) and the mean, both at once.
 	 * \sa getMean, getInformationMatrix
 	 */
-	virtual void getCovarianceAndMean(cov_mat_t& c, TDATA& mean) const = 0;
+	virtual std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const = 0;
+
+	/// \overload
+	virtual void getCovarianceAndMean(cov_mat_t& c, TDATA& mean) const final
+	{
+		const auto [C, M] = getCovarianceAndMean();
+		c = C;
+		mean = M;
+	}
 
 	/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN
 	 * cov matrix) and the mean, both at once.
 	 * \sa getMean, getInformationMatrix
 	 */
 	inline void getCovarianceDynAndMean(
-		mrpt::math::CMatrixDouble& cov, TDATA& mean_point) const
+		mrpt::math::CMatrixDouble& cov, type_value& mean_point) const
 	{
 		cov_mat_t C(mrpt::math::UNINITIALIZED_MATRIX);
 		this->getCovarianceAndMean(C, mean_point);
@@ -66,9 +74,9 @@ class CProbabilityDensityFunction
 	 * distribution (PDF).
 	 * \sa getCovariance, getInformationMatrix
 	 */
-	inline TDATA getMeanVal() const
+	inline type_value getMeanVal() const
 	{
-		TDATA p;
+		type_value p;
 		getMean(p);
 		return p;
 	}

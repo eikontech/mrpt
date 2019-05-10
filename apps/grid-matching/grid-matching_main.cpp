@@ -365,7 +365,7 @@ void do_grid_align()
 
 				float stdPhi = sqrt(estimateCOV(2, 2));
 
-				CMatrixDouble22 estimateCOV22 = estimateCOV.block<2, 2>(0, 0);
+				const auto estimateCOV22 = estimateCOV.extractMatrix<2, 2>();
 				float stdXY = sqrt(estimateCOV22.det());
 
 				float Axy = estimateMean.distance2DTo(GT_Ax, GT_Ay);
@@ -644,7 +644,7 @@ void do_grid_align()
 					}
 
 					size_t best_match = 0;
-					dErrs.minimum(&best_match);
+					dErrs.minCoeff(best_match);
 					double MIN_DESCR_DIST = mrpt::math::minimum(D);
 					if (dErrs[best_match] < 0.20)
 					{

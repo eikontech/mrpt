@@ -65,16 +65,15 @@ void CPosePDFSOG::getMean(CPose2D& p) const
 	}
 }
 
-/*---------------------------------------------------------------
-						getEstimatedCovariance
- ---------------------------------------------------------------*/
-void CPosePDFSOG::getCovarianceAndMean(
-	CMatrixDouble33& estCov, CPose2D& estMean2D) const
+std::tuple<CMatrixDouble33, CPose2D> CPosePDFSOG::getCovarianceAndMean() const
 {
-	size_t N = m_modes.size();
+	const size_t N = m_modes.size();
+
+	mrpt::math::CMatrixDouble33 cov;
+	CPose2D estMean2D;
 
 	this->getMean(estMean2D);
-	estCov.setZero();
+	cov.setZero();
 
 	if (N)
 	{
@@ -96,11 +95,12 @@ void CPosePDFSOG::getCovarianceAndMean(
 			temp += m.cov;
 			temp *= w;
 
-			estCov += temp;
+			cov += temp;
 		}
 
-		if (sumW != 0) estCov *= (1.0 / sumW);
+		if (sumW != 0) cov *= (1.0 / sumW);
 	}
+	return {cov, estMean2D};
 }
 
 uint8_t CPosePDFSOG::serializeGetVersion() const { return 2; }

@@ -82,14 +82,14 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 
 	inline const CPose3DQuat& getPoseMean() const { return mean; }
 	inline CPose3DQuat& getPoseMean() { return mean; }
-	/** Returns an estimate of the pose, (the mean, or mathematical expectation
-	 * of the PDF). \sa getCovariance */
+
 	void getMean(CPose3DQuat& mean_pose) const override;
-	/** Returns an estimate of the pose covariance matrix (7x7 cov matrix) and
-	 * the mean, both at once. \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble77& cov,
-		CPose3DQuat& mean_point) const override;
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
+	{
+		return {cov, mean};
+	}
+
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations) */
 	void copyFrom(const CPose3DQuatPDF& o) override;

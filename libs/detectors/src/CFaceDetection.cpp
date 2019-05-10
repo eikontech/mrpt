@@ -6,12 +6,11 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-
-#include <mrpt/gui.h>
-#include <mrpt/maps/CColouredPointsMap.h>
 #include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CFaceDetection.h>
+#include <mrpt/gui.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/geometry.h>
@@ -22,12 +21,10 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSphere.h>
-
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
-
-// Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <fstream>
 
 using namespace std;
 using namespace mrpt;
@@ -426,14 +423,12 @@ bool CFaceDetection::checkIfFacePlaneCov(CObservation3DRangeScan* face)
 
 	// To obtain the covariance vector and eigenvalues
 	CMatrixDouble cov;
-	CMatrixDouble eVects, m_eVals;
-	CVectorDouble eVals;
+	CMatrixDouble eVects;
+	std::vector<double> eVals;
 
 	cov = covVector<vector<CVectorFixedDouble<3>>, CMatrixDouble>(pointsVector);
 
-	cov.eigenValues(eVals);
-
-	cov.eigenVectors(eVects, m_eVals);
+	cov.eig(eVects, eVals);
 
 	// To obtain experimental results
 	{
@@ -1464,7 +1459,7 @@ void CFaceDetection::experimental_viewFacePointsScanned(
 
 void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 	const vector<CVectorFixedDouble<3>>& pointsVector,
-	const CMatrixDouble& eigenVect, const CVectorDouble& eigenVal)
+    const CMatrixDouble& eigenVect, const std::vector<double>& eigenVal)
 {
 	vector<float> xs, ys, zs;
 

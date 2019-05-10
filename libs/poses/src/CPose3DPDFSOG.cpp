@@ -59,15 +59,13 @@ void CPose3DPDFSOG::getMean(CPose3D& p) const
 	}
 }
 
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void CPose3DPDFSOG::getCovarianceAndMean(
-	mrpt::math::CMatrixDouble66& estCovOut, CPose3D& mean) const
+std::tuple<mrpt::math::CMatrixDouble66, CPose3D>
+    CPose3DPDFSOG::getCovarianceAndMean() const
 {
-	size_t N = m_modes.size();
+	const size_t N = m_modes.size();
 
 	// Get mean:
+	CPose3D mean;
 	getMean(mean);
 
 	// Get cov:
@@ -93,7 +91,7 @@ void CPose3DPDFSOG::getCovarianceAndMean(
 		if (sumW != 0) estCov *= (1.0 / sumW);
 	}
 
-	estCovOut = estCov;
+	return {estCov, mean};
 }
 
 uint8_t CPose3DPDFSOG::serializeGetVersion() const { return 2; }

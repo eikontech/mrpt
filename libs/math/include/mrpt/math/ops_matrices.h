@@ -234,9 +234,9 @@ void extractSubmatrixSymmetricalBlocks(
 				throw std::runtime_error(
 					"extractSubmatrixSymmetricalBlocks: Indices out of range!");
 #endif
-			out.template block<BLOCKSIZE, BLOCKSIZE>(
+			out.asEigen().template block<BLOCKSIZE, BLOCKSIZE>(
 				dst_row_blk * BLOCKSIZE, dst_col_blk * BLOCKSIZE) =
-				m.template block<BLOCKSIZE, BLOCKSIZE>(
+			    m.asEigen().template block<BLOCKSIZE, BLOCKSIZE>(
 					block_indices[dst_row_blk] * BLOCKSIZE,
 					block_indices[dst_col_blk] * BLOCKSIZE);
 		}

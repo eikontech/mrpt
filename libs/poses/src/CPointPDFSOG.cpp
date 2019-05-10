@@ -78,14 +78,12 @@ void CPointPDFSOG::getMean(CPoint3D& p) const
 	p.z(Z);
 }
 
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void CPointPDFSOG::getCovarianceAndMean(
-	CMatrixDouble33& estCov, CPoint3D& p) const
+std::tuple<CMatrixDouble33, CPoint3D> CPointPDFSOG::getCovarianceAndMean() const
 {
 	size_t N = m_modes.size();
 
+	CMatrixDouble33 estCov;
+	CPoint3D p;
 	getMean(p);
 	estCov.setZero();
 
@@ -114,6 +112,8 @@ void CPointPDFSOG::getCovarianceAndMean(
 
 		if (sumW != 0) estCov *= (1.0 / sumW);
 	}
+
+	return {estCov, p};
 }
 
 uint8_t CPointPDFSOG::serializeGetVersion() const { return 1; }

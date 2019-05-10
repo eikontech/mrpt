@@ -200,8 +200,9 @@ void Test()
 	{
 		gui::CDisplayWindow win("Adjacency matrix");
 		gui::CDisplayWindow win2(" Rearranged adjacency matrix");
-		CImage img(A, true /* normalized in range [0,1] */);
-		CImage img2(B, true /* normalized in range [0,1] */);
+		CImage img, img2;
+		img.setFromMatrix(A, true /* normalized in range [0,1] */);
+		img2.setFromMatrix(B, true /* normalized in range [0,1] */);
 		img.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
 		img2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
 		win.showImage(img);

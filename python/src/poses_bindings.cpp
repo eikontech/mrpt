@@ -446,10 +446,6 @@ void export_poses()
 				"Returns the mean, or mathematical expectation of the "
 				"probability density distribution (PDF).")
 			.def(
-				"getCovarianceAndMean", &CPosePDF::getCovarianceAndMean,
-				"Returns an estimate of the pose covariance matrix "
-				"(STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
-			.def(
 				"saveToTextFile", &CPosePDF::saveToTextFile,
 				"Save PDF's particles to a text file. See derived classes for "
 				"more information about the format of generated files.")
@@ -572,10 +568,6 @@ void export_poses()
 				"Returns an estimate of the pose covariance matrix "
 				"(STATE_LENxSTATE_LEN cov matrix).")
 			.def(
-				"getCovarianceAndMean", &CPose3DPDF::getCovarianceAndMean,
-				"Returns an estimate of the pose covariance matrix "
-				"(STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
-			.def(
 				"saveToTextFile", &CPose3DPDF::saveToTextFile,
 				"Save PDF's particles to a text file. See derived classes for "
 				"more information about the format of generated files.")
@@ -629,11 +621,6 @@ void export_poses()
 				"getCovariance", getCovariance1,
 				"Returns an estimate of the pose covariance matrix "
 				"(STATE_LENxSTATE_LEN cov matrix).")
-			.def(
-				"getCovarianceAndMean",
-				&CPose3DPDFGaussian::getCovarianceAndMean,
-				"Returns an estimate of the pose covariance matrix "
-				"(STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
 			.def(
 				"saveToTextFile", &CPose3DPDFGaussian::saveToTextFile,
 				"Save PDF's particles to a text file. See derived classes for "

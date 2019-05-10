@@ -15,6 +15,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/vision/CDifodo.h>
 #include <Eigen/Dense>
+#include <fstream>
 #include <iostream>
 
 class CDifodoDatasets : public mrpt::vision::CDifodo

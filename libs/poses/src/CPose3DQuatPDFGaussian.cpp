@@ -79,21 +79,7 @@ CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(const CPose3DPDFGaussian& o)
 	this->copyFrom(o);
 }
 
-/*---------------------------------------------------------------
-						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the
- PDF)
- ---------------------------------------------------------------*/
 void CPose3DQuatPDFGaussian::getMean(CPose3DQuat& p) const { p = mean; }
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::getCovarianceAndMean(
-	CMatrixDouble77& C, CPose3DQuat& p) const
-{
-	C = cov;
-	p = mean;
-}
 
 uint8_t CPose3DQuatPDFGaussian::serializeGetVersion() const { return 0; }
 void CPose3DQuatPDFGaussian::serializeTo(

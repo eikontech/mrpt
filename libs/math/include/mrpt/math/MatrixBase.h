@@ -108,13 +108,13 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	/** Evaluates: R = this * C * this<sup>T</sup>, or the same
 	 * with `R+=` if `accumInOutput=true`. */
 	template <typename MAT_C, typename MAT_R>
-	void multiply_HCHt(const MAT_C& C, MAT_R& R, bool accumInOutput = false)
+	void multiply_HCHt(const MAT_C& C, MAT_R& R, bool accumOutput = false) const
 	{
 		internalAssertEigenDefined<Derived>();
 		auto res =
 			(mbDerived().asEigen() * C.asEigen() *
 			 mbDerived().asEigen().transpose());
-		if (accumInOutput)
+		if (accumOutput)
 			R.asEigen() += res.eval();
 		else
 		{

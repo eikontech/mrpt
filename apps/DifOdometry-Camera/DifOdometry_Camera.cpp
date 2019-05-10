@@ -295,7 +295,9 @@ void CDifodoCamera::initializeScene()
 	scene->insert(traj_points_odo);
 
 	// Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d = 20.f * est_cov.topLeftCorner(3, 3);
+	math::CMatrixFloat33 cov3d = est_cov.extractMatrix<3, 3>(0, 0);
+	cov3d *= 20.f;
+
 	CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<CEllipsoid>();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
@@ -356,7 +358,7 @@ void CDifodoCamera::updateScene()
 	traj_points_odo->insertPoint(cam_pose.x(), cam_pose.y(), cam_pose.z());
 
 	// Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d = 20.f * est_cov.topLeftCorner(3, 3);
+	const auto cov3d = math::CMatrixFloat33(20.f * est_cov.block<3, 3>(0, 0));
 	CEllipsoid::Ptr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose + rel_lenspose);
@@ -409,8 +411,8 @@ void CDifodoCamera::writeTrajectoryFile()
 	f_res << cam_pose[0] << " ";
 	f_res << cam_pose[1] << " ";
 	f_res << cam_pose[2] << " ";
-	f_res << quat(2) << " ";
-	f_res << quat(3) << " ";
-	f_res << -quat(1) << " ";
-	f_res << -quat(0) << endl;
+	f_res << quat[2] << " ";
+	f_res << quat[3] << " ";
+	f_res << -quat[1] << " ";
+	f_res << -quat[0] << endl;
 }

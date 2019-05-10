@@ -145,9 +145,9 @@ double mrpt::vision::bundle_adj_full(
 
 	// Auxiliary vars:
 	Array_F arrF_zeros;
-	arrF_zeros.assign(0);
+	arrF_zeros.fill(0);
 	Array_P arrP_zeros;
-	arrP_zeros.assign(0);
+	arrP_zeros.fill(0);
 
 	const size_t num_free_frames = num_frames - num_fix_frames;
 	const size_t num_free_points = num_points - num_fix_points;
@@ -211,8 +211,8 @@ double mrpt::vision::bundle_adj_full(
 
 			VERBOSE_COUT << "mu: " << mu << endl;
 
-			I_muFrame.unit(FrameDof, mu);
-			I_muPoint.unit(PointDof, mu);
+			I_muFrame.setDiagonal(FrameDof, mu);
+			I_muPoint.setDiagonal(PointDof, mu);
 
 			mrpt::aligned_std_vector<Matrix_FxF> U_star(
 				num_free_frames, I_muFrame);
@@ -221,7 +221,7 @@ double mrpt::vision::bundle_adj_full(
 			for (size_t i = 0; i < U_star.size(); ++i) U_star[i] += H_f[i];
 
 			for (size_t i = 0; i < H_p.size(); ++i)
-				(H_p[i] + I_muPoint).inverse_LLt(V_inv[i]);
+				V_inv[i] = (H_p[i] + I_muPoint).inverse_LLt();
 
 			using WMap = mrpt::aligned_std_map<
 				pair<TCameraPoseID, TLandmarkID>, Matrix_FxP>;
@@ -248,8 +248,8 @@ double mrpt::vision::bundle_adj_full(
 					const pair<TCameraPoseID, TLandmarkID> id_pair =
 						make_pair(frame_id, feat_id);
 
-					Matrix_FxP tmp(UNINITIALIZED_MATRIX);
-					tmp.multiply_AtB(J_frame, J_point);
+					const auto tmp =
+						Matrix_FxP(J_frame.transpose() * J_point.asEigen());
 
 					// W[ids] = J_f^T * J_p
 					// Was: W[id_pair] = tmp;
@@ -298,9 +298,8 @@ double mrpt::vision::bundle_adj_full(
 					const WMap::iterator& W_ik = iters[itIdx];
 					const TLandmarkID k = W_ik->first.first - num_fix_frames;
 
-					Matrix_FxF YWt(UNINITIALIZED_MATRIX);  //-(Y_ij->second) *
-					//(W_ik->second).T();
-					YWt.multiply_ABt(Y_ij->second, W_ik->second);
+					const auto YWt = Matrix_FxF(
+						Y_ij->second.asEigen() * W_ik->second.transpose());
 					// YWt*=-1.0; // The "-" sign is taken into account below:
 
 					const pair<TCameraPoseID, TLandmarkID> ids_jk =
@@ -310,11 +309,11 @@ double mrpt::vision::bundle_adj_full(
 					if (it != YW_map.end())
 						it->second -= YWt;  // += (-YWt);
 					else
-						YW_map[ids_jk] = YWt * (-1.0);
+						YW_map[ids_jk] = -YWt;
 				}
 
-				CVectorFixedDouble<FrameDof> r;
-				Y_ij->second.multiply_Ab(eps_point[i], r);
+				const auto r =
+					(Y_ij->second.asEigen() * eps_point[i].asEigen()).eval();
 				for (size_t k = 0; k < FrameDof; k++)
 					e[j * FrameDof + k] -= r[k];
 			}
@@ -382,8 +381,7 @@ double mrpt::vision::bundle_adj_full(
 
 			for (size_t i = 0; i < num_free_points; ++i)
 			{
-				Array_P tmp =
-					eps_point[i];  // eps_point.slice(PointDof*i,PointDof);
+				Array_P tmp = eps_point[i];
 
 				for (size_t j = 0; j < num_free_frames; ++j)
 				{
@@ -394,16 +392,11 @@ double mrpt::vision::bundle_adj_full(
 
 					if (W_ij != W.end())
 					{
-						// tmp -= W_ij->second.T() *
-						// delta.slice(j*FrameDof,FrameDof);
 						const Array_F v(&delta[j * FrameDof]);
-						Array_P r;
-						W_ij->second.multiply_Atb(v, r);  // r= A^t * v
-						tmp -= r;
+						tmp -= Array_P(W_ij->second.transpose() * v.asEigen());
 					}
 				}
-				Array_P Vi_tmp;
-				V_inv[i].multiply_Ab(tmp, Vi_tmp);  // Vi_tmp = V_inv[i] * tmp
+				const auto Vi_tmp = Array_P(V_inv[i] * tmp);
 
 				::memcpy(
 					&delta[len_free_frames + i * PointDof], &Vi_tmp[0],

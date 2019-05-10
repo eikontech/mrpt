@@ -702,12 +702,9 @@ void jacob_dA_eps_D_p_deps(
 	// Jacobian 10.3.7 in technical report "A tutorial on SE(3) transformation
 	// parameterizations and on-manifold optimization"
 	const Eigen::Matrix<double, 1, 3> P(p.x, p.y, p.z);
-	const Eigen::Matrix<double, 1, 3> dr1 =
-		D.getRotationMatrix().block<1, 3>(0, 0);
-	const Eigen::Matrix<double, 1, 3> dr2 =
-		D.getRotationMatrix().block<1, 3>(1, 0);
-	const Eigen::Matrix<double, 1, 3> dr3 =
-		D.getRotationMatrix().block<1, 3>(2, 0);
+	const auto dr1 = D.getRotationMatrix().asEigen().block<1, 3>(0, 0);
+	const auto dr2 = D.getRotationMatrix().asEigen().block<1, 3>(1, 0);
+	const auto dr3 = D.getRotationMatrix().asEigen().block<1, 3>(2, 0);
 
 	const Eigen::Matrix<double, 1, 3> v(
 		P.dot(dr1) + D.x(), P.dot(dr2) + D.y(), P.dot(dr3) + D.z());
@@ -879,7 +876,7 @@ void mrpt::vision::add_lm_increment(
 			lm_stat.left_cam_poses[lm_stat.valid_image_pair_indices[i]];
 
 		// Use the Lie Algebra methods for the increment:
-		const CVectorFixedDouble<6> incr(eps.block<6, 1>(6 * i, 0));
+		const CVectorFixedDouble<6> incr(eps.asEigen().block<6, 1>(6 * i, 0));
 		const CPose3D incrPose = Lie::SE<3>::exp(incr);
 
 		// new_pose =  old_pose  [+] delta
@@ -890,7 +887,7 @@ void mrpt::vision::add_lm_increment(
 	// Increment of the right-left pose:
 	{
 		// Use the Lie Algebra methods for the increment:
-		const CVectorFixedDouble<6> incr(eps.block<6, 1>(6 * N, 0));
+		const CVectorFixedDouble<6> incr(eps.asEigen().block<6, 1>(6 * N, 0));
 		const CPose3D incrPose = Lie::SE<3>::exp(incr);
 
 		// new_pose =  old_pose  [+] delta

@@ -576,9 +576,8 @@ bool CBeaconMap::internal_insertObservation(
 
 							// Is the moment to turn into a Gaussian??
 							// -------------------------------------------
-							CPoint3D MEAN;
-							CMatrixDouble33 COV;
-							beac->m_locationMC.getCovarianceAndMean(COV, MEAN);
+							auto [COV, MEAN] =
+							    beac->m_locationMC.getCovarianceAndMean();
 
 							double D1 = sqrt(COV(0, 0));
 							double D2 = sqrt(COV(1, 1));
@@ -746,10 +745,8 @@ bool CBeaconMap::internal_insertObservation(
 							// Should we pass this beacon to a single Gaussian
 							// mode?
 							// -----------------------------------------------------------
-							CPoint3D curMean;
-							CMatrixDouble33 curCov;
-							beac->m_locationSOG.getCovarianceAndMean(
-								curCov, curMean);
+							const auto [curCov, curMean] =
+							    beac->m_locationSOG.getCovarianceAndMean();
 
 							double D1 = sqrt(curCov(0, 0));
 							double D2 = sqrt(curCov(1, 1));
@@ -1253,12 +1250,9 @@ void CBeaconMap::saveToTextFile(const string& fil) const
 	FILE* f = os::fopen(fil.c_str(), "wt");
 	ASSERT_(f != nullptr);
 
-	CPoint3D p;
-	CMatrixDouble33 C;
-
 	for (const auto& m_beacon : m_beacons)
 	{
-		m_beacon.getCovarianceAndMean(C, p);
+		const auto [C, p] = m_beacon.getCovarianceAndMean();
 
 		float D3 = C.det();
 		float D2 = C(0, 0) * C(1, 1) - square(C(0, 1));

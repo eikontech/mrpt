@@ -24,6 +24,7 @@
 #include "vision-lgpl-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/robust_kernels.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/pinhole.h>
 #include "ba_internals.h"
@@ -284,8 +285,8 @@ void mrpt::vision::ba_build_gradient_Hessians(
 			JtJ.multiply_AtA(JACOB.J_frame);
 
 			CVectorFixedDouble<6> eps_delta;
-			JACOB.J_frame.multiply_Atb(
-				RESID, eps_delta);  // eps_delta = J^t * RESID
+			// eps_delta = J^t * RESID
+			eps_delta = JACOB.J_frame.transpose() * RESID;
 			if (!use_robust_kernel)
 			{
 				eps_frame[frame_id] += eps_delta;
@@ -293,7 +294,9 @@ void mrpt::vision::ba_build_gradient_Hessians(
 			else
 			{
 				const double rho_1st_der = (*kernel_1st_deriv)[i];
-				eps_frame[frame_id] += eps_delta * rho_1st_der;
+				auto scaled_eps = eps_delta;
+				scaled_eps *= rho_1st_der;
+				eps_frame[frame_id] += scaled_eps;
 			}
 			U[frame_id] += JtJ;
 		}
@@ -306,8 +309,8 @@ void mrpt::vision::ba_build_gradient_Hessians(
 			JtJ.multiply_AtA(JACOB.J_point);
 
 			CVectorFixedDouble<3> eps_delta;
-			JACOB.J_point.multiply_Atb(
-				RESID, eps_delta);  // eps_delta = J^t * RESID
+			// eps_delta = J^t * RESID
+			eps_delta = JACOB.J_point.transpose() * RESID;
 			if (!use_robust_kernel)
 			{
 				eps_point[point_id] += eps_delta;
@@ -315,7 +318,9 @@ void mrpt::vision::ba_build_gradient_Hessians(
 			else
 			{
 				const double rho_1st_der = (*kernel_1st_deriv)[i];
-				eps_point[point_id] += eps_delta * rho_1st_der;
+				auto scaled_eps = eps_delta;
+				scaled_eps *= rho_1st_der;
+				eps_point[point_id] += scaled_eps;
 			}
 
 			V[point_id] += JtJ;
@@ -346,8 +351,8 @@ void mrpt::vision::add_se3_deltas_to_frames(
 		CPose3D& new_pose = new_frame_poses[i];
 
 		// Use the Lie Algebra methods for the increment:
-		const CVectorFixedDouble<6> incr(delta_val);
-		const CPose3D incrPose = CPose3D::exp(incr);
+		const CPose3D incrPose =
+			mrpt::poses::Lie::SE<3>::exp(CVectorFixedDouble<6>(delta_val));
 
 		// new_pose =  old_pose  [+] delta
 		//         = exp(delta) (+) old_pose

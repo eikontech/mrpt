@@ -11,10 +11,10 @@
 
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/detectors/CObjectDetection.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/system/CTimeLogger.h>
-
 #include <future>
 
 namespace mrpt
@@ -185,7 +185,7 @@ class CFaceDetection : public CObjectDetection
 	void experimental_viewFacePointsAndEigenVects(
 		const std::vector<mrpt::math::CVectorFixedDouble<3>>& pointsVector,
 		const mrpt::math::CMatrixDouble& eigenVect,
-		const mrpt::math::CVectorDouble& eigenVal);
+	    const std::vector<double>& eigenVal);
 
 	void experimental_viewRegions(
 		const std::vector<mrpt::math::TPoint3D> regions[9],

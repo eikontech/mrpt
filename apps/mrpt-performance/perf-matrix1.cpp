@@ -112,10 +112,7 @@ double matrix_test_inv_dyn(int a1, int a2)
 
 	const long N = 1000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		A.inverse_LLt(A2);
-	}
+	for (long i = 0; i < N; i++) A2 = A.inverse_LLt();
 	return tictac.Tac() / N;
 }
 
@@ -127,10 +124,7 @@ double matrix_test_inv_fix(int a1, int a2)
 
 	const long N = 1000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		A.inverse_LLt(A2);
-	}
+	for (long i = 0; i < N; i++) A2 = A.inverse_LLt();
 	return tictac.Tac() / N;
 }
 
@@ -142,10 +136,7 @@ double matrix_test_det_dyn(int a1, int a2)
 
 	const long N = 10000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		A.det();
-	}
+	for (long i = 0; i < N; i++) A.det();
 	return tictac.Tac() / N;
 }
 
@@ -157,10 +148,7 @@ double matrix_test_det_fix(int a1, int a2)
 
 	const long N = 10000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++)
-	{
-		A.det();
-	}
+	for (long i = 0; i < N; i++) A.det();
 	return tictac.Tac() / N;
 }
 
@@ -203,46 +191,36 @@ void register_tests_matrices1()
 		"matrix: multiply, dyn[float ], 3x6 * 6x3",
 		matrix_test_mult_dyn<float, 3, 6, 3>);
 	lstTests.emplace_back(
-		"matrix: multiply, fix[float ], 3x6 * 6x3",
-		matrix_test_mult_fix<float, 3, 6, 3>);
-	lstTests.emplace_back(
 		"matrix: multiply, dyn[double], 3x6 * 6x3",
 		matrix_test_mult_dyn<double, 3, 6, 3>);
-	lstTests.emplace_back(
-		"matrix: multiply, fix[double], 3x6 * 6x3",
-		matrix_test_mult_fix<double, 3, 6, 3>);
 	lstTests.emplace_back(
 		"matrix: multiply, dyn[float ], 10x40 * 40x10",
 		matrix_test_mult_dyn<float, 10, 40, 10>);
 	lstTests.emplace_back(
-		"matrix: multiply, fix[float ], 10x40 * 40x10",
-		matrix_test_mult_fix<float, 10, 40, 10>);
-	lstTests.emplace_back(
 		"matrix: multiply, dyn[double], 10x40 * 40x10",
 		matrix_test_mult_dyn<double, 10, 40, 10>);
-	lstTests.emplace_back(
-		"matrix: multiply, fix[double], 10x40 * 40x10",
-		matrix_test_mult_fix<double, 10, 40, 10>);
 
 	// Note: All "float" tests below were removed since they produced weird
 	// compile errors in MSVC :-(
 
 	lstTests.emplace_back(
-		"matrix: inv, dyn[double] 3x3", matrix_test_inv_dyn<double, 3>);
+	    "matrix: inverse_LLt(), dyn[double] 3x3",
+	    matrix_test_inv_dyn<double, 3>);
 	lstTests.emplace_back(
-		"matrix: inv, fix[double] 3x3", matrix_test_inv_fix<double, 3>);
+	    "matrix: inverse_LLt(), fix[double] 3x3",
+	    matrix_test_inv_fix<double, 3>);
 	lstTests.emplace_back(
-		"matrix: inv, dyn[double] 6x6", matrix_test_inv_dyn<double, 6>);
+	    "matrix: inverse_LLt(), dyn[double] 6x6",
+	    matrix_test_inv_dyn<double, 6>);
 	lstTests.emplace_back(
-		"matrix: inv, fix[double] 6x6", matrix_test_inv_fix<double, 6>);
+	    "matrix: inverse_LLt(), fix[double] 6x6",
+	    matrix_test_inv_fix<double, 6>);
 	lstTests.emplace_back(
-		"matrix: inv, dyn[double] 20x20", matrix_test_inv_dyn<double, 20>);
+	    "matrix: inverse_LLt(), dyn[double] 20x20",
+	    matrix_test_inv_dyn<double, 20>);
 	lstTests.emplace_back(
-		"matrix: inv, fix[double] 20x20", matrix_test_inv_fix<double, 20>);
-	lstTests.emplace_back(
-		"matrix: inv, dyn[double] 40x40", matrix_test_inv_dyn<double, 40>);
-	lstTests.emplace_back(
-		"matrix: inv, fix[double] 40x40", matrix_test_inv_fix<double, 40>);
+	    "matrix: inverse_LLt(), dyn[double] 40x40",
+	    matrix_test_inv_dyn<double, 40>);
 
 	lstTests.emplace_back(
 		"matrix: det, dyn[double] 2x2", matrix_test_det_dyn<double, 2>);
@@ -259,9 +237,5 @@ void register_tests_matrices1()
 	lstTests.emplace_back(
 		"matrix: det, dyn[double] 20x20", matrix_test_det_dyn<double, 20>);
 	lstTests.emplace_back(
-		"matrix: det, fix[double] 20x20", matrix_test_det_fix<double, 20>);
-	lstTests.emplace_back(
 		"matrix: det, dyn[double] 40x40", matrix_test_det_dyn<double, 40>);
-	lstTests.emplace_back(
-		"matrix: det, fix[double] 40x40", matrix_test_det_fix<double, 40>);
 }

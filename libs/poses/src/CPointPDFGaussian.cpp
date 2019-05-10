@@ -54,15 +54,6 @@ CPointPDFGaussian::CPointPDFGaussian(const CPoint3D& init_Mean)
  PDF)
  ---------------------------------------------------------------*/
 void CPointPDFGaussian::getMean(CPoint3D& p) const { p = mean; }
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void CPointPDFGaussian::getCovarianceAndMean(
-	CMatrixDouble33& C, CPoint3D& p) const
-{
-	p = mean;
-	C = cov;
-}
 
 uint8_t CPointPDFGaussian::serializeGetVersion() const { return 1; }
 void CPointPDFGaussian::serializeTo(mrpt::serialization::CArchive& out) const
@@ -232,9 +223,8 @@ double CPointPDFGaussian::productIntegralWith2D(
 	//   Gaussians variables amounts to simply the evaluation of
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
-	auto C = CMatrixDouble22(cov.block<2, 2>(0, 0));
-	C.asEigen() += p.cov.block<2, 2>(0, 0);  // Sum of covs:
-
+	// Sum of covs:
+	const auto C = cov.block<2, 2>(0, 0) + p.cov.block<2, 2>(0, 0);
 	CMatrixDouble22 C_inv = C.inverse_LLt();
 
 	const Eigen::Vector2d MU(mean.x() - p.mean.x(), mean.y() - p.mean.y());

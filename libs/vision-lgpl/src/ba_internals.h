@@ -27,7 +27,7 @@
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
-
+#include <Eigen/Dense>
 #include <array>
 
 // Declarations shared between ba_*.cpp files, but which are private to MRPT

@@ -39,6 +39,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -1850,7 +1851,8 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 			const CMatrixDouble33 H(dat_H);
 
 			// Transform covariance with Jacobian:
-			const CMatrixDouble33 C_ypr = H * C_xy * H.transpose();
+			CMatrixDouble33 C_ypr;
+			H.multiply_HCHt(C_xy, C_ypr);
 
 			// Create obs:
 			CObservationBearingRange::TMeasurement meas;

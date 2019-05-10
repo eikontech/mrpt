@@ -184,12 +184,9 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 			o.mean.x(), o.mean.y(), o.mean.z(), yaw, pitch, roll);
 
 		// Cov:
-		CMatrixDouble44 cov_Q(UNINITIALIZED_MATRIX);
-		CMatrixDouble33 cov_T(UNINITIALIZED_MATRIX);
-		CMatrixFixed<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
-		cov_Q.asEigen() = o.cov.block<4, 4>(3, 3);
-		cov_T.asEigen() = o.cov.block<3, 3>(0, 0);
-		cov_TQ.asEigen() = o.cov.block<3, 4>(0, 3);
+		const CMatrixDouble44 cov_Q = o.cov.block<4, 4>(3, 3);
+		const CMatrixDouble33 cov_T = o.cov.block<3, 3>(0, 0);
+		const CMatrixFixed<double, 3, 4> cov_TQ = o.cov.block<3, 4>(0, 3);
 
 		// [        S_T       |   S_TQ * H^t    ]
 		// [ -----------------+---------------- ]

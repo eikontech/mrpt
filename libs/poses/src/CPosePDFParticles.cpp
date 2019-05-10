@@ -105,9 +105,11 @@ void CPosePDFParticles::getMean(CPose2D& est_) const
 	}
 }
 
-void CPosePDFParticles::getCovarianceAndMean(
-	CMatrixDouble33& cov, CPose2D& mean) const
+std::tuple<CMatrixDouble33, CPose2D> CPosePDFParticles::getCovarianceAndMean()
+    const
 {
+	CMatrixDouble33 cov;
+	CPose2D mean;
 	cov.setZero();
 	getMean(mean);
 
@@ -154,6 +156,7 @@ void CPosePDFParticles::getCovarianceAndMean(
 		cov(2, 0) = cov(0, 2) = var_xp;
 		cov(1, 2) = cov(2, 1) = var_yp;
 	}
+	return {cov, mean};
 }
 
 uint8_t CPosePDFParticles::serializeGetVersion() const { return 1; }

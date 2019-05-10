@@ -79,23 +79,17 @@ void CBeacon::getMean(CPoint3D& p) const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					getCovarianceAndMean
-  ---------------------------------------------------------------*/
-void CBeacon::getCovarianceAndMean(CMatrixDouble33& COV, CPoint3D& p) const
+std::tuple<CMatrixDouble33, CPoint3D> CBeacon::getCovarianceAndMean() const
 {
 	MRPT_START
 	switch (m_typePDF)
 	{
 		case pdfMonteCarlo:
-			m_locationMC.getCovarianceAndMean(COV, p);
-			break;
+			return m_locationMC.getCovarianceAndMean();
 		case pdfGauss:
-			m_locationGauss.getCovarianceAndMean(COV, p);
-			break;
+			return m_locationGauss.getCovarianceAndMean();
 		case pdfSOG:
-			m_locationSOG.getCovarianceAndMean(COV, p);
-			break;
+			return m_locationSOG.getCovarianceAndMean();
 		default:
 			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};

@@ -106,19 +106,21 @@ class MatrixVectorBase
 	/** @name Operations that DO require `#include <Eigen/Dense>` in user code
 	 * @{ */
 
+	/** const block(): Returns a *copy* of the given block */
+	template <int BLOCK_ROWS, int BLOCK_COLS>
+	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> block(
+	    int start_row = 0, int start_col = 0) const
+	{
+		return mvbDerived().template extractMatrix<BLOCK_ROWS, BLOCK_COLS>(
+			start_row, start_col);
+	}
+	/** non-const block(): Returns an Eigen::Block reference to the block */
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	auto block(int start_row = 0, int start_col = 0)
 	{
 		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(
-			start_row, start_col);
-	}
-	template <int BLOCK_ROWS, int BLOCK_COLS>
-	auto block(int start_row = 0, int start_col = 0) const
-	{
-		internalAssertEigenDefined<Derived>();
-		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(
-			start_row, start_col);
+		    start_row, start_col);
 	}
 
 	auto block(int start_row, int start_col, int BLOCK_ROWS, int BLOCK_COLS)

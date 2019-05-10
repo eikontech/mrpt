@@ -2354,7 +2354,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 		}
 
 		// Process element:
-		s;
+		s.clear();
 		switch (rawlog.getType(i))
 		{
 			case CRawlog::etActionCollection:
@@ -4747,7 +4747,7 @@ void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent& event)
 
 			CPose2D estMean(odo_x, odo_y, odo_phi);
 			CMatrixDouble33 estCov;
-			estCov.unit(3, 1e-6);
+			estCov.setDiagonal(3, 1e-6);
 
 			CActionRobotMovement2D newAct;
 			newAct.estimationMethod = CActionRobotMovement2D::emScan2DMatching;

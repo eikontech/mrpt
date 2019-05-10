@@ -135,13 +135,10 @@ class CPosePDFSOG : public CPosePDF
 	 */
 	void mergeModes(double max_KLd = 0.5, bool verbose = false);
 
-	/** Returns an estimate of the pose, (the mean, or mathematical expectation
-	 * of the PDF) \sa getCovariance */
 	void getMean(CPose2D& mean_pose) const override;
-	/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and
-	 * the mean, both at once. \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const override;
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
+
 	/** For the most likely Gaussian mode in the SOG, returns the pose
 	 * covariance matrix (3x3 cov matrix) and the mean. \sa getMean */
 	void getMostLikelyCovarianceAndMean(

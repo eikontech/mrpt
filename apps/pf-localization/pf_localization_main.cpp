@@ -566,9 +566,8 @@ void do_pf_localization(
 						// Show 3D?
 						if (SHOW_PROGRESS_3D_REAL_TIME)
 						{
-							CPose2D meanPose;
-							CMatrixDouble33 cov;
-							pdf.getCovarianceAndMean(cov, meanPose);
+							const auto [cov, meanPose] =
+							    pdf.getCovarianceAndMean();
 
 							if (rawlogEntry >= 2)
 								getGroundTruth(
@@ -820,9 +819,8 @@ void do_pf_localization(
 							expectedPose.distanceTo(odometryEstimation));
 					}
 
-					CPosePDFGaussian current_pdf_gaussian;
-					pdf.getCovarianceAndMean(
-						current_pdf_gaussian.cov, current_pdf_gaussian.mean);
+					const auto [C, M] = pdf.getCovarianceAndMean();
+					const auto current_pdf_gaussian = CPosePDFGaussian(M, C);
 
 					// Text output:
 					// ----------------------------------------
@@ -947,9 +945,7 @@ void do_pf_localization(
 							odometryEstimation.y(), odometryEstimation.phi());
 					}
 
-					CPose2D meanPose;
-					CMatrixDouble33 cov;
-					pdf.getCovarianceAndMean(cov, meanPose);
+					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ > 0 &&
 						(step % SCENE3D_FREQ) == 0)

@@ -156,6 +156,15 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	{
 		this->internal_plot_interface(x, y, lineFormat, plotName);
 	}
+	//! \overload (for std::vector)
+	template <typename T>
+	inline void plot(
+		const std::vector<T>& x, const std::vector<T>& y,
+		const std::string& lineFormat = std::string("b-"),
+		const std::string& plotName = std::string("plotXY"))
+	{
+		this->internal_plot_interface(x, y, lineFormat, plotName);
+	}
 
 	//! \overload
 	template <typename VEC>

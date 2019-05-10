@@ -78,14 +78,10 @@ class CPosePDFGaussianInf : public CPosePDF
 	 * \sa getCovariance */
 	void getMean(CPose2D& mean_pose) const override { mean_pose = mean; }
 	bool isInfType() const override { return true; }
-	/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and
-	 * the mean, both at once.
-	 * \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const override
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
 	{
-		mean_point = mean;
-		cov = cov_inv.inverse_LLt();
+		return {cov_inv.inverse_LLt(), mean};
 	}
 
 	/** Returns the information (inverse covariance) matrix (a STATE_LEN x

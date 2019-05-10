@@ -227,9 +227,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 			mapPDF.getEstimatedPosePDF(poseEstimation);
 			poseEstimation.getMean(meanPose);
 
-			CPose3D estPos;
-			CMatrixDouble66 cov;
-			poseEstimation.getCovarianceAndMean(cov, estPos);
+			const auto [cov, estPos] = poseEstimation.getCovarianceAndMean();
 
 			MRPT_LOG_INFO_STREAM(
 				"New pose=" << estPos << std::endl

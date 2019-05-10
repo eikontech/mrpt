@@ -80,13 +80,13 @@ void CPointPDFParticles::getMean(CPoint3D& p) const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getEstimatedCovariance
- ---------------------------------------------------------------*/
-void CPointPDFParticles::getCovarianceAndMean(
-	CMatrixDouble33& cov, CPoint3D& mean) const
+std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean()
+    const
 {
 	MRPT_START
+
+	CPoint3D mean;
+	CMatrixDouble33 cov;
 
 	getMean(mean);
 	cov.setZero();
@@ -127,6 +127,7 @@ void CPointPDFParticles::getCovarianceAndMean(
 		cov(1, 2) = cov(2, 1) = var_yp;
 	}
 
+	return {cov, mean};
 	MRPT_END
 }
 

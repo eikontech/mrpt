@@ -286,6 +286,20 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		return m_data[row * COLS + col];
 	}
 
+	/** Access the i-th element, Row-Major order, without out-of-bounds check
+	 * (except in Debug builds)
+	 */
+	inline T& operator()(int i)
+	{
+		ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
+		return m_data[i];
+	}
+	inline const T& operator()(int i) const
+	{
+		ASSERTDEB_(static_cast<std::size_t>(i) < ROWS * COLS);
+		return m_data[i];
+	}
+
 	/** Access the [i-th] element (for 1xN or Nx1 matrices) */
 	inline T& operator[](int i)
 	{

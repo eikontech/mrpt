@@ -532,9 +532,7 @@ void TestParticlesLocalization()
 				// Generate 3D scene:
 				// ------------------------------
 				{
-					CPose2D meanPose;
-					CMatrixDouble33 C;
-					pdf.getCovarianceAndMean(C, meanPose);
+					const auto [C, meanPose] = pdf.getCovarianceAndMean();
 
 #ifdef SHOW_REAL_TIME_3D
 					sceneTR = window.get3DSceneAndLock();
