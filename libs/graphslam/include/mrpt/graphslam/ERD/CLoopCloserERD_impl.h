@@ -608,8 +608,8 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 		// make the necessary change and see if the dot product increases
 		w[i] = 1;
 		double potential_dot_product =
-		    ((w.asEigen().transpose() * u.asEigen()) / mrpt::square(w.norm()))
-		        .value();
+			((w.asEigen().transpose() * u.asEigen()) / mrpt::square(w.norm()))
+				.value();
 		ss << mrpt::format(
 			"current: %f | potential_dot_product: %f", dot_product,
 			potential_dot_product);
@@ -863,7 +863,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 template <class GRAPH_T>
 bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	const mrpt::math::CMatrixDouble& consist_matrix,
-    mrpt::math::CVectorDouble* eigvec, bool use_power_method)
+	mrpt::math::CVectorDouble* eigvec, bool use_power_method)
 {
 	MRPT_START;
 	using namespace mrpt;
@@ -892,7 +892,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 		// the same size
 		ASSERTDEBMSG_(
 			eigvecs.size() == eigvals.size() &&
-		        consist_matrix.cols() == eigvals.size(),
+				consist_matrix.cols() == eigvals.size(),
 			mrpt::format(
 				"Size of eigvecs \"%lu\","
 				"eigvalues \"%lu\","
@@ -1175,7 +1175,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 		<< hypot_b2_a1->getEdge() << endl);
 
 	// get the vector of the corresponding transformation - [x, y, phi] form
-	mrpt::math::CMatrixDouble T;
+	typename pose_t::vector_t T;
 	res_transform.getMeanVal().asVector(T);
 
 	// information matrix
@@ -1639,7 +1639,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
 	// mean difference
 	pose_t initial_estim =
 		this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
-	mrpt::math::CVectorDouble mean_diff;
+	typename pose_t::vector_t mean_diff;
 	(rel_edge.getMeanVal() - initial_estim).asVector(mean_diff);
 
 	// covariance matrix

@@ -60,7 +60,7 @@ void CPose3DPDFSOG::getMean(CPose3D& p) const
 }
 
 std::tuple<mrpt::math::CMatrixDouble66, CPose3D>
-    CPose3DPDFSOG::getCovarianceAndMean() const
+	CPose3DPDFSOG::getCovarianceAndMean() const
 {
 	const size_t N = m_modes.size();
 

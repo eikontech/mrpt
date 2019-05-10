@@ -236,7 +236,7 @@ TExtendedCPose2D CPosePDFParticlesExtended::getEstimatedPoseState() const
 }
 
 std::tuple<CMatrixDouble33, CPose2D>
-    CPosePDFParticlesExtended::getCovarianceAndMean() const
+	CPosePDFParticlesExtended::getCovarianceAndMean() const
 {
 	CMatrixDouble33 cov;
 	CPose2D mean;

@@ -109,7 +109,7 @@ class MatrixVectorBase
 	/** const block(): Returns a *copy* of the given block */
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> block(
-	    int start_row = 0, int start_col = 0) const
+		int start_row = 0, int start_col = 0) const
 	{
 		return mvbDerived().template extractMatrix<BLOCK_ROWS, BLOCK_COLS>(
 			start_row, start_col);
@@ -120,7 +120,7 @@ class MatrixVectorBase
 	{
 		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(
-		    start_row, start_col);
+			start_row, start_col);
 	}
 
 	auto block(int start_row, int start_col, int BLOCK_ROWS, int BLOCK_COLS)

@@ -185,7 +185,7 @@ class CFaceDetection : public CObjectDetection
 	void experimental_viewFacePointsAndEigenVects(
 		const std::vector<mrpt::math::CVectorFixedDouble<3>>& pointsVector,
 		const mrpt::math::CMatrixDouble& eigenVect,
-	    const std::vector<double>& eigenVal);
+		const std::vector<double>& eigenVal);
 
 	void experimental_viewRegions(
 		const std::vector<mrpt::math::TPoint3D> regions[9],

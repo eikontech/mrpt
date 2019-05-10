@@ -9,6 +9,7 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/math/CMatrixF.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>
@@ -95,7 +96,7 @@ void TestHCH()
 
 	CMatrixFixed<double, 1, 5> Hfix;
 	Hfix.loadFromTextFile(myDataDir + string("H_row.txt"));
-	cout << "Again, loaded as a fixed matrix: " << endl << Hfix;
+	cout << "Again, loaded as a fixed matrix: " << endl << CMatrixDouble(Hfix);
 }
 
 // ------------------------------------------------------

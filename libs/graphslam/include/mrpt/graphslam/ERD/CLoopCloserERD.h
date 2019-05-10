@@ -604,7 +604,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 
 	bool computeDominantEigenVector(
 		const mrpt::math::CMatrixDouble& consist_matrix,
-	    mrpt::math::CVectorDouble* eigvec, bool use_power_method = false);
+		mrpt::math::CVectorDouble* eigvec, bool use_power_method = false);
 	/**\brief Return the pair-wise consistency between the observations of the
 	 * given nodes.
 	 *

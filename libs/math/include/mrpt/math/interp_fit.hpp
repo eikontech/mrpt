@@ -138,7 +138,7 @@ NUMTYPE leastSquareLinearFit(
 	}
 
 	const auto B =
-	    ((Xt * Xt.transpose()).inverse().eval() * Xt * y.asEigen()).eval();
+		((Xt * Xt.transpose()).inverse().eval() * Xt * y.asEigen()).eval();
 	ASSERT_(B.size() == 2);
 
 	NUMTYPE ret = B[0] + B[1] * (t - x_min);
@@ -169,7 +169,7 @@ void leastSquareLinearFit(
 	// X= [1 columns of ones, x' ]
 	using NUM = typename VECTORLIKE3::value_type;
 	const NUM x_min = x.minCoeff();
-	Eigen::Matrix<NUM, 2, NUM_POINTS, 0, 2, NUM_POINTS> Xt;
+	CMatrixDynamic<NUM> Xt;
 	Xt.resize(2, N);
 	for (size_t i = 0; i < N; i++)
 	{

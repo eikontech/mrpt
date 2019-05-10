@@ -200,14 +200,13 @@ std::string MATLAB_plotCovariance2D(
  * \endcode
  * \note This operator performs the appropiate type castings, if required.
  */
-template <typename EIGEN_VECTOR, typename At, size_t N>
-EIGEN_VECTOR& loadVector(EIGEN_VECTOR& v, At (&theArray)[N])
+template <typename VECTOR_T, typename At, size_t N>
+VECTOR_T& loadVector(VECTOR_T& v, At (&theArray)[N])
 {
 	static_assert(N != 0, "N!=0");
-	v.derived().resize(N);
+	v.resize(N);
 	for (size_t i = 0; i < N; i++)
-		(v.derived())[i] =
-			static_cast<typename EIGEN_VECTOR::Scalar>(theArray[i]);
+		v[i] = static_cast<typename VECTOR_T::Scalar>(theArray[i]);
 	return v;
 }
 //! \overload

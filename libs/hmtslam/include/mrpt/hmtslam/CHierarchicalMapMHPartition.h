@@ -239,8 +239,8 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	 * \sa computeCoordinatesTransformationBetweenNodes
 	 */
 	void computeGloballyConsistentNodeCoordinates(
-	    mrpt::aligned_std_map<
-	        CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
+		mrpt::aligned_std_map<
+			CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
 		const CHMHMapNode::TNodeID& idReferenceNode,
 		const THypothesisID& hypothesisID,
 		const unsigned int& numberOfIterations = 2) const;

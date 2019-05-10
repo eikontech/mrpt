@@ -36,7 +36,7 @@ void cov2to3(const MAT33& c2d, MAT66& c3d)
 {
 	c3d.setZero();
 	c3d.asEigen().template block<2, 2>(0, 0) =
-	    c2d.asEigen().template block<2, 2>(0, 0);
+		c2d.asEigen().template block<2, 2>(0, 0);
 	c3d(3, 3) = c2d(2, 2);
 	c3d(0, 3) = c3d(3, 0) = c2d(0, 2);
 	c3d(1, 3) = c3d(3, 1) = c2d(1, 2);

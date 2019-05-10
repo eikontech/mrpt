@@ -236,7 +236,7 @@ void extractSubmatrixSymmetricalBlocks(
 #endif
 			out.asEigen().template block<BLOCKSIZE, BLOCKSIZE>(
 				dst_row_blk * BLOCKSIZE, dst_col_blk * BLOCKSIZE) =
-			    m.asEigen().template block<BLOCKSIZE, BLOCKSIZE>(
+				m.asEigen().template block<BLOCKSIZE, BLOCKSIZE>(
 					block_indices[dst_row_blk] * BLOCKSIZE,
 					block_indices[dst_col_blk] * BLOCKSIZE);
 		}

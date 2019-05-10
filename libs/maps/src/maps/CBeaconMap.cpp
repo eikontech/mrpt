@@ -577,7 +577,7 @@ bool CBeaconMap::internal_insertObservation(
 							// Is the moment to turn into a Gaussian??
 							// -------------------------------------------
 							auto [COV, MEAN] =
-							    beac->m_locationMC.getCovarianceAndMean();
+								beac->m_locationMC.getCovarianceAndMean();
 
 							double D1 = sqrt(COV(0, 0));
 							double D2 = sqrt(COV(1, 1));
@@ -746,7 +746,7 @@ bool CBeaconMap::internal_insertObservation(
 							// mode?
 							// -----------------------------------------------------------
 							const auto [curCov, curMean] =
-							    beac->m_locationSOG.getCovarianceAndMean();
+								beac->m_locationSOG.getCovarianceAndMean();
 
 							double D1 = sqrt(curCov(0, 0));
 							double D2 = sqrt(curCov(1, 1));

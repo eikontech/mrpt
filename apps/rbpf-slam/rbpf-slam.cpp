@@ -558,7 +558,7 @@ void MapBuilding_RBPF()
 							k, poseParts);
 
 						const auto [COV, meanPose] =
-						    poseParts.getCovarianceAndMean();
+							poseParts.getCovarianceAndMean();
 
 						if (meanPose.distanceTo(lastMeanPose) > minDistBtwPoses)
 						{

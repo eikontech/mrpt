@@ -106,7 +106,7 @@ void CPosePDFParticles::getMean(CPose2D& est_) const
 }
 
 std::tuple<CMatrixDouble33, CPose2D> CPosePDFParticles::getCovarianceAndMean()
-    const
+	const
 {
 	CMatrixDouble33 cov;
 	CPose2D mean;

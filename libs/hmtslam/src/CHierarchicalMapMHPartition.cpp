@@ -1121,7 +1121,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 	}
 
 	using TMapID2PosePDF =
-	    mrpt::aligned_std_map<CHMHMapNode::TNodeID, CPose3DPDFGaussian>;
+		mrpt::aligned_std_map<CHMHMapNode::TNodeID, CPose3DPDFGaussian>;
 	// The ref. pose of each area
 	TMapID2PosePDF nodesPoses;
 	TMapID2PosePDF::iterator it;
@@ -1312,8 +1312,8 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 }
 
 void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
-    mrpt::aligned_std_map<
-        CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
+	mrpt::aligned_std_map<
+		CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
 	const CHMHMapNode::TNodeID& idReferenceNode,
 	const THypothesisID& hypothesisID,
 	const unsigned int& numberOfIterations) const

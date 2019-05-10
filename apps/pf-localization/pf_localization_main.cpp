@@ -567,7 +567,7 @@ void do_pf_localization(
 						if (SHOW_PROGRESS_3D_REAL_TIME)
 						{
 							const auto [cov, meanPose] =
-							    pdf.getCovarianceAndMean();
+								pdf.getCovarianceAndMean();
 
 							if (rawlogEntry >= 2)
 								getGroundTruth(

@@ -63,8 +63,8 @@ template <typename T, size_t DIM1>
 double matrix_test_chol_fix(int a1, int a2)
 {
 	auto A =
-	    getRandomGenerator()
-	        .drawDefinitePositiveMatrix<CMatrixFixed<T, DIM1, DIM1>>(DIM1, 0.2);
+		getRandomGenerator()
+			.drawDefinitePositiveMatrix<CMatrixFixed<T, DIM1, DIM1>>(DIM1, 0.2);
 	CMatrixFixed<T, DIM1, DIM1> chol_U;
 
 	const long N = 100;

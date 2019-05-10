@@ -204,23 +204,23 @@ void register_tests_matrices1()
 	// compile errors in MSVC :-(
 
 	lstTests.emplace_back(
-	    "matrix: inverse_LLt(), dyn[double] 3x3",
-	    matrix_test_inv_dyn<double, 3>);
+		"matrix: inverse_LLt(), dyn[double] 3x3",
+		matrix_test_inv_dyn<double, 3>);
 	lstTests.emplace_back(
-	    "matrix: inverse_LLt(), fix[double] 3x3",
-	    matrix_test_inv_fix<double, 3>);
+		"matrix: inverse_LLt(), fix[double] 3x3",
+		matrix_test_inv_fix<double, 3>);
 	lstTests.emplace_back(
-	    "matrix: inverse_LLt(), dyn[double] 6x6",
-	    matrix_test_inv_dyn<double, 6>);
+		"matrix: inverse_LLt(), dyn[double] 6x6",
+		matrix_test_inv_dyn<double, 6>);
 	lstTests.emplace_back(
-	    "matrix: inverse_LLt(), fix[double] 6x6",
-	    matrix_test_inv_fix<double, 6>);
+		"matrix: inverse_LLt(), fix[double] 6x6",
+		matrix_test_inv_fix<double, 6>);
 	lstTests.emplace_back(
-	    "matrix: inverse_LLt(), dyn[double] 20x20",
-	    matrix_test_inv_dyn<double, 20>);
+		"matrix: inverse_LLt(), dyn[double] 20x20",
+		matrix_test_inv_dyn<double, 20>);
 	lstTests.emplace_back(
-	    "matrix: inverse_LLt(), dyn[double] 40x40",
-	    matrix_test_inv_dyn<double, 40>);
+		"matrix: inverse_LLt(), dyn[double] 40x40",
+		matrix_test_inv_dyn<double, 40>);
 
 	lstTests.emplace_back(
 		"matrix: det, dyn[double] 2x2", matrix_test_det_dyn<double, 2>);

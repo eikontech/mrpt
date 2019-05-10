@@ -81,7 +81,7 @@ void CPointPDFParticles::getMean(CPoint3D& p) const
 }
 
 std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean()
-    const
+	const
 {
 	MRPT_START
 

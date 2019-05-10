@@ -66,7 +66,7 @@ void CPose3DPDFParticles::getMean(CPose3D& p) const
 }
 
 std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
-    const
+	const
 {
 	MRPT_START
 
